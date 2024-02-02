@@ -1,0 +1,214 @@
+import {
+  faBed,
+  faCalendarDays,
+  faLocation,
+  faPerson,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import "./header.css";
+import { DateRange } from "react-date-range";
+import { useState } from "react";
+import "react-date-range/dist/styles.css";
+import "react-date-range/dist/theme/default.css";
+import { format } from "date-fns";
+import { useNavigate } from "react-router-dom";
+import { useRecoilState } from "recoil";
+import { datesAtom, destinationAtom, guestsAtom } from "../../atoms";
+import CityInput from "../CityInput";
+import { ClickAwayListener } from "@mui/base";
+
+const Header = ({ type }) => {
+  const [destination, setDestination] = useRecoilState(destinationAtom);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [date, setDate] = useRecoilState(datesAtom);
+  const [showGuests, setShowGuests] = useState(false);
+  const [guests, setGuests] = useRecoilState(guestsAtom);
+
+  const navigate = useNavigate();
+
+  const handleOption = (name, operation) => {
+    setGuests((prev) => {
+      return {
+        ...prev,
+        [name]: operation === "i" ? guests[name] + 1 : guests[name] - 1,
+      };
+    });
+  };
+
+  const handleSearch = () => {
+    navigate("/hotels");
+  };
+
+  return (
+    <div
+      className="header"
+      style={
+        type !== "list"
+          ? {
+              backgroundImage: "url(img/wanderlust.jpeg)",
+              backgroundSize: "cover",
+              resize: "both",
+            }
+          : {}
+      }
+    >
+      <div
+        className={
+          type === "list" ? "headerContainer listMode" : "headerContainer"
+        }
+      >
+        {type !== "list" && (
+          <div className="backdrop">
+            <h1 className="headerTitle font-weight-bold">
+              Wanderlust days
+              <br />
+              and cozy nights
+            </h1>
+            <p className="headerDesc">Choose from cabins, houses, and more</p>
+            <button className="btn btn-primary">
+              Explore vacation rentals
+            </button>
+            <div className="headerSearch">
+              <div className="headerSearchItem">
+                <span style={{ display: "flex", alignItems: "center" }}>
+                  <FontAwesomeIcon icon={faBed} className="headerIcon" />
+                  &nbsp;&nbsp;
+                  <CityInput />
+                </span>
+                <FontAwesomeIcon
+                  icon={faLocation}
+                  className="headerIcon location"
+                />
+              </div>
+              <div className="headerSearchItem">
+                <span
+                  onClick={() => setShowDatePicker(!showDatePicker)}
+                  className="headerSearchText"
+                >
+                  <FontAwesomeIcon
+                    icon={faCalendarDays}
+                    className="headerIcon"
+                  />
+                  &nbsp;&nbsp;
+                  {`${format(date[0].startDate, "dd/MM/yyyy")} to ${format(
+                    date[0].endDate,
+                    "dd/MM/yyyy",
+                  )}`}
+                </span>
+                {showDatePicker && (
+                  <DateRange
+                    editableDateInputs={true}
+                    onChange={(item) => {
+                      setDate([item.selection]);
+                    }}
+                    moveRangeOnFirstSelection={false}
+                    ranges={date}
+                    className="date"
+                    minDate={new Date()}
+                  />
+                )}
+              </div>
+              <div className="headerSearchItem">
+                <span
+                  onClick={() => {
+                    setShowGuests(!showGuests);
+                    setShowDatePicker(false);
+                  }}
+                  className="headerSearchText"
+                >
+                  <FontAwesomeIcon icon={faPerson} className="headerIcon" />
+                  &nbsp;&nbsp;
+                  {`${guests.adult} adult · ${guests.children} children · ${guests.room} room`}
+                </span>
+                {showGuests && (
+                  <ClickAwayListener
+                    onClickAway={() => {
+                      setShowGuests(false);
+                    }}
+                  >
+                    <div className="options">
+                      <div className="optionItem">
+                        <span className="optionText">Adult</span>
+                        <div className="optionCounter">
+                          <button
+                            disabled={guests.adult <= 1}
+                            className="optionCounterButton"
+                            onClick={() => handleOption("adult", "d")}
+                          >
+                            -
+                          </button>
+                          <span className="optionCounterNumber">
+                            {guests.adult}
+                          </span>
+                          <button
+                            className="optionCounterButton"
+                            onClick={() => handleOption("adult", "i")}
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
+                      <div className="optionItem">
+                        <span className="optionText">Children</span>
+                        <div className="optionCounter">
+                          <button
+                            disabled={guests.children <= 0}
+                            className="optionCounterButton"
+                            onClick={() => handleOption("children", "d")}
+                          >
+                            -
+                          </button>
+                          <span className="optionCounterNumber">
+                            {guests.children}
+                          </span>
+                          <button
+                            className="optionCounterButton"
+                            onClick={() => handleOption("children", "i")}
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
+                      <div className="optionItem">
+                        <span className="optionText">Room</span>
+                        <div className="optionCounter">
+                          <button
+                            disabled={guests.room <= 1}
+                            className="optionCounterButton"
+                            onClick={() => handleOption("room", "d")}
+                          >
+                            -
+                          </button>
+                          <span className="optionCounterNumber">
+                            {guests.room}
+                          </span>
+                          <button
+                            className="optionCounterButton"
+                            onClick={() => handleOption("room", "i")}
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </ClickAwayListener>
+                )}
+              </div>
+              <div className="headerSearchItem">
+                <button
+                  className="headerBtn btn btn-primary"
+                  onClick={handleSearch}
+                  disabled={destination.length === 0}
+                >
+                  Search
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default Header;

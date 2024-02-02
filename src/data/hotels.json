@@ -1,0 +1,194 @@
+[
+  {
+    "name": "Hotel Residenz",
+    "location": "Westend",
+    "metersFromCenter": "3.8 km",
+    "price": 69,
+    "prevPrice": 75,
+    "rating": 8.6,
+    "numReviews": 2502,
+    "comfort": 9.4,
+    "description": "Contemporary living, sleek hotel, stylish rooms, top-notch amenities.",
+    "roomName": "Quadruple Room",
+    "freeCancellation": true,
+    "freeAirportTaxi": true,
+    "freeBreakfast": true,
+    "beds": {
+      "queen": 2,
+      "single": 2,
+      "sofa": 1
+    }
+  },
+  {
+    "name": "CitySmart Hotels Stadion",
+    "location": "Am Stadion",
+    "metersFromCenter": "4.2 km",
+    "price": 75,
+    "rating": "9.0",
+    "numReviews": 984,
+    "comfort": 9.4,
+    "description": "Style in simplicity, minimalist design, maximum comfort.",
+    "roomName": "Quadruple Room",
+    "freeCancellation": true,
+    "freeAirportTaxi": true,
+    "freeBreakfast": false,
+    "beds": {
+      "queen": 2,
+      "single": 2,
+      "sofa": 1
+    }
+  },
+  {
+    "name": "Hotel Schlossblick",
+    "location": "Am Schlosspark",
+    "metersFromCenter": "2.4 km",
+    "price": 84,
+    "rating": 9.7,
+    "numReviews": 2991,
+    "comfort": 8.6,
+    "description": "Refined luxury, sophisticated setting, exquisite accommodations, impeccable service.",
+    "roomName": "Quadruple Room",
+    "freeCancellation": true,
+    "freeAirportTaxi": false,
+    "freeBreakfast": true,
+    "beds": {
+      "queen": 2,
+      "single": 2,
+      "sofa": 1
+    }
+  },
+  {
+    "name": "The Nordic Inn",
+    "location": "Markt",
+    "metersFromCenter": "1.5 km",
+    "price": 83,
+    "rating": 8.4,
+    "numReviews": 2140,
+    "comfort": 9.5,
+    "description": "Tranquility in a peaceful space, where comfort meets simplicity.",
+    "roomName": "Quadruple Room",
+    "freeCancellation": true,
+    "freeAirportTaxi": false,
+    "freeBreakfast": true,
+    "beds": {
+      "queen": 2,
+      "single": 2,
+      "sofa": 1
+    }
+  },
+  {
+    "name": "Mitor Hotel Mitte",
+    "location": "Mitte",
+    "metersFromCenter": "2.8 km",
+    "price": 56,
+    "prevPrice": 66,
+    "rating": 8.6,
+    "numReviews": 1139,
+    "comfort": 9.9,
+    "description": "Classic charm, welcoming establishment, timeless hospitality, cozy accommodations.",
+    "roomName": "Quadruple Room",
+    "freeCancellation": true,
+    "freeAirportTaxi": true,
+    "freeBreakfast": false,
+    "beds": {
+      "queen": 2,
+      "single": 2,
+      "sofa": 1
+    }
+  },
+  {
+    "name": "City Palace",
+    "location": "Westend",
+    "metersFromCenter": "3.6 km",
+    "price": 79,
+    "rating": 7.5,
+    "numReviews": 2104,
+    "comfort": 9.5,
+    "description": "Escape to modernity, chic urban destination, cutting-edge design, vibrant atmosphere.",
+    "roomName": "Quadruple Room",
+    "freeCancellation": false,
+    "freeAirportTaxi": false,
+    "freeBreakfast": false,
+    "beds": {
+      "queen": 2,
+      "single": 2,
+      "sofa": 1
+    }
+  },
+  {
+    "name": "Le petit logement",
+    "location": "Stadtmitte",
+    "metersFromCenter": "1 km",
+    "price": 59,
+    "rating": 8.4,
+    "numReviews": 2140,
+    "comfort": 9.1,
+    "description": "Cozy stay, comfortable suites, warmth, relaxation.",
+    "roomName": "Quadruple Room",
+    "freeCancellation": false,
+    "freeAirportTaxi": false,
+    "freeBreakfast": false,
+    "beds": {
+      "queen": 2,
+      "single": 2,
+      "sofa": 1
+    }
+  },
+  {
+    "name": "Hotel Domicil",
+    "location": "Südende",
+    "metersFromCenter": "4.4 km",
+    "price": 81,
+    "rating": 9.8,
+    "numReviews": 2498,
+    "comfort": 9,
+    "description": "Effortless sophistication, refined elegance, impeccable details.",
+    "roomName": "Quadruple Room",
+    "freeCancellation": false,
+    "freeAirportTaxi": false,
+    "freeBreakfast": true,
+    "beds": {
+      "queen": 2,
+      "single": 2,
+      "sofa": 1
+    }
+  },
+  {
+    "name": "Stella Hotel",
+    "location": "Westend",
+    "metersFromCenter": "4.7 km",
+    "price": 63,
+    "rating": 7.7,
+    "numReviews": 1036,
+    "comfort": 9.3,
+    "description": "Unwind in understated luxury, quiet escape, indulgent accommodations.",
+    "roomName": "Quadruple Room",
+    "freeCancellation": true,
+    "freeAirportTaxi": false,
+    "freeBreakfast": true,
+    "beds": {
+      "queen": 2,
+      "single": 2,
+      "sofa": 1
+    }
+  },
+  {
+    "name": "Kükennest",
+    "location": "Zoologischer Garten",
+    "metersFromCenter": "2.7 km",
+    "price": 84,
+    "rating": 8.7,
+    "numReviews": 1829,
+    "comfort": 8.8,
+    "description": "Recharge in relaxed accommodations, laid-back vibes, modern convenience.",
+    "roomName": "Quadruple Room",
+    "freeCancellation": true,
+    "freeAirportTaxi": false,
+    "freeBreakfast": false,
+    "beds": {
+      "queen": 2,
+      "single": 2,
+      "sofa": 1
+    }
+  }
+]
