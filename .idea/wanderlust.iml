@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$">
+      <excludeFolder url="file://$MODULE_DIR$/venv" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="e6474733abba1cd6bc8a66bea1aa8643d7435c30" level="application" />
+    <orderEntry type="library" name="3d161fe815defc4c2abd452685c55638e17c1dd1" level="application" />
+    <orderEntry type="library" name="fb72b80a0ac41908803bad3844521903f584c372" level="application" />
+    <orderEntry type="library" name="2454015045ef79168d452ff4e7f30bdadff0aa81" level="application" />
+  </component>
+</module>
