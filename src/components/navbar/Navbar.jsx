@@ -13,7 +13,14 @@ const Navbar = () => {
     <div className="navbar">
       <div className="navContainer">
         <div className="firstRow">
-          <span className="logo">Booking</span>
+          <span className="logo">
+            Wanderlust Hotels{" "}
+            <sub>
+              <small>
+                <small>powered by Booking.com</small>
+              </small>
+            </sub>
+          </span>
           <div className={"headerListContainer"}></div>
           <div className="navItems">
             <span>EUR</span> &nbsp;&nbsp;&nbsp;
@@ -31,15 +38,13 @@ const Navbar = () => {
             &nbsp;&nbsp;&nbsp;
             <FontAwesomeIcon icon={faCircleQuestion} />
             &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;<span>List your property</span>
-            <button className="navButton">Register</button>
-            <button className="navButton">Sign in</button>
           </div>
         </div>
 
         <div className="headerList">
           <div className="headerListItem active">
             <FontAwesomeIcon icon={faBed} />
-            <span>Stays</span>
+            <span>Hotels</span>
           </div>
           <div className="headerListItem">
             <FontAwesomeIcon icon={faPlane} />

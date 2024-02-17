@@ -16,6 +16,7 @@ import { useRecoilState } from "recoil";
 import { datesAtom, destinationAtom, guestsAtom } from "../../atoms";
 import CityInput from "../CityInput";
 import { ClickAwayListener } from "@mui/base";
+import { pluralize } from "../../util";
 
 const Header = ({ type }) => {
   const [destination, setDestination] = useRecoilState(destinationAtom);
@@ -36,7 +37,7 @@ const Header = ({ type }) => {
   };
 
   const handleSearch = () => {
-    navigate("/hotels");
+    navigate("/hotel-results");
   };
 
   return (
@@ -75,10 +76,6 @@ const Header = ({ type }) => {
                   &nbsp;&nbsp;
                   <CityInput />
                 </span>
-                <FontAwesomeIcon
-                  icon={faLocation}
-                  className="headerIcon location"
-                />
               </div>
               <div className="headerSearchItem">
                 <span
@@ -118,7 +115,9 @@ const Header = ({ type }) => {
                 >
                   <FontAwesomeIcon icon={faPerson} className="headerIcon" />
                   &nbsp;&nbsp;
-                  {`${guests.adult} adult · ${guests.children} children · ${guests.room} room`}
+                  {pluralize(guests.adult, "adult")} ·{" "}
+                  {pluralize(guests.children, "child", "ren")} ·{" "}
+                  {pluralize(guests.room, "room")}
                 </span>
                 {showGuests && (
                   <ClickAwayListener
@@ -199,6 +198,7 @@ const Header = ({ type }) => {
                   className="headerBtn btn btn-primary"
                   onClick={handleSearch}
                   disabled={destination.length === 0}
+                  tabIndex={"-1"}
                 >
                   Search
                 </button>

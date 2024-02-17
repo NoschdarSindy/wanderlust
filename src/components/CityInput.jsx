@@ -1,16 +1,31 @@
 import * as React from "react";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
-import { InputAdornment } from "@mui/material";
+import {
+  askedForCookiesAtom,
+  askedForLocationAtom,
+  destinationAtom,
+} from "../atoms";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { useState } from "react";
+import { Backdrop, InputAdornment } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBed } from "@fortawesome/free-solid-svg-icons";
-import { destinationAtom } from "../atoms";
-import { useRecoilState } from "recoil";
+import { faLocation } from "@fortawesome/free-solid-svg-icons";
+import { sendEvent } from "../util";
 
 export default function CityInput() {
   const [destination, setDestination] = useRecoilState(destinationAtom);
+  const [askedForLocation, setAskedForLocation] =
+    useRecoilState(askedForLocationAtom);
+  const [showBackdrop, setShowBackdrop] = useState(false);
+  const askedForCookies = useRecoilValue(askedForCookiesAtom);
+  const [showAutomplete, setShowAutocomplete] = useState(false);
 
-  const handleChange = (e) => {
+  const handleChange = (e, newValue) => {
+    if (!askedForCookies) {
+      e.preventDefault();
+      return;
+    }
     if (e.target.value.length === 0) {
       setDestination("");
       return;
@@ -21,34 +36,87 @@ export default function CityInput() {
     );
   };
 
+  const handleTextFieldClick = (e) => {
+    if (askedForCookies && !askedForLocation) {
+      setShowBackdrop(true);
+      sendEvent("geolocation/start");
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          console.log(pos);
+          console.log("Location is enabled");
+          sendEvent("geolocation/end");
+          setShowBackdrop(false);
+          setDestination("Lübeck");
+          setAskedForLocation(true);
+        },
+        (error) => {
+          console.log(error);
+          console.log("Location is disabled");
+          sendEvent("geolocation/end");
+          setShowBackdrop(false);
+          setAskedForLocation(true);
+        },
+      );
+    }
+  };
+
   return (
     <Autocomplete
-      forcePopupIcon={false}
-      clearIcon={false}
-      disablePortal
-      id="combo-box-demo"
-      options={top100Films}
+      value={destination}
+      open={showAutomplete}
+      openOnFocus={false}
+      disabled={showBackdrop || !askedForCookies}
+      freeSolo
       sx={{ width: 300 }}
-      fullWidth
+      disablePortal
+      options={options}
+      onInputChange={(e, newValue) => {
+        if (newValue.length === 0) {
+          if (showAutomplete) setShowAutocomplete(false);
+        } else {
+          if (!showAutomplete) setShowAutocomplete(true);
+        }
+        setDestination(newValue);
+      }}
+      onClose={() => setShowAutocomplete(false)}
       renderInput={(params) => (
         <TextField
-          value={destination?.toUpperCase() ?? ""}
-          placeholder={"Where are you going?"}
-          variant="standard"
           {...params}
+          placeholder={"Where are you going?"}
+          disabled={showBackdrop || !askedForCookies}
+          variant="standard"
           InputProps={{
             disableUnderline: true,
+            endAdornment: (
+              <InputAdornment position="end">
+                <FontAwesomeIcon
+                  cursor={"pointer"}
+                  icon={faLocation}
+                  className="headerIcon location"
+                  onClick={handleTextFieldClick}
+                />
+                <Backdrop
+                  transitionDuration={500}
+                  sx={{
+                    color: "#777",
+                    zIndex: (theme) => theme.zIndex.drawer + 1,
+                  }}
+                  open={showBackdrop}
+                  onClick={() => {}}
+                ></Backdrop>
+              </InputAdornment>
+            ),
             ...params.InputProps,
           }}
           onChange={handleChange}
-          onBlur={handleChange}
+          onClick={handleTextFieldClick}
         />
       )}
     />
   );
 }
 
-const top100Films = [
+const options = [
   {
     label: "Berlin",
   },

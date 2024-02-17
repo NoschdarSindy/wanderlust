@@ -1,19 +1,13 @@
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
-import Home from "./pages/home/Home";
+import Hotels from "./pages/home/Hotels";
 import Hotel from "./pages/hotel/Hotel";
 import List from "./pages/list/List";
-import ScrollToTop from "./components/ScrollToTop";
+import PersonalDetails from "./pages/personalDetails/PersonalDetails";
 import React, { useEffect, useState } from "react";
 
 function App() {
   const location = useLocation();
   const [loading, setLoading] = useState(true);
-
-  const handleClick = async () => {
-    const response = await fetch("http://127.0.0.1:8000");
-    const json = await response.json();
-    console.log(json);
-  };
 
   setTimeout(() => {
     setLoading((loading) => false);
@@ -25,14 +19,15 @@ function App() {
 
   return (
     <>
-      <button onClick={handleClick}>Test</button>
       {loading ? (
         <span>Loading...</span>
       ) : (
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/hotels" element={<List />} />
+          <Route path="/" element={<Hotels />} />
+          <Route path="/hotel-results" element={<List />} />
           <Route path="/hotel/:id" element={<Hotel />} />
+          <Route path="/your-details" element={<PersonalDetails />} />
+          <Route path="/hotel-checkout" element={<Hotel />} />
         </Routes>
       )}
     </>

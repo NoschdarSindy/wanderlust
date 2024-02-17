@@ -96,7 +96,7 @@
 
 .headerSearchItem:not(:last-child) {
   background-color: white;
-  flex-grow: 0.46;
+  flex-grow: 0.47;
 }
 
 .headerSearchItem:first-child {
@@ -110,7 +110,7 @@
 }
 
 .headerSearchText {
-  color: lightgray;
+  color: black;
   cursor: pointer;
 }
 

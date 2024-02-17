@@ -1,7 +1,7 @@
 import "./searchItem.css";
 import hotels from "../../data/hotels.json";
-import { useRecoilState, useRecoilValue } from "recoil";
-import { datesAtom, destinationAtom, guestsAtom } from "../../atoms";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { datesAtom, destinationAtom, guestsAtom, hotelAtom } from "../../atoms";
 import { differenceInDays } from "date-fns";
 import { getNights, getTotalPrice, pluralize } from "../../util";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -12,12 +12,16 @@ const SearchItem = ({ number }) => {
   const date = useRecoilValue(datesAtom);
   const guests = useRecoilValue(guestsAtom);
   const destination = useRecoilValue(destinationAtom);
+  const setHotel = useSetRecoilState(hotelAtom);
 
   const navigate = useNavigate();
 
   const hotel = hotels[number];
 
-  const handleClick = () => navigate(`/hotel/${number}`);
+  const handleClick = () => {
+    setHotel(number);
+    navigate(`/hotel/${number}`);
+  };
 
   return (
     <div className="searchItem">

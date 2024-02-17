@@ -1,14 +1,5 @@
 import { differenceInDays } from "date-fns";
 
-export function dateDiffInDays(a, b) {
-  const _MS_PER_DAY = 1000 * 60 * 60 * 24;
-  // Discard the time and time-zone information.
-  const utc1 = Date.UTC(a.getFullYear(), a.getMonth(), a.getDate());
-  const utc2 = Date.UTC(b.getFullYear(), b.getMonth(), b.getDate());
-
-  return Math.floor((utc2 - utc1) / _MS_PER_DAY);
-}
-
 export const pluralize = (count, noun, suffix = "s") =>
   `${count} ${noun}${count !== 1 ? suffix : ""}`;
 
@@ -17,3 +8,16 @@ export const getNights = (date) =>
 
 export const getTotalPrice = (price, date, guests) =>
   price * getNights(date) * guests.adult;
+
+// eventString is a string that represents the event, e.g. 'cookies/start'
+export const sendEvent = (eventString) => {
+  fetch("http://127.0.0.1:8000/" + eventString)
+    .then((response) => {
+      response.json().then((json) => {
+        console.log(json.message);
+      });
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+};
