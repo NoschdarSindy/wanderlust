@@ -1,4 +1,3 @@
-import * as React from "react";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import {
@@ -20,8 +19,9 @@ export default function CityInput() {
   const [showBackdrop, setShowBackdrop] = useState(false);
   const askedForCookies = useRecoilValue(askedForCookiesAtom);
   const [showAutomplete, setShowAutocomplete] = useState(false);
+  const [locationAccessGranted, setLocationAccessGranted] = useState(false);
 
-  const handleChange = (e, newValue) => {
+  const handleChange = (e) => {
     if (!askedForCookies) {
       e.preventDefault();
       return;
@@ -36,7 +36,7 @@ export default function CityInput() {
     );
   };
 
-  const handleTextFieldClick = (e) => {
+  const handleTextFieldClick = () => {
     if (askedForCookies && !askedForLocation) {
       setShowBackdrop(true);
       sendEvent("geolocation/start");
@@ -47,6 +47,7 @@ export default function CityInput() {
           sendEvent("geolocation/end");
           setShowBackdrop(false);
           setDestination("Lübeck");
+          setLocationAccessGranted(true);
           setAskedForLocation(true);
         },
         (error) => {
@@ -63,7 +64,7 @@ export default function CityInput() {
   return (
     <Autocomplete
       value={destination}
-      open={showAutomplete}
+      open={showAutomplete && !locationAccessGranted}
       openOnFocus={false}
       disabled={showBackdrop || !askedForCookies}
       freeSolo

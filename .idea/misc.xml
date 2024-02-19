@@ -4,7 +4,6 @@
     <option name="sdkName" value="Python 3.10 (python3.10_x64)" />
   </component>
   <component name="PWA">
-    <option name="enabled" value="true" />
     <option name="wasEnabledAtLeastOnce" value="true" />
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_21" project-jdk-name="Python 3.10 (python3.10_x64)" project-jdk-type="Python SDK">

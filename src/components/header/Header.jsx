@@ -1,7 +1,6 @@
 import {
   faBed,
   faCalendarDays,
-  faLocation,
   faPerson,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -12,14 +11,14 @@ import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { datesAtom, destinationAtom, guestsAtom } from "../../atoms";
 import CityInput from "../CityInput";
 import { ClickAwayListener } from "@mui/base";
 import { pluralize } from "../../util";
 
 const Header = ({ type }) => {
-  const [destination, setDestination] = useRecoilState(destinationAtom);
+  const destination = useRecoilValue(destinationAtom);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [date, setDate] = useRecoilState(datesAtom);
   const [showGuests, setShowGuests] = useState(false);
@@ -198,7 +197,7 @@ const Header = ({ type }) => {
                   className="headerBtn btn btn-primary"
                   onClick={handleSearch}
                   disabled={destination.length === 0}
-                  tabIndex={"-1"}
+                  tabIndex={-1}
                 >
                   Search
                 </button>

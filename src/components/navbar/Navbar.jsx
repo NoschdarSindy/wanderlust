@@ -37,7 +37,7 @@ const Navbar = () => {
             />
             &nbsp;&nbsp;&nbsp;
             <FontAwesomeIcon icon={faCircleQuestion} />
-            &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;<span>List your property</span>
+            &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;<span>List your offer</span>
           </div>
         </div>
 

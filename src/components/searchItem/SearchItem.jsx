@@ -1,8 +1,7 @@
 import "./searchItem.css";
 import hotels from "../../data/hotels.json";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import { datesAtom, destinationAtom, guestsAtom, hotelAtom } from "../../atoms";
-import { differenceInDays } from "date-fns";
 import { getNights, getTotalPrice, pluralize } from "../../util";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleRight, faCheck } from "@fortawesome/free-solid-svg-icons";
@@ -20,12 +19,12 @@ const SearchItem = ({ number }) => {
 
   const handleClick = () => {
     setHotel(number);
-    navigate(`/hotel/${number}`);
+    navigate(`/hotel`);
   };
 
   return (
     <div className="searchItem">
-      <Link to={`/hotel/${number}`}>
+      <Link to={`/hotel`}>
         <img
           src={`/img/hotel-thumbnail/${number}.webp`}
           alt=""

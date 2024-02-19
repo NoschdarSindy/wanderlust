@@ -1,5 +1,4 @@
 import * as React from "react";
-import Button from "@mui/material/Button";
 import { styled } from "@mui/material/styles";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
@@ -11,7 +10,7 @@ import Typography from "@mui/material/Typography";
 import { useEffect } from "react";
 import { sendEvent } from "../util";
 import { askedForCookiesAtom } from "../atoms";
-import { useRecoilState, useSetRecoilState } from "recoil";
+import { useRecoilState } from "recoil";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -40,7 +39,7 @@ export default function CookiePopup() {
         setOpen(true);
         sendEvent("cookies/start");
       }, 800);
-  }, []);
+  });
 
   return (
     <React.Fragment>
@@ -70,9 +69,9 @@ export default function CookiePopup() {
             data to provide better experiences and content. This may also
             include showing you more relevant advertisements. By clicking
             "Accept", you agree to this. You can learn more via our{" "}
-            <a href={"#"} style={{ color: "initial" }}>
+            <button className={"link-button"} style={{ color: "initial" }}>
               privacy policy
-            </a>
+            </button>
             .
           </Typography>
         </DialogContent>

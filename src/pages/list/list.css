@@ -8,6 +8,7 @@
 .lsOptionInput,
 .lsItem > span {
   border-radius: 5px;
+  color: rgb(84, 84, 84);
 }
 
 .listWrapper {
@@ -48,6 +49,7 @@
   height: 30px;
   border: none;
   padding: 5px;
+  background-color: white;
 }
 .lsItem > span {
   height: 30px;
@@ -73,6 +75,7 @@
 .lsOptionInput {
   width: 50px;
   border-width: 1px;
+  background-color: white;
 }
 
 .listSearch > button {

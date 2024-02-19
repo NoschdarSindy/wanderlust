@@ -5,7 +5,7 @@ import { useState } from "react";
 import { format } from "date-fns";
 import { DateRange } from "react-date-range";
 import SearchItem from "../../components/searchItem/SearchItem";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { datesAtom, destinationAtom, guestsAtom } from "../../atoms";
 import Footer from "../../components/footer/Footer";
 import { Pagination, Stack } from "@mui/material";
@@ -13,7 +13,7 @@ import { Pagination, Stack } from "@mui/material";
 const List = () => {
   const [destination, setDestination] = useRecoilState(destinationAtom);
   const [date, setDate] = useRecoilState(datesAtom);
-  const [guests, setGuests] = useRecoilState(guestsAtom);
+  const guests = useRecoilValue(guestsAtom);
   const [showDatePicker, setShowDatePicker] = useState(false);
 
   return (

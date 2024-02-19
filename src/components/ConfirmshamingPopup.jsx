@@ -1,17 +1,13 @@
-import * as React from "react";
-import Button from "@mui/material/Button";
 import { styled } from "@mui/material/styles";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
-import IconButton from "@mui/material/IconButton";
-import CloseIcon from "@mui/icons-material/Close";
 import Typography from "@mui/material/Typography";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { sendEvent } from "../util";
-import { askedForCookiesAtom, confirmshamingDoneAtom } from "../atoms";
-import { useRecoilState, useSetRecoilState } from "recoil";
+import { confirmshamingDoneAtom } from "../atoms";
+import { useRecoilState } from "recoil";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -29,8 +25,7 @@ export default function ConfirmshamingPopup() {
   );
 
   const handleAccept = (e) => {
-    Notification.requestPermission().then((result) => {
-      console.log(result);
+    Notification.requestPermission().then(() => {
       handleClose(e);
     });
   };
@@ -48,10 +43,10 @@ export default function ConfirmshamingPopup() {
         setOpen(true);
         sendEvent("confirmshaming/start");
       }, 800);
-  }, []);
+  });
 
   return (
-    <React.Fragment>
+    <Fragment>
       <BootstrapDialog
         onClose={handleClose}
         aria-labelledby="customized-dialog-title"
@@ -75,6 +70,6 @@ export default function ConfirmshamingPopup() {
           </button>
         </DialogActions>
       </BootstrapDialog>
-    </React.Fragment>
+    </Fragment>
   );
 }

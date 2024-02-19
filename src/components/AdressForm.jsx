@@ -4,12 +4,54 @@ import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
+import {
+  Box,
+  Collapse,
+  FormControl,
+  FormLabel,
+  Radio,
+  RadioGroup,
+} from "@mui/material";
+import { TransitionGroup } from "react-transition-group";
+import { sendEvent } from "../util";
+import { useEffect } from "react";
 
 export default function AddressForm() {
+  const [radio, setRadio] = React.useState("no");
+  const [validEmail, setValidEmail] = React.useState(null);
+  const [showConfusingCheckbox, setShowConfusingCheckbox] =
+    React.useState(false);
+  const re =
+    /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i;
+
+  const handleValidEmail = () => {
+    if (!validEmail) sendEvent("confusingCheckbox/start");
+    setValidEmail(true);
+    setShowConfusingCheckbox(true);
+  };
+
+  const handleEmailChange = (e) => {
+    if (e.target.value.match(re)) {
+      handleValidEmail();
+    }
+  };
+
+  const handleEmailBlur = (e) => {
+    if (e.target.value.match(re)) {
+      handleValidEmail();
+    } else {
+      setValidEmail(false);
+    }
+  };
+
+  useEffect(() => {
+    sendEvent("personalDetails/start");
+  }, []);
+
   return (
     <React.Fragment>
       <Typography variant="h6" gutterBottom>
-        Shipping address
+        Enter your details
       </Typography>
       <Grid container spacing={3}>
         <Grid item xs={12} sm={6}>
@@ -34,6 +76,61 @@ export default function AddressForm() {
             variant="standard"
           />
         </Grid>
+        <Grid item xs={12} sm={6}>
+          <TextField
+            required
+            id="emailAddress"
+            type={"email"}
+            name="emailAddress"
+            label="Email address"
+            fullWidth
+            autoComplete="email-address"
+            variant="standard"
+            onBlur={handleEmailBlur}
+            onChange={handleEmailChange}
+            error={validEmail === false}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6}></Grid>
+        <TransitionGroup>
+          {showConfusingCheckbox && (
+            <Collapse sx={{ paddingLeft: "24px" }}>
+              <Grid item xs={12} sm={12}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      defaultChecked
+                      onChange={(e) => {
+                        !e.target.checked && sendEvent("confusingCheckbox/end");
+                      }}
+                    />
+                  }
+                  label="I want to opt out of not receiving any news and special offers via email."
+                />
+              </Grid>
+            </Collapse>
+          )}
+        </TransitionGroup>
+        <Box width="100%" height={0} />
+        <br />
+        <Grid item xs={12} sm={6} sx={{ paddingTop: "0 !important" }}>
+          <TextField
+            id="phoneNumber"
+            name="phoneNumber"
+            label="Phone number"
+            fullWidth
+            autoComplete="phone-number"
+            variant="standard"
+          />
+        </Grid>
+      </Grid>
+      <Grid item xs={12} sm={6}></Grid>
+      <br />
+      <br />
+      <Typography variant="h6" gutterBottom>
+        Your address
+      </Typography>
+      <Grid container spacing={3}>
         <Grid item xs={12}>
           <TextField
             required
@@ -98,12 +195,22 @@ export default function AddressForm() {
           />
         </Grid>
         <Grid item xs={12}>
-          <FormControlLabel
-            control={
-              <Checkbox color="secondary" name="saveAddress" value="yes" />
-            }
-            label="Use this address for payment details"
-          />
+          <FormControl>
+            <br />
+            <FormLabel id="demo-row-radio-buttons-group-label">
+              Are you traveling for work?
+            </FormLabel>
+            <RadioGroup
+              row
+              aria-labelledby="demo-row-radio-buttons-group-label"
+              name="row-radio-buttons-group"
+              value={radio}
+              onChange={(e) => setRadio(e.target.value)}
+            >
+              <FormControlLabel value="yes" control={<Radio />} label="Yes" />
+              <FormControlLabel value="no" control={<Radio />} label="No" />
+            </RadioGroup>
+          </FormControl>
         </Grid>
       </Grid>
     </React.Fragment>

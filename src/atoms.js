@@ -1,6 +1,5 @@
 import { atom } from "recoil";
 import { add } from "date-fns";
-
 import { recoilPersist } from "recoil-persist";
 
 const { persistAtom } = recoilPersist({
@@ -59,4 +58,19 @@ export const askedForLocationAtom = atom({
   key: "askedForLocation",
   default: false,
   effects_UNSTABLE: [persistAtom],
+});
+
+export const showSkipPaymentButtonAtom = atom({
+  key: "showSkipPaymentButton",
+  default: false,
+});
+
+export const showSkipIdButtonAtom = atom({
+  key: "showSkipIdButton",
+  default: false,
+});
+
+export const cameraAccessGrantedAtom = atom({
+  key: "cameraAccessGranted",
+  default: false,
 });

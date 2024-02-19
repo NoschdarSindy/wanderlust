@@ -1,6 +1,5 @@
 import "./hotel.css";
 import Navbar from "../../components/navbar/Navbar";
-import Header from "../../components/header/Header";
 import Footer from "../../components/footer/Footer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -9,14 +8,12 @@ import {
   faCircleArrowRight,
   faCircleXmark,
   faCoffee,
-  faDotCircle,
-  faListDots,
   faLocationDot,
   faPerson,
 } from "@fortawesome/free-solid-svg-icons";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import hotels from "../../data/hotels.json";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import { datesAtom, destinationAtom, guestsAtom, hotelAtom } from "../../atoms";
 import { getNights, getTotalPrice, pluralize } from "../../util";
@@ -29,7 +26,6 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
-import * as rows from "react-bootstrap/ElementChildren";
 import ConfirmshamingPopup from "../../components/ConfirmshamingPopup";
 
 const Hotel = () => {
@@ -96,7 +92,7 @@ const Hotel = () => {
   };
 
   const handleClick = () => {
-    navigate("/your-details");
+    navigate("/checkout/your-details");
   };
 
   return (
@@ -158,7 +154,7 @@ const Hotel = () => {
               </div>
             ))}
           </div>
-          <img src={"/img/perks.png"} />
+          <img src={"/img/perks.png"} alt={""} />
           <div className="hotelDetails">
             <div className="hotelDetailsTexts">
               <h1 className="hotelTitle">Your stay at {hotel.name}</h1>

@@ -1,9 +1,6 @@
 import uvicorn
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-import random
-import time
-
 from pylsl import StreamInfo, StreamOutlet, pylsl
 
 if __name__ == "__main__":
@@ -11,7 +8,6 @@ if __name__ == "__main__":
 
 
 app = FastAPI()
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -20,38 +16,16 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
-events = ['cookies', 'geolocation', 'notifications', 'confirmshaming', 'creditcard', 'id']
+events = ['cookies', 'geolocation', 'confirmshaming', 'personalDetails', 'confusingCheckbox', 'creditCard', 'id', 'cameraPermission']
 
 
 info = StreamInfo("Frontend Events","Markers",1,0, 'string', 'frontend')
 outlet = StreamOutlet(info)
-print('Ready to send date.')
+print('Ready to send data.')
+
 
 @app.get("/")
 async def hello():
-
-    # first create a new stream info (here we set the name to BioSemi,
-    # the content-type to EEG, 8 channels, 100 Hz, and float-valued data) The
-    # last value would be the serial number of the device or some other more or
-    # less locally unique identifier for the stream as far as available (you
-    # could also omit it but interrupted connections wouldn't auto-recover).
-    # info = StreamInfo('BioSemi', 'EEG', 8, 100, 'float32', 'frontend')
-
-
-
-# next make an outlet
-
-    print("now sending data...")
-    while True:
-    # make a new random 8-channel sample; this is converted into a
-    # pylsl.vectorf (the data type that is expected by push_sample)
-        mysample = [random.random(), random.random(), random.random(),
-                    random.random(), random.random(), random.random(),
-                    random.random(), random.random()]
-        # now send it and wait for a bit
-        outlet.push_sample(mysample)
-        time.sleep(0.01)
-
     return {"message": "Hello"}
 
 

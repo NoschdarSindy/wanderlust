@@ -5,7 +5,7 @@
 # SETUP HERE
 #
 
-license_file = "license_file"
+license_file = ""
 
 # DONT CHANGE BELOW
 
