@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Task</title>
+    <link rel="stylesheet" href="res/bootstrap.min.css" />
+  </head>
+  <body>
+    <div class="m-5 p-xl-5">
+      <h3>Setting up the sensors</h3>
+      <p>
+        The researcher will now assist you with setting up the sensors. Once
+        that is done, you can come back to this window and click
+        <i>Continue</i>.
+      </p>
+
+      <button class="btn btn-primary" id="showTaskButton" disabled>
+        Continue
+      </button>
+
+      <div id="yourTask" style="display: none">
+        <br />
+        <h3>Your Task</h3>
+        <p>
+          The task now is to visit
+          <a href="http://wanderlust.travel">wanderlust.travel</a> and reserve
+          any hotel in
+          <!--//TODO set to current city-->
+          Berlin. The duration of the stay and the number of guests does not
+          matter.
+        </p>
+      </div>
+    </div>
+    <script>
+      const showTaskButton = document.getElementById("showTaskButton");
+      const yourTask = document.getElementById("yourTask");
+
+      showTaskButton.addEventListener("click", function () {
+        yourTask.style.display = "block";
+        showTaskButton.style.display = "none";
+      });
+
+      showTaskButton.disabled = true;
+      setTimeout(function () {
+        showTaskButton.disabled = false;
+      }, 60000);
+    </script>
+  </body>
+</html>

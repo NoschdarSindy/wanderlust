@@ -1,3 +1,5 @@
+import json
+from datetime import datetime
 import uvicorn
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -16,10 +18,10 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
-events = ['cookies', 'geolocation', 'confirmshaming', 'personalDetails', 'confusingCheckbox', 'creditCard', 'id', 'cameraPermission']
+events = ['app', 'cookies', 'geolocation', 'confirmshaming', 'personalDetails', 'confusingCheckbox', 'creditCard', 'id', 'cameraPermission']
 
 
-info = StreamInfo("Frontend Events","Markers",1,0, 'string', 'frontend')
+info = StreamInfo("Frontend Events", "Markers",1, 0, 'string', 'frontend')
 outlet = StreamOutlet(info)
 print('Ready to send data.')
 
@@ -27,6 +29,21 @@ print('Ready to send data.')
 @app.get("/")
 async def hello():
     return {"message": "Hello"}
+
+
+@app.post("/store-json/{filename_suffix}")
+async def store_json(data: dict, filename_suffix: str):
+    print('Storing data')
+    try:
+        datetime_string = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
+        filename = f"{datetime_string}_{filename_suffix}.json"
+
+        with open(filename, "w") as file:
+            json.dump(data, file)
+
+        return {"message": f"Data stored successfully in file: {filename}"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error storing data: {str(e)}")
 
 
 @app.get("/{event}/{start_or_end}")

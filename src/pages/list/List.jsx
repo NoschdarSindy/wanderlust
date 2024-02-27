@@ -2,7 +2,6 @@ import "./list.css";
 import Navbar from "../../components/navbar/Navbar";
 import Header from "../../components/header/Header";
 import { useState } from "react";
-import { format } from "date-fns";
 import { DateRange } from "react-date-range";
 import SearchItem from "../../components/searchItem/SearchItem";
 import { useRecoilState, useRecoilValue } from "recoil";
@@ -12,7 +11,7 @@ import { Pagination, Stack } from "@mui/material";
 
 const List = () => {
   const [destination, setDestination] = useRecoilState(destinationAtom);
-  const [date, setDate] = useRecoilState(datesAtom);
+  const date = useRecoilValue(datesAtom);
   const guests = useRecoilValue(guestsAtom);
   const [showDatePicker, setShowDatePicker] = useState(false);
 
@@ -37,18 +36,13 @@ const List = () => {
               <label>Time span</label>
               <span
                 onClick={() => setShowDatePicker(!showDatePicker)}
-              >{`${format(date[0].startDate, "dd/MM/yyyy")} - ${format(
-                date[0].endDate,
-                "dd/MM/yyyy",
+              >{`${new Date(date[0].startDate).toLocaleDateString(
+                "en-GB",
+              )} to ${new Date(date[0].endDate).toLocaleDateString(
+                "en-GB",
               )}`}</span>
               {showDatePicker && (
-                <DateRange
-                  className="dateRange"
-                  onChange={(item) => setDate([item.selection])}
-                  minDate={new Date()}
-                  ranges={date}
-                  disabled={true}
-                />
+                <DateRange className="dateRange" disabled={true} />
               )}
             </div>
             <div className="lsItem">

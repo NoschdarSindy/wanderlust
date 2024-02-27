@@ -28,8 +28,8 @@ export const datesAtom = atom({
   key: "date",
   default: [
     {
-      startDate: new Date(),
-      endDate: add(new Date(), { days: 1 }),
+      startDate: new Date().toISOString(),
+      endDate: add(new Date(), { days: 1 }).toISOString(),
       key: "selection",
     },
   ],
@@ -45,19 +45,16 @@ export const hotelAtom = atom({
 export const askedForCookiesAtom = atom({
   key: "askedForCookies",
   default: false,
-  effects_UNSTABLE: [persistAtom],
 });
 
 export const confirmshamingDoneAtom = atom({
   key: "confirmshamingDone",
   default: false,
-  effects_UNSTABLE: [persistAtom],
 });
 
 export const askedForLocationAtom = atom({
   key: "askedForLocation",
   default: false,
-  effects_UNSTABLE: [persistAtom],
 });
 
 export const showSkipPaymentButtonAtom = atom({

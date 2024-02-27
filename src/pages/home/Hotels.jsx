@@ -6,8 +6,23 @@ import Navbar from "../../components/navbar/Navbar";
 import PropertyList from "../../components/propertyList/PropertyList";
 import "./hotels.css";
 import CookiePopup from "../../components/CookiePopup";
+import { useResetRecoilState } from "recoil";
+import { datesAtom, destinationAtom, guestsAtom, hotelAtom } from "../../atoms";
+import { useEffect } from "react";
 
 const Hotels = () => {
+  const resetDestination = useResetRecoilState(destinationAtom);
+  const resetGuests = useResetRecoilState(guestsAtom);
+  const resetDates = useResetRecoilState(datesAtom);
+  const resetHote = useResetRecoilState(hotelAtom);
+
+  useEffect(() => {
+    resetDestination();
+    resetGuests();
+    resetDates();
+    resetHote();
+  }, []);
+
   return (
     <div>
       <Navbar />

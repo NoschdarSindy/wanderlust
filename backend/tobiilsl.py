@@ -15,19 +15,16 @@ license_file = ""
 # Preface here
 #
 # from psychopy import prefs, visual, core, event, monitors, tools, logging
-import numpy as np
 import tobii_research as tr
 import time
-import random
-import os
 import pylsl as lsl
 import sys
 
 # Find Eye Tracker and Apply License (edit to suit actual tracker serial no)
-ft = tr.find_all_eyetrackers()
-if len(ft) == 0:
-    print("No Eye Trackers found!?")
-    exit(1)
+
+while len((ft := tr.find_all_eyetrackers())) == 0:
+    print("No Eye Tracker found! Retrying in 10s...")
+    time.sleep(10)
 
 # Pick first tracker
 mt = ft[0]

@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Task</title>
+    <link rel="stylesheet" href="res/bootstrap.min.css" />
+  </head>
+  <body>
+    <div class="m-5 p-xl-5">
+      <p>
+        Always delete any site data and reset site permissions before conducting
+        the study. To do so, open a new tab and paste:
+        <p
+          >chrome://settings/content/siteDetails?site=http%3A%2F%2Fwanderlust.travel</p
+        >
+      </p>
+      <p><a class="btn btn-primary" href="consent.html"> Begin study </a></p>
+    </div>
+  <script>
+    const textCopy = 'chrome://settings/content/siteDetails?site=http%3A%2F%2Fwanderlust.travel'
+    navigator.clipboard.writeText(textCopy)
+            .then(() => {
+              console.log('URL copied to clipboard');
+            })
+            .catch(err => {
+              console.error('Unable to copy URL to clipboard', err);
+            });
+  </script>
+  </body>
+</html>

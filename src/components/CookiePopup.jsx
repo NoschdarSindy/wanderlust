@@ -39,7 +39,7 @@ export default function CookiePopup() {
         setOpen(true);
         sendEvent("cookies/start");
       }, 800);
-  });
+  }, []);
 
   return (
     <React.Fragment>

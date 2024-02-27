@@ -42,10 +42,10 @@ export default function CityInput() {
       sendEvent("geolocation/start");
       navigator.geolocation.getCurrentPosition(
         (pos) => {
-          console.log(pos);
           console.log("Location is enabled");
           sendEvent("geolocation/end");
           setShowBackdrop(false);
+          //TODO set string to current city
           setDestination("Lübeck");
           setLocationAccessGranted(true);
           setAskedForLocation(true);

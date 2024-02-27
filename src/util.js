@@ -4,10 +4,13 @@ export const pluralize = (count, noun, suffix = "s") =>
   `${count} ${noun}${count !== 1 ? suffix : ""}`;
 
 export const getNights = (date) =>
-  Math.max(1, differenceInDays(date[0].endDate, date[0].startDate));
+  Math.max(
+    1,
+    differenceInDays(new Date(date[0].endDate), new Date(date[0].startDate)),
+  );
 
 export const getTotalPrice = (price, date, guests) =>
-  price * getNights(date) * guests.adult;
+  price * getNights(date) * guests.adult * guests.room;
 
 // eventString is a string that represents the event, e.g. 'cookies/start'
 export const sendEvent = (eventString) => {

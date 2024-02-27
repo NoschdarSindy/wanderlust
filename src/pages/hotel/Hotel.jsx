@@ -250,7 +250,7 @@ const Hotel = () => {
                       <b>Free cancellation</b> before 6:00 PM on{" "}
                       {new Date(
                         new Date(date[0].startDate).setDate(
-                          date[0].startDate.getDate() - 1,
+                          new Date(date[0].startDate).getDate() - 1,
                         ),
                       ).toLocaleDateString()}
                     </span>
@@ -296,7 +296,7 @@ const Hotel = () => {
                           <b>Free cancellation</b> before 6:00 PM on{" "}
                           {new Date(
                             new Date(date[0].startDate).setDate(
-                              date[0].startDate.getDate() - 1,
+                              new Date(date[0].startDate).getDate() - 1,
                             ),
                           ).toLocaleDateString()}
                         </span>

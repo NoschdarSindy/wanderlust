@@ -35,8 +35,8 @@ const Checkout = () => {
           break;
         case "/checkout/id":
           sendEvent("id/end");
-          window.location.href =
-            "https://docs.google.com/forms/d/e/1FAIpQLSeFfliq1wlLgyK9d5E-G8JLBFHQv-KTuiLrwpA7jH2H5VsGUQ/viewform";
+          sendEvent("app/end");
+          navigate("/questionnaire");
           break;
         default:
           break;

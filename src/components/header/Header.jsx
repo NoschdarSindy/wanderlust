@@ -9,7 +9,6 @@ import { DateRange } from "react-date-range";
 import { useState } from "react";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
-import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { datesAtom, destinationAtom, guestsAtom } from "../../atoms";
@@ -86,19 +85,31 @@ const Header = ({ type }) => {
                     className="headerIcon"
                   />
                   &nbsp;&nbsp;
-                  {`${format(date[0].startDate, "dd/MM/yyyy")} to ${format(
-                    date[0].endDate,
-                    "dd/MM/yyyy",
+                  {`${new Date(date[0].startDate).toLocaleDateString(
+                    "en-GB",
+                  )} to ${new Date(date[0].endDate).toLocaleDateString(
+                    "en-GB",
                   )}`}
                 </span>
                 {showDatePicker && (
                   <DateRange
                     editableDateInputs={true}
                     onChange={(item) => {
-                      setDate([item.selection]);
+                      const selection = item.range1;
+                      setDate([
+                        {
+                          startDate: selection.startDate.toISOString(),
+                          endDate: selection.endDate.toISOString(),
+                        },
+                      ]);
                     }}
                     moveRangeOnFirstSelection={false}
-                    ranges={date}
+                    ranges={[
+                      {
+                        startDate: new Date(date[0].startDate),
+                        endDate: new Date(date[0].endDate),
+                      },
+                    ]}
                     className="date"
                     minDate={new Date()}
                   />
