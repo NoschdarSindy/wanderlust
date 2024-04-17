@@ -16,7 +16,7 @@ export default function IdForm() {
     setTimeout(() => {
       setShowSkipIdButton(true);
     }, 6000);
-  });
+  }, []);
 
   navigator.permissions.query({ name: "camera" }).finally(() => {
     sendEvent("cameraPermission/end");

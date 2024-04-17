@@ -43,7 +43,7 @@ export default function ConfirmshamingPopup() {
         setOpen(true);
         sendEvent("confirmshaming/start");
       }, 800);
-  });
+  }, []);
 
   return (
     <Fragment>

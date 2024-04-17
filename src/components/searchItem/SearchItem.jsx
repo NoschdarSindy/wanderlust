@@ -32,11 +32,14 @@ const SearchItem = ({ number }) => {
         />
       </Link>
       <div className="siDesc">
-        <Link to={`/hotel/${number}`} style={{ textDecoration: "none" }}>
+        <a
+          onClick={handleClick}
+          style={{ textDecoration: "none", cursor: "pointer" }}
+        >
           <h1 className="siTitle">
             <b>{hotel.name}</b>
           </h1>
-        </Link>
+        </a>
         <span className="siDistance">
           {hotel.location}, {destination}
         </span>

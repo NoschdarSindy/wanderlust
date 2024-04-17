@@ -46,7 +46,7 @@ export default function CityInput() {
           sendEvent("geolocation/end");
           setShowBackdrop(false);
           //TODO set string to current city
-          setDestination("Lübeck");
+          setDestination("Berlin");
           setLocationAccessGranted(true);
           setAskedForLocation(true);
         },
