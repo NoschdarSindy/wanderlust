@@ -1,5 +1,5 @@
-
 import { createContext, useContext, useState } from 'react';
+import { websiteThemes } from '../theme/websiteThemes';
 
 const WebsiteContext = createContext();
 
@@ -36,17 +36,3 @@ export const useWebsite = () => {
   }
   return context;
 };
-
-export function WebsiteProvider({ children }) {
-  const [websiteType, setWebsiteType] = useState('hotels');
-
-  return (
-    <WebsiteContext.Provider value={{ websiteType, setWebsiteType }}>
-      {children}
-    </WebsiteContext.Provider>
-  );
-}
-
-export function useWebsite() {
-  return useContext(WebsiteContext);
-}
