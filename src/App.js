@@ -1,6 +1,10 @@
+
 import { Routes, Route, useLocation } from "react-router-dom";
+import { WebsiteProvider } from "./contexts/WebsiteContext";
+import { DesignModeProvider } from "./contexts/DesignModeContext";
 import Hotels from "./pages/home/Hotels";
-import Hotel from "./pages/hotel/Hotel";
+import Flights from "./pages/home/Flights";
+import CarRentals from "./pages/home/CarRentals";
 import List from "./pages/list/List";
 import Checkout from "./pages/checkout/Checkout";
 import React, { useEffect, useState } from "react";
@@ -19,19 +23,23 @@ function App() {
   }, [location]);
 
   return (
-    <>
-      {loading ? (
-        <span></span>
-      ) : (
-        <Routes>
-          <Route path="/" element={<Hotels />} />
-          <Route path="/hotel-results" element={<List />} />
-          <Route path="/hotel" element={<Hotel />} />
-          <Route path="/checkout/*" element={<Checkout />} />
-          <Route path="/questionnaire" element={<Questionnaire />} />
-        </Routes>
-      )}
-    </>
+    <DesignModeProvider>
+      <WebsiteProvider>
+        {loading ? (
+          <span></span>
+        ) : (
+          <Routes>
+            <Route path="/" element={<Hotels />} />
+            <Route path="/flights" element={<Flights />} />
+            <Route path="/car-rentals" element={<CarRentals />} />
+            <Route path="/results" element={<List />} />
+            <Route path="/details" element={<List />} />
+            <Route path="/checkout/*" element={<Checkout />} />
+            <Route path="/questionnaire" element={<Questionnaire />} />
+          </Routes>
+        )}
+      </WebsiteProvider>
+    </DesignModeProvider>
   );
 }
 

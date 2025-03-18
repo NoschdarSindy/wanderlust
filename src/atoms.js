@@ -10,7 +10,32 @@ const { persistAtom } = recoilPersist({
 
 export const destinationAtom = atom({
   key: "destination",
-  default: "",
+  default: {
+    from: "",
+    to: "",
+  },
+  effects_UNSTABLE: [persistAtom],
+});
+
+export const websiteThemeAtom = atom({
+  key: "websiteTheme",
+  default: {
+    hotels: {
+      name: "Wanderlust Hotels",
+      primary: "#1976d2",
+      secondary: "#dc004e",
+    },
+    flights: {
+      name: "SkyWay Airways",
+      primary: "#2196f3",
+      secondary: "#f50057",
+    },
+    carRentals: {
+      name: "RoadMaster Rentals",
+      primary: "#00796b",
+      secondary: "#ff4081",
+    }
+  },
   effects_UNSTABLE: [persistAtom],
 });
 
