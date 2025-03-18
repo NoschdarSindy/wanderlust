@@ -1,4 +1,3 @@
-
 import { Routes, Route, useLocation } from "react-router-dom";
 import { WebsiteProvider } from "./contexts/WebsiteContext";
 import { DesignModeProvider } from "./contexts/DesignModeContext";
@@ -34,7 +33,7 @@ function App() {
             <Route path="/car-rentals" element={<CarRentals />} />
             <Route path="/results" element={<List />} />
             <Route path="/details" element={<List />} />
-            <Route path="/checkout/*" element={<Checkout />} />
+            <Route path="/checkout/*" element={<Checkout />} /> {/* Added Checkout route */}
             <Route path="/questionnaire" element={<Questionnaire />} />
           </Routes>
         )}

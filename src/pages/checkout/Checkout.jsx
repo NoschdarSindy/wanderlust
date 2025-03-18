@@ -1,153 +1,48 @@
-import Navbar from "../../components/navbar/Navbar";
-import Footer from "../../components/footer/Footer";
-import AddressForm from "../../components/AdressForm";
-import { Box, Card, CardContent, Zoom } from "@mui/material";
-import Grid from "@mui/material/Grid";
-import PaymentForm from "../../components/PaymentForm";
-import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
-import { sendEvent } from "../../util";
-import { useRecoilValue } from "recoil";
-import {
-  cameraAccessGrantedAtom,
-  showSkipIdButtonAtom,
-  showSkipPaymentButtonAtom,
-} from "../../atoms";
-import IdForm from "../../components/IdForm";
-
-const Checkout = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const showSkipPaymentButton = useRecoilValue(showSkipPaymentButtonAtom);
-  const showSkipIdButton = useRecoilValue(showSkipIdButtonAtom);
-  const cameraAccessGranted = useRecoilValue(cameraAccessGrantedAtom);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (e.target.checkValidity()) {
-      switch (location.pathname) {
-        case "/checkout/your-details":
-          sendEvent("personalDetails/end");
-          navigate("/checkout/payment");
-          break;
-        case "/checkout/payment":
-          sendEvent("creditCard/end");
-          navigate("/checkout/id");
-          break;
-        case "/checkout/id":
-          sendEvent("id/end");
-          sendEvent("app/end");
-          navigate("/questionnaire");
-          break;
-        default:
-          break;
-      }
-    }
-  };
-
-  return (
-    <div>
-      <Navbar />
-      <br />
-      <Box display="flex" alignItems="center" justifyContent="center">
-        <Card
-          variant="outlined"
-          sx={{ width: 1024, paddingX: 10, paddingY: 3 }}
-        >
-          <CardContent>
-            <form onSubmit={handleSubmit}>
-              <Routes>
-                <Route path="/your-details" element={<AddressForm />} />
-                <Route path="/payment" element={<PaymentForm />} />
-                <Route path="/id" element={<IdForm />} />
-              </Routes>
-              <Grid container justifyContent="flex-end">
-                <Box sx={{ display: "flex" }}>
-                  {location.pathname.includes("/payment") && (
-                    <Zoom in={showSkipPaymentButton}>
-                      <button
-                        onClick={handleSubmit}
-                        className={"btn btn-light"}
-                      >
-                        Skip this step
-                      </button>
-                    </Zoom>
-                  )}
-                  {location.pathname.includes("/id") && (
-                    <Zoom in={showSkipIdButton}>
-                      <button
-                        onClick={handleSubmit}
-                        className={"btn btn-light"}
-                      >
-                        Skip identification
-                      </button>
-                    </Zoom>
-                  )}
-                </Box>
-                &nbsp;
-                <button
-                  id={"submit-btn"}
-                  type="submit"
-                  className={"btn btn-primary"}
-                  disabled={
-                    location.pathname.includes("/id") && !cameraAccessGranted
-                  }
-                >
-                  Next
-                </button>
-              </Grid>
-            </form>
-          </CardContent>
-        </Card>
-      </Box>
-      <Footer />
-    </div>
-  );
-};
-
-export default Checkout;
 import { useNavigate } from "react-router-dom";
 import { useWebsite } from "../../contexts/WebsiteContext";
 import { websiteThemes } from "../../theme/websiteThemes";
 import { Box, Button, Container, Paper, Step, StepLabel, Stepper, Typography } from "@mui/material";
 import { useState } from "react";
 
-const steps = ['Personal Details', 'Payment', 'Confirmation'];
+const steps = ['Customer Details', 'Payment', 'Confirmation'];
 
 const Checkout = () => {
-  const [activeStep, setActiveStep] = useState(0);
+  const navigate = useNavigate();
   const { websiteType } = useWebsite();
   const theme = websiteThemes[websiteType];
-  const navigate = useNavigate();
+  const [activeStep, setActiveStep] = useState(0);
 
   const handleNext = () => {
-    if (activeStep === steps.length - 1) {
-      navigate('/questionnaire');
-    } else {
-      setActiveStep((prev) => prev + 1);
-    }
+    setActiveStep((prevStep) => prevStep + 1);
+  };
+
+  const handleBack = () => {
+    setActiveStep((prevStep) => prevStep - 1);
   };
 
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
+    <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
       <Paper 
         elevation={3} 
         sx={{ 
-          p: 4, 
+          p: 4,
           borderRadius: theme.borderRadius,
-          boxShadow: theme.boxShadow 
+          boxShadow: theme.boxShadow,
+          fontFamily: theme.fontFamily
         }}
       >
         <Typography 
           variant="h4" 
+          align="center" 
           sx={{ 
-            mb: 4, 
-            fontFamily: theme.fontFamily,
-            color: theme.primaryColor 
+            color: theme.primaryColor,
+            mb: 4,
+            fontFamily: theme.fontFamily
           }}
         >
           {theme.name} Checkout
         </Typography>
-        
+
         <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
           {steps.map((label) => (
             <Step key={label}>
@@ -156,19 +51,63 @@ const Checkout = () => {
           ))}
         </Stepper>
 
-        <Box sx={{ mt: 4 }}>
-          <Button
-            variant="contained"
-            onClick={handleNext}
-            sx={{
-              bgcolor: theme.primaryColor,
-              '&:hover': {
-                bgcolor: theme.accentColor,
-              },
-            }}
-          >
-            {activeStep === steps.length - 1 ? 'Complete Order' : 'Next'}
-          </Button>
+        <Box sx={{ mt: 2 }}>
+          {activeStep === steps.length ? (
+            <Box sx={{ textAlign: 'center' }}>
+              <Typography sx={{ mb: 2 }}>
+                Thank you for your booking!
+              </Typography>
+              <Button 
+                onClick={() => navigate('/')}
+                sx={{
+                  backgroundColor: theme.primaryColor,
+                  color: 'white',
+                  '&:hover': {
+                    backgroundColor: theme.accentColor,
+                  }
+                }}
+              >
+                Return Home
+              </Button>
+            </Box>
+          ) : (
+            <Box>
+              <Box sx={{ mb: 2 }}>
+                {activeStep === 0 && (
+                  <Typography>Customer Details Form</Typography>
+                )}
+                {activeStep === 1 && (
+                  <Typography>Payment Form</Typography>
+                )}
+                {activeStep === 2 && (
+                  <Typography>Booking Summary</Typography>
+                )}
+              </Box>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4 }}>
+                <Button
+                  disabled={activeStep === 0}
+                  onClick={handleBack}
+                  sx={{
+                    color: theme.secondaryColor
+                  }}
+                >
+                  Back
+                </Button>
+                <Button
+                  variant="contained"
+                  onClick={handleNext}
+                  sx={{
+                    backgroundColor: theme.primaryColor,
+                    '&:hover': {
+                      backgroundColor: theme.accentColor,
+                    }
+                  }}
+                >
+                  {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
+                </Button>
+              </Box>
+            </Box>
+          )}
         </Box>
       </Paper>
     </Container>
