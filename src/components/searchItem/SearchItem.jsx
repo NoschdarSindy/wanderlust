@@ -1,15 +1,10 @@
-
 import "./searchItem.css";
-import hotels from "../../data/hotels.json";
-import flights from "../../data/flights.json";
-import cars from "../../data/cars.json";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { datesAtom, destinationAtom, guestsAtom, hotelAtom } from "../../atoms";
 import { useWebsite } from "../../contexts/WebsiteContext";
 import { useDesignMode } from "../../contexts/DesignModeContext";
-import { getNights, getTotalPrice, pluralize } from "../../util";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faAngleRight, faCheck } from "@fortawesome/free-solid-svg-icons";
+import { getNights, getTotalPrice } from "../../util";
+import { hotels, flights, cars } from "../../data/mockData";
 
 const SearchItem = ({ number }) => {
   const { websiteType } = useWebsite();
@@ -33,90 +28,57 @@ const SearchItem = ({ number }) => {
   const nights = getNights(dates[0].startDate, dates[0].endDate);
   const totalPrice = getTotalPrice(item.price, nights);
 
+  const renderAmenities = () => {
+    const amenities = websiteType === 'hotels' 
+      ? ['Free WiFi', 'Breakfast included', 'Pool', 'Parking']
+      : websiteType === 'flights'
+      ? ['Baggage allowance', 'In-flight meals', 'Entertainment', 'USB Power']
+      : ['GPS', 'Bluetooth', 'Air conditioning', 'Automatic'];
+
+    return (
+      <div className="siAmenities">
+        {amenities.map((amenity, index) => (
+          <span key={index} className="siAmenity">{amenity}</span>
+        ))}
+      </div>
+    );
+  };
+
   const handleClick = () => {
     setHotel(number);
     window.location.href = "/details";
   };
 
-  const renderDeceptiveContent = () => (
-    <>
-      {item.prevPrice && (
-        <span className="siOldPrice">${item.prevPrice * nights}</span>
-      )}
-      <span className="siPrice">${totalPrice}</span>
-      <span className="siTaxOp">
-        {websiteType === 'hotels' ? 'Includes taxes and fees' : 'All taxes included'}
-      </span>
-      <div className="siDetailTexts">
-        <span className="siBookNow">Book now!</span>
-        <span className="siLimitedTime">Limited time offer</span>
-        <span className="siOthersViewing">
-          {Math.floor(Math.random() * 10) + 2} others viewing this {websiteType === 'hotels' ? 'room' : websiteType === 'flights' ? 'flight' : 'car'}
-        </span>
-      </div>
-    </>
-  );
-
-  const renderFairContent = () => (
-    <>
-      <span className="siPrice">${totalPrice}</span>
-      <span className="siTaxOp">
-        {websiteType === 'hotels' ? 'Includes taxes and fees' : 'All taxes included'}
-      </span>
-    </>
-  );
-
   return (
     <div className="searchItem">
-      <img src="https://placehold.co/200x200" alt="" className="siImg" />
+      <div className="siImages">
+        {[item.image, item.image2, item.image3].filter(Boolean).map((img, index) => (
+          <img key={index} src={img} alt="" className="siImg" />
+        ))}
+      </div>
       <div className="siDesc">
         <h1 className="siTitle">{item.name}</h1>
-        {websiteType === 'hotels' && (
-          <>
-            <span className="siDistance">{item.distance} from center</span>
-            <span className="siSubtitle">
-              {pluralize(guests.adult, "adult")} · {pluralize(guests.children, "child")} · {pluralize(guests.room, "room")}
-            </span>
-          </>
-        )}
-        {websiteType === 'flights' && (
-          <>
-            <span className="siDistance">{item.airline}</span>
-            <span className="siSubtitle">
-              {item.departureTime} - {item.arrivalTime} ({item.duration})
-            </span>
-          </>
-        )}
-        {websiteType === 'cars' && (
-          <>
-            <span className="siDistance">{item.location} ({item.metersFromCenter} from center)</span>
-            <span className="siSubtitle">
-              {item.seats} seats · {item.transmission}
-            </span>
-          </>
-        )}
-        <span className="siFeatures">{item.description}</span>
-        {item.freeCancellation && (
-          <span className="siCancelOp">Free cancellation</span>
-        )}
-        {item.freeMeal && websiteType === 'flights' && (
-          <span className="siCancelOp">Free meal</span>
-        )}
-        {item.freeInsurance && websiteType === 'cars' && (
-          <span className="siCancelOp">Free insurance</span>
-        )}
+        <span className="siDistance">{item.distance}</span>
+        <span className="siRating">
+          Rating: {item.rating}/5
+        </span>
+        {renderAmenities()}
       </div>
       <div className="siDetails">
-        <div className="siRating">
-          <span>Excellent</span>
-          <button>{item.rating}</button>
-        </div>
-        <div className="siDetailTexts">
-          {designMode === 'deceptive' ? renderDeceptiveContent() : renderFairContent()}
-          <button className="siCheckButton" onClick={handleClick}>
-            See availability <FontAwesomeIcon icon={faAngleRight} />
-          </button>
-        </div>
+        {designMode && (
+          <>
+            {item.prevPrice && <span className="siOldPrice">${item.prevPrice * nights}</span>}
+            <span className="siPrice">${totalPrice}</span>
+            <span className="siTaxOp">Includes taxes and fees</span>
+            <div className="siDetailTexts">
+              <span className="siLimitedTime">Limited time offer</span>
+              <span className="siOthersViewing">
+                {Math.floor(Math.random() * 10) + 2} others viewing
+              </span>
+            </div>
+          </>
+        )}
+        <button className="siCheckButton" onClick={handleClick}>See details</button>
       </div>
     </div>
   );
