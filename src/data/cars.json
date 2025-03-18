@@ -1,0 +1,34 @@
+
+[
+  {
+    "name": "Economy Compact",
+    "model": "Toyota Yaris",
+    "location": "City Center",
+    "metersFromCenter": "2.8 km",
+    "price": 45,
+    "prevPrice": 55,
+    "rating": 8.6,
+    "numReviews": 892,
+    "comfort": 7.4,
+    "description": "Fuel-efficient compact car, perfect for city driving",
+    "freeCancellation": true,
+    "freeInsurance": false,
+    "seats": 5,
+    "transmission": "automatic"
+  },
+  {
+    "name": "Premium SUV",
+    "model": "BMW X3",
+    "location": "Airport",
+    "metersFromCenter": "12.5 km",
+    "price": 85,
+    "rating": "9.0",
+    "numReviews": 654,
+    "comfort": 9.4,
+    "description": "Luxury SUV with advanced features",
+    "freeCancellation": true,
+    "freeInsurance": true,
+    "seats": 5,
+    "transmission": "automatic"
+  }
+]

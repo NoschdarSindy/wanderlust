@@ -1,0 +1,34 @@
+
+[
+  {
+    "name": "Economy Basic",
+    "airline": "SkyWay Airways",
+    "departureTime": "06:30",
+    "arrivalTime": "08:45",
+    "duration": "2h 15m",
+    "price": 89,
+    "prevPrice": 99,
+    "rating": 8.6,
+    "numReviews": 1502,
+    "comfort": 7.4,
+    "description": "Basic economy flight with standard amenities",
+    "freeCancellation": true,
+    "freeMeal": false,
+    "extraLegroom": false
+  },
+  {
+    "name": "Business Select",
+    "airline": "SkyWay Airways",
+    "departureTime": "10:15",
+    "arrivalTime": "12:30",
+    "duration": "2h 15m",
+    "price": 199,
+    "rating": "9.0",
+    "numReviews": 984,
+    "comfort": 9.4,
+    "description": "Premium business class experience",
+    "freeCancellation": true,
+    "freeMeal": true,
+    "extraLegroom": true
+  }
+]

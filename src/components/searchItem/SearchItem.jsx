@@ -1,7 +1,10 @@
 import "./searchItem.css";
 import hotels from "../../data/hotels.json";
+import flights from "../../data/flights.json";
+import cars from "../../data/cars.json";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { datesAtom, destinationAtom, guestsAtom, hotelAtom } from "../../atoms";
+import { useWebsite } from "../../contexts/WebsiteContext";
 import { getNights, getTotalPrice, pluralize } from "../../util";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleRight, faCheck } from "@fortawesome/free-solid-svg-icons";
