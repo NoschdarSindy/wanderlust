@@ -34,10 +34,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "sudo HOST=wanderlust.travel PORT=80 BROWSER=none react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start": "node start-service.js"
   },
   "eslintConfig": {
     "extends": [
@@ -56,5 +53,8 @@
       "last 1 chrome version",
       "last 1 firefox version"
     ]
+  },
+  "devDependencies": {
+    "wait-on": "^8.0.3"
   }
 }

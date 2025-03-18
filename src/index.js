@@ -5,14 +5,20 @@ import "bootstrap/dist/css/bootstrap.css";
 import App from "./App";
 import { BrowserRouter } from "react-router-dom";
 import { sendEvent } from "./util";
+import { WebsiteProvider } from "./contexts/WebsiteContext";
+import { DesignModeProvider } from "./contexts/DesignModeContext";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
   <RecoilRoot>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
+    <DesignModeProvider>
+      <WebsiteProvider>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </WebsiteProvider>
+    </DesignModeProvider>
   </RecoilRoot>,
 );
 sendEvent("app/start");

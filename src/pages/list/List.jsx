@@ -8,12 +8,14 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import { datesAtom, destinationAtom, guestsAtom } from "../../atoms";
 import Footer from "../../components/footer/Footer";
 import { Pagination, Stack } from "@mui/material";
+import { useWebsite } from "../../contexts/WebsiteContext"; // Added import for website context
 
 const List = () => {
   const [destination, setDestination] = useRecoilState(destinationAtom);
   const date = useRecoilValue(datesAtom);
   const guests = useRecoilValue(guestsAtom);
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const website = useWebsite(); // Use the website context
 
   return (
     <div>
