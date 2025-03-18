@@ -1,0 +1,93 @@
+## **🔹 Core Functionality**
+Each website must include the following pages:
+1️⃣ **Homepage (Search)**
+   - Users **cannot switch** between hotel, flight, and car rental (they are separate sites).
+   - Users enter:
+     - **Hotels:** Location, check-in/out dates, number of guests.
+     - **Flights:** Departure & arrival locations, date, number of passengers, class (economy/business).
+     - **Car Rentals:** Pickup location, rental period, car type.
+   - The **cookie banner appears as a blocking modal before anything can be clicked**.
+   - After closing the cookie banner, the **geolocation access prompt appears**.
+
+2️⃣ **Search Results Page**
+   - Displays **realistic hotel, flight, and car rental listings** with:
+     - Multiple **images** for each result.
+     - Realistic **amenities/options** (e.g., Wi-Fi, breakfast, baggage allowance).
+     - **Sorting & Filtering:** 
+       - Sorting: **Price, Rating, Distance**.
+       - Filtering: **Only a maximum price slider (no minimum price).**
+   - The **notification permission prompt appears here**, as a blocking pop-up.
+   - Users can open a result by:
+     - Clicking **"View Details"** button.
+     - Clicking **the image** or **the title**.
+   - URLs for detail pages should be **realistic** (e.g., /hotels/grand-hotel-berlin instead of /h1).
+
+3️⃣ **Detail Page (Hotel/Flight/Car Details)**
+   - More **images** and **detailed descriptions**.
+   - **Different room types for hotels**.
+   - **Seat selection for flights**.
+   - **Car type & features for rentals**.
+   - "Proceed to Booking" button.
+
+4️⃣ **Personal Information Step**
+   - User enters **name, email, phone number**.
+   - "Continue to Extras" button.
+
+5️⃣ **Travel Protection Plan Step**
+   - **Checkbox for a €19.99 "Travel Protection Plan"** (preselected in deceptive mode).
+   - "Continue to Payment" button.
+
+6️⃣ **Payment Step**
+   - **Only contains credit card input fields.**
+   - "Continue to Verification" button.
+
+7️⃣ **Video Identification Step**
+   - Users **must enable their webcam before proceeding**.
+   - In **Deceptive Design mode**, a **fake "Scanning..." process** starts.
+   - In **Fair Design mode**, a "Skip Verification" button is visible.
+   - "Complete Booking" button.
+
+---
+
+## **🔹 Deceptive Design (Experimental Conditions)**
+Each **stimulus must exist in three conditions**:
+1. **Deceptive Design Mode** (Uses dark patterns)
+2. **Fair Design Mode** (No manipulative design)
+3. **No Stimulus Mode** (The UI element is absent)
+
+Each stimulus should be implemented as **a separate React component**, allowing it to dynamically switch between conditions.
+
+### **Stimuli (Implemented in Correct Order)**
+1️⃣ **Cookie Banner (Forced Action & Interface Interference)**
+   - **Deceptive Mode:** Blocking modal with no "Decline" button, only "Accept All" or "Manage Settings."
+   - **Fair Mode:** Equal prominence for "Accept All" and "Decline All."
+   - **No Stimulus:** No cookie banner appears.
+
+2️⃣ **Geolocation Permission (Nagging & Privacy Zuckering)**
+   - **Deceptive Mode:** It looks mandatory: "Enable location to find offers near you."
+   - **Fair Mode:** Pop-up clearly states location sharing is optional.
+   - **No Stimulus:** No location pop-up appears.
+
+3️⃣ **Notification Permission (Confirmshaming & Nagging)**
+   - **Appears on the Search Results Page, not the homepage.**
+   - **Deceptive Mode:** Uses confirmshaming text: "Get notified about exclusive discounts!" and "No thanks, I don’t like saving money."
+   - **Fair Mode:** A simple "Allow" / "Deny" notification request.
+   - **No Stimulus:** No notification pop-up appears.
+
+4️⃣ **Travel Protection Plan (Sneaking – Hidden Costs)**
+   - **A separate step, after personal data entry.**
+   - **Deceptive Mode:** A preselected checkbox automatically adds the €19.99 protection fee without user action.
+   - **Fair Mode:** The checkbox is unchecked by default.
+   - **No Stimulus:** No travel protection plan is offered.
+
+5️⃣ **Payment Information (Forced Action)**
+   - **A separate step, after travel protection selection.**
+   - **Deceptive Mode:** Users must enter payment details before seeing the final price.
+   - **Fair Mode:** Users can see the final price before entering payment details.
+   - **No Stimulus:** No payment information is required at this step.
+
+6️⃣ **Video Identification (Forced Action)**
+   - **A separate step, after payment entry.**
+   - **Deceptive Mode:** Users must enable webcam; a fake "Scanning..." process starts.
+   - **Fair Mode:** Users can skip video identification with a "Skip verification" button.
+   - **No Stimulus:** No video identification step appears.
