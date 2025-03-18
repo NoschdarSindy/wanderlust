@@ -105,7 +105,7 @@ const List = () => {
           </div>
           <div className="listResult">
             {[...Array(10)].map((e, i) => (
-              <SearchItem number={i} key={i} website={website} /> {/* Pass website context */}
+              <SearchItem number={i} key={i} />
             ))}
 
             <br />
