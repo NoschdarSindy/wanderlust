@@ -105,3 +105,74 @@ const Checkout = () => {
 };
 
 export default Checkout;
+import { useNavigate } from "react-router-dom";
+import { useWebsite } from "../../contexts/WebsiteContext";
+import { websiteThemes } from "../../theme/websiteThemes";
+import { Box, Button, Container, Paper, Step, StepLabel, Stepper, Typography } from "@mui/material";
+import { useState } from "react";
+
+const steps = ['Personal Details', 'Payment', 'Confirmation'];
+
+const Checkout = () => {
+  const [activeStep, setActiveStep] = useState(0);
+  const { websiteType } = useWebsite();
+  const theme = websiteThemes[websiteType];
+  const navigate = useNavigate();
+
+  const handleNext = () => {
+    if (activeStep === steps.length - 1) {
+      navigate('/questionnaire');
+    } else {
+      setActiveStep((prev) => prev + 1);
+    }
+  };
+
+  return (
+    <Container maxWidth="md" sx={{ py: 4 }}>
+      <Paper 
+        elevation={3} 
+        sx={{ 
+          p: 4, 
+          borderRadius: theme.borderRadius,
+          boxShadow: theme.boxShadow 
+        }}
+      >
+        <Typography 
+          variant="h4" 
+          sx={{ 
+            mb: 4, 
+            fontFamily: theme.fontFamily,
+            color: theme.primaryColor 
+          }}
+        >
+          {theme.name} Checkout
+        </Typography>
+        
+        <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
+          {steps.map((label) => (
+            <Step key={label}>
+              <StepLabel>{label}</StepLabel>
+            </Step>
+          ))}
+        </Stepper>
+
+        <Box sx={{ mt: 4 }}>
+          <Button
+            variant="contained"
+            onClick={handleNext}
+            sx={{
+              bgcolor: theme.primaryColor,
+              '&:hover': {
+                bgcolor: theme.accentColor,
+              },
+            }}
+          >
+            {activeStep === steps.length - 1 ? 'Complete Order' : 'Next'}
+          </Button>
+        </Box>
+      </Paper>
+    </Container>
+  );
+};
+
+export default Checkout;

@@ -15,6 +15,7 @@ import { datesAtom, destinationAtom, guestsAtom } from "../../atoms";
 import CityInput from "../CityInput";
 import { ClickAwayListener } from "@mui/base";
 import { pluralize } from "../../util";
+import { useWebsite } from '../../websiteContext'; // Added import for website context
 
 const Header = ({ type }) => {
   const destination = useRecoilValue(destinationAtom);
@@ -22,6 +23,7 @@ const Header = ({ type }) => {
   const [date, setDate] = useRecoilState(datesAtom);
   const [showGuests, setShowGuests] = useState(false);
   const [guests, setGuests] = useRecoilState(guestsAtom);
+  const theme = useWebsite(); // Get the theme from the context
 
   const navigate = useNavigate();
 
@@ -38,13 +40,22 @@ const Header = ({ type }) => {
     navigate("/hotel-results");
   };
 
+  const getHeaderStyle = (theme) => ({
+    background: theme.headerBg,
+    color: "white",
+    display: "flex",
+    justifyContent: "center",
+    position: "relative",
+    fontFamily: theme.fontFamily
+  });
+
   return (
     <div
       className="header"
       style={
         type !== "list"
           ? {
-              backgroundImage: "url(img/wanderlust.jpeg)",
+              backgroundImage: theme.headerImage, // Use theme image
               backgroundSize: "cover",
               resize: "both",
             }
@@ -55,16 +66,19 @@ const Header = ({ type }) => {
         className={
           type === "list" ? "headerContainer listMode" : "headerContainer"
         }
+        style={getHeaderStyle(theme)} // Apply theme to header container
       >
         {type !== "list" && (
           <div className="backdrop">
-            <h1 className="headerTitle font-weight-bold">
+            <h1 className="headerTitle font-weight-bold" style={{ color: theme.primary }}> {/* Apply theme color */}
               Wanderlust days
               <br />
               and cozy nights
             </h1>
-            <p className="headerDesc">Choose from cabins, houses, and more</p>
-            <button className="btn btn-primary">
+            <p className="headerDesc" style={{ color: theme.secondary }}> {/* Apply theme color */}
+              Choose from cabins, houses, and more
+            </p>
+            <button className="btn btn-primary" style={{ backgroundColor: theme.primary, borderColor: theme.primary }}> {/* Apply theme color */}
               Explore vacation rentals
             </button>
             <div className="headerSearch">
@@ -222,3 +236,62 @@ const Header = ({ type }) => {
 };
 
 export default Header;
+
+
+// websiteThemes.js
+export const websiteThemes = {
+  'theme1': {
+    headerBg: '#003580',
+    headerImage: 'url(img/wanderlust.jpeg)',
+    primary: '#007bff',
+    secondary: '#6c757d',
+    accent: '#28a745',
+    fontFamily: 'Arial, sans-serif'
+  },
+  'theme2': {
+    headerBg: '#f8f9fa',
+    headerImage: 'url(img/beach.jpg)', //Example image
+    primary: '#dc3545',
+    secondary: '#adb5bd',
+    accent: '#ffc107',
+    fontFamily: '"Times New Roman", serif'
+  }
+  // Add more themes as needed
+}
+
+// websiteContext.js
+import React, { createContext, useContext, useState } from 'react';
+
+const WebsiteContext = createContext();
+
+export const WebsiteProvider = ({ children, websiteType = 'theme1' }) => {
+  const [theme, setTheme] = useState(websiteThemes[websiteType] || websiteThemes['theme1']); //Default to theme1
+
+  return (
+    <WebsiteContext.Provider value={theme}>
+      {children}
+    </WebsiteContext.Provider>
+  );
+};
+
+export const useWebsite = () => {
+  const context = useContext(WebsiteContext);
+  if (!context) {
+    throw new Error('useWebsite must be used within a WebsiteProvider');
+  }
+  return context;
+};
+
+//checkout.js
+import React from 'react';
+
+const Checkout = () => {
+  return (
+    <div>
+      <h1>Checkout Page</h1>
+      {/* Add your checkout form here */}
+    </div>
+  );
+};
+
+export default Checkout;
