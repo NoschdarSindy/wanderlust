@@ -35,7 +35,7 @@ const Header = ({ type }) => {
   };
 
   const handleSearch = () => {
-    navigate("/hotel-results");
+    navigate("/results");
   };
 
   return (
