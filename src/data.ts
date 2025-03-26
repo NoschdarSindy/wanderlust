@@ -25,7 +25,7 @@ const style = {
   },
 };
 
-const text = {
+const texts = {
   hotels: {
     title: "Wanderlust Hotels",
     item_name: "hotel",
@@ -564,21 +564,21 @@ const websitesData = {
     site: "hotels",
     domain: "hotels.travel",
     s: style.hotels,
-    t: text.hotels,
+    t: texts.hotels,
     m: mocks.hotels,
   },
   flights: {
     site: "flights",
     domain: "flights.travel",
     s: style.flights,
-    t: text.flights,
+    t: texts.flights,
     m: mocks.flights,
   },
   cars: {
     site: "cars",
     domain: "cars.travel",
     s: style.cars,
-    t: text.cars,
+    t: texts.cars,
     m: mocks.cars,
   },
 } as const;

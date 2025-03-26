@@ -16,7 +16,6 @@ import CityInput from "../CityInput";
 import { ClickAwayListener } from "@mui/base";
 import { pluralize } from "src/util";
 import { useWebsite } from "src/contexts/WebsiteContext";
-import React = require("react");
 
 const Header = ({ type }: { type?: string }) => {
   const destination = useRecoilValue(destinationAtom);

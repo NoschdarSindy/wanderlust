@@ -1,14 +1,13 @@
 const { spawn } = require("child_process");
 const { once } = require("events");
 const { resolve } = require("path");
-const { execSync, exec } = require("child_process");
+const { execSync } = require("child_process");
 const path = require("path");
 const os = require("os");
 const fs = require("fs");
-const websiteData = require("./src/data.ts").websitesData;
+const websiteData = require("./src/data.ts").default;
 
 const openBrowser = true;
-
 const isMac = os.platform() === "darwin";
 const shell = "/bin/bash";
 
@@ -28,7 +27,7 @@ const entries = Object.entries(mapping);
 
     const reactArgs = [
       "-c",
-      `BROWSER=none REACT_APP_TYPE=${app} PORT=${port} CI=true craco start`,
+      `BROWSER=none REACT_APP_TYPE=${app} PORT=${port} react-scripts start`,
     ];
 
     spawn(shell, reactArgs, { stdio: "inherit", env: process.env });
@@ -60,38 +59,25 @@ const entries = Object.entries(mapping);
   }
 })();
 
-function isNginxRunning() {
+function killExistingNginx() {
   try {
-    return execSync("ps aux | grep [n]ginx").toString().trim().length > 0;
-  } catch (err) {
-    return false;
-  }
-}
-
-function freePort80() {
-  try {
-    const output = execSync("lsof -ti:80").toString().trim();
-    if (output) {
-      const pids = output.split("\n").filter(Boolean);
-      console.log("⚠️ Port 80 is in use. Killing processes:", pids.join(", "));
-      for (const pid of pids) {
-        execSync(`kill -9 ${pid}`);
-      }
-      console.log("✅ Freed port 80.");
-    }
-  } catch (err) {
-    console.error("⚠️ Could not free port 80:", err.message);
+    execSync("sudo pkill nginx");
+    console.log("🛑 Killed existing nginx processes.");
+  } catch {
+    console.log("ℹ️ No nginx processes to kill.");
   }
 }
 
 async function startNginx() {
-  if (updateNginx() || !isNginxRunning()) {
-    const nginxConfPath = resolve("nginx.conf");
-    console.log("🚀 Starting nginx...");
-    freePort80();
+  const nginxConfPath = resolve("nginx.conf");
+
+  if (updateNginx()) {
+    killExistingNginx();
+    console.log("🚀 Starting nginx with custom config...");
     const nginxProc = spawn("sudo", ["nginx", "-c", nginxConfPath], {
       stdio: "inherit",
     });
+
     const [exitCode] = await once(nginxProc, "exit");
     if (exitCode !== 0) {
       console.error(
@@ -99,6 +85,8 @@ async function startNginx() {
       );
       process.exit(1);
     }
+  } else {
+    console.log("🌀 nginx config unchanged, skipping restart.");
   }
 }
 

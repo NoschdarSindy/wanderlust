@@ -1,7 +1,6 @@
-import * as React from "react";
 import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
-import { useEffect } from "react";
+import { Fragment, useEffect } from "react";
 import { sendEvent } from "../util";
 import { showSkipIdButtonAtom } from "../atoms";
 import { useSetRecoilState } from "recoil";
@@ -18,12 +17,14 @@ export default function IdForm() {
     }, 6000);
   }, []);
 
-  navigator.permissions.query({ name: "camera" }).finally(() => {
-    sendEvent("cameraPermission/end");
-  });
+  navigator.permissions
+    .query({ name: "camera" } as unknown as PermissionDescriptor)
+    .finally(() => {
+      sendEvent("cameraPermission/end");
+    });
 
   return (
-    <React.Fragment>
+    <Fragment>
       <Typography variant="h6" gutterBottom>
         ID verification
       </Typography>
@@ -48,6 +49,6 @@ export default function IdForm() {
       <Grid container spacing={3}>
         <Grid item xs={12}></Grid>
       </Grid>
-    </React.Fragment>
+    </Fragment>
   );
 }
