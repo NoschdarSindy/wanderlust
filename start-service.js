@@ -5,17 +5,17 @@ const { execSync, exec } = require("child_process");
 const path = require("path");
 const os = require("os");
 const fs = require("fs");
-
-const mapping = {
-  Hotels: "hotels.travel",
-  Flights: "flights.travel",
-  Cars: "cars.travel",
-};
+const websiteData = require("./src/data.ts").websitesData;
 
 const openBrowser = true;
 
 const isMac = os.platform() === "darwin";
 const shell = "/bin/bash";
+
+const mapping = {};
+for (const name in websiteData) {
+  mapping[name] = websiteData[name].domain;
+}
 const entries = Object.entries(mapping);
 
 (async () => {
@@ -28,7 +28,7 @@ const entries = Object.entries(mapping);
 
     const reactArgs = [
       "-c",
-      `BROWSER=none REACT_APP_TYPE=${app} PORT=${port} CI=true react-scripts start`,
+      `BROWSER=none REACT_APP_TYPE=${app} PORT=${port} CI=true craco start`,
     ];
 
     spawn(shell, reactArgs, { stdio: "inherit", env: process.env });

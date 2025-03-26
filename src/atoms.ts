@@ -3,18 +3,29 @@ import { add } from "date-fns";
 import { recoilPersist } from "recoil-persist";
 
 const { persistAtom } = recoilPersist({
-  key: "recoil-persist", // this key is using to store data in local storage
-  storage: localStorage, // configure which storage will be used to store the data
-  converter: JSON, // configure how values will be serialized/deserialized in storage
+  key: "recoil-persist",
+  storage: localStorage,
+  converter: JSON,
 });
 
-export const destinationAtom = atom({
+export interface Guests {
+  adult: number;
+  children: number;
+  room: number;
+}
+
+export interface DateRangeItem {
+  startDate: string; // ISO format
+  endDate: string;
+}
+
+export const destinationAtom = atom<string>({
   key: "destination",
   default: "",
   effects_UNSTABLE: [persistAtom],
 });
 
-export const guestsAtom = atom({
+export const guestsAtom = atom<Guests>({
   key: "guests",
   default: {
     adult: 1,
@@ -24,50 +35,49 @@ export const guestsAtom = atom({
   effects_UNSTABLE: [persistAtom],
 });
 
-export const datesAtom = atom({
+export const datesAtom = atom<DateRangeItem[]>({
   key: "date",
   default: [
     {
       startDate: new Date().toISOString(),
       endDate: add(new Date(), { days: 1 }).toISOString(),
-      key: "selection",
     },
   ],
   effects_UNSTABLE: [persistAtom],
 });
 
-export const hotelAtom = atom({
+export const hotelAtom = atom<number>({
   key: "hotel",
   default: 0,
   effects_UNSTABLE: [persistAtom],
 });
 
-export const askedForCookiesAtom = atom({
+export const askedForCookiesAtom = atom<boolean>({
   key: "askedForCookies",
   default: false,
 });
 
-export const confirmshamingDoneAtom = atom({
+export const confirmshamingDoneAtom = atom<boolean>({
   key: "confirmshamingDone",
   default: false,
 });
 
-export const askedForLocationAtom = atom({
+export const askedForLocationAtom = atom<boolean>({
   key: "askedForLocation",
   default: false,
 });
 
-export const showSkipPaymentButtonAtom = atom({
+export const showSkipPaymentButtonAtom = atom<boolean>({
   key: "showSkipPaymentButton",
   default: false,
 });
 
-export const showSkipIdButtonAtom = atom({
+export const showSkipIdButtonAtom = atom<boolean>({
   key: "showSkipIdButton",
   default: false,
 });
 
-export const cameraAccessGrantedAtom = atom({
+export const cameraAccessGrantedAtom = atom<boolean>({
   key: "cameraAccessGranted",
   default: false,
 });

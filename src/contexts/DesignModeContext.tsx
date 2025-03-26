@@ -1,6 +1,6 @@
 import { createContext, useContext, useState } from "react";
 
-const DesignModeContext = createContext();
+const DesignModeContext = createContext(undefined);
 
 export const DESIGN_MODES = {
   DECEPTIVE: "deceptive",

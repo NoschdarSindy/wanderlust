@@ -1,4 +1,3 @@
-import * as React from "react";
 import { styled } from "@mui/material/styles";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
@@ -7,7 +6,7 @@ import DialogActions from "@mui/material/DialogActions";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import Typography from "@mui/material/Typography";
-import { useEffect } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { sendEvent } from "../util";
 import { askedForCookiesAtom } from "../atoms";
 import { useRecoilState } from "recoil";
@@ -22,11 +21,11 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 }));
 
 export default function CookiePopup() {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
   const [askedforCookies, setAskedForCookies] =
     useRecoilState(askedForCookiesAtom);
 
-  const handleClose = (e, reason) => {
+  const handleClose = (e: any, reason?: string) => {
     if (reason && reason === "backdropClick") return;
     sendEvent("cookies/end");
     setOpen(false);
@@ -42,7 +41,7 @@ export default function CookiePopup() {
   }, []);
 
   return (
-    <React.Fragment>
+    <Fragment>
       <BootstrapDialog
         onClose={handleClose}
         aria-labelledby="customized-dialog-title"
@@ -81,6 +80,6 @@ export default function CookiePopup() {
           </button>
         </DialogActions>
       </BootstrapDialog>
-    </React.Fragment>
+    </Fragment>
   );
 }

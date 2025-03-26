@@ -1,8 +1,8 @@
 import "./searchItem.css";
-import hotels from "../../data/hotels.json";
+import hotels from "src/data/hotels.json";
 import { useRecoilValue, useSetRecoilState } from "recoil";
-import { datesAtom, destinationAtom, guestsAtom, hotelAtom } from "../../atoms";
-import { getNights, getTotalPrice, pluralize } from "../../util";
+import { datesAtom, destinationAtom, guestsAtom, hotelAtom } from "src/atoms";
+import { getNights, getTotalPrice, pluralize } from "src/util";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleRight, faCheck } from "@fortawesome/free-solid-svg-icons";
 import { Link, useNavigate } from "react-router-dom";

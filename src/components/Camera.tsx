@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import { useRef } from "react";
 import Webcam from "react-webcam";
 import { Box } from "@mui/material";
 import IconButton from "@mui/material/IconButton";

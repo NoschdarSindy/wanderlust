@@ -7,7 +7,7 @@ import PropertyList from "../../components/propertyList/PropertyList";
 import "./hotels.css";
 import CookiePopup from "../../components/CookiePopup";
 import { useResetRecoilState } from "recoil";
-import { datesAtom, destinationAtom, guestsAtom, hotelAtom } from "../../atoms";
+import { datesAtom, destinationAtom, guestsAtom, hotelAtom } from "src/atoms";
 import { useEffect } from "react";
 
 const Hotels = () => {

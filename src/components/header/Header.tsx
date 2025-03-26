@@ -11,12 +11,14 @@ import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { datesAtom, destinationAtom, guestsAtom } from "../../atoms";
+import { datesAtom, destinationAtom, guestsAtom } from "src/atoms";
 import CityInput from "../CityInput";
 import { ClickAwayListener } from "@mui/base";
-import { pluralize } from "../../util";
+import { pluralize } from "src/util";
+import { useWebsite } from "src/contexts/WebsiteContext";
+import React = require("react");
 
-const Header = ({ type }) => {
+const Header = ({ type }: { type?: string }) => {
   const destination = useRecoilValue(destinationAtom);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [date, setDate] = useRecoilState(datesAtom);
@@ -24,6 +26,7 @@ const Header = ({ type }) => {
   const [guests, setGuests] = useRecoilState(guestsAtom);
 
   const navigate = useNavigate();
+  const { t } = useWebsite();
 
   const handleOption = (name, operation) => {
     setGuests((prev) => {
@@ -58,15 +61,9 @@ const Header = ({ type }) => {
       >
         {type !== "list" && (
           <div className="backdrop">
-            <h1 className="headerTitle font-weight-bold">
-              Wanderlust days
-              <br />
-              and cozy nights
-            </h1>
-            <p className="headerDesc">Choose from cabins, houses, and more</p>
-            <button className="btn btn-primary">
-              Explore vacation rentals
-            </button>
+            <h1 className="headerTitle font-weight-bold">{t.title}</h1>
+            <p className="headerDesc">{t.description}</p>
+            <button className="btn btn-primary">{t.exploreButton}</button>
             <div className="headerSearch">
               <div className="headerSearchItem">
                 <span style={{ display: "flex", alignItems: "center" }}>
@@ -84,7 +81,7 @@ const Header = ({ type }) => {
                     icon={faCalendarDays}
                     className="headerIcon"
                   />
-                  &nbsp;&nbsp;
+
                   {`${new Date(date[0].startDate).toLocaleDateString(
                     "en-GB",
                   )} to ${new Date(date[0].endDate).toLocaleDateString(
@@ -124,10 +121,13 @@ const Header = ({ type }) => {
                   className="headerSearchText"
                 >
                   <FontAwesomeIcon icon={faPerson} className="headerIcon" />
-                  &nbsp;&nbsp;
-                  {pluralize(guests.adult, "adult")} ·{" "}
-                  {pluralize(guests.children, "child", "ren")} ·{" "}
-                  {pluralize(guests.room, "room")}
+                  {pluralize(guests.adult, t.adultLabel.toLowerCase())} ·{" "}
+                  {pluralize(
+                    guests.children,
+                    t.childrenLabel.toLowerCase(),
+                    "ren",
+                  )}{" "}
+                  · {pluralize(guests.room, t.roomLabel.toLowerCase())}
                 </span>
                 {showGuests && (
                   <ClickAwayListener
@@ -137,7 +137,7 @@ const Header = ({ type }) => {
                   >
                     <div className="options">
                       <div className="optionItem">
-                        <span className="optionText">Adult</span>
+                        <span className="optionText">{t.adultLabel}</span>
                         <div className="optionCounter">
                           <button
                             disabled={guests.adult <= 1}
@@ -158,7 +158,7 @@ const Header = ({ type }) => {
                         </div>
                       </div>
                       <div className="optionItem">
-                        <span className="optionText">Children</span>
+                        <span className="optionText">{t.childrenLabel}</span>
                         <div className="optionCounter">
                           <button
                             disabled={guests.children <= 0}
@@ -179,7 +179,7 @@ const Header = ({ type }) => {
                         </div>
                       </div>
                       <div className="optionItem">
-                        <span className="optionText">Room</span>
+                        <span className="optionText">{t.roomLabel}</span>
                         <div className="optionCounter">
                           <button
                             disabled={guests.room <= 1}
@@ -210,7 +210,7 @@ const Header = ({ type }) => {
                   disabled={destination.length === 0}
                   tabIndex={-1}
                 >
-                  Search
+                  {t.searchButton}
                 </button>
               </div>
             </div>

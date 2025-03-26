@@ -5,17 +5,17 @@ import { useState } from "react";
 import { DateRange } from "react-date-range";
 import SearchItem from "../../components/searchItem/SearchItem";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { datesAtom, destinationAtom, guestsAtom } from "../../atoms";
+import { datesAtom, destinationAtom, guestsAtom } from "src/atoms";
 import Footer from "../../components/footer/Footer";
 import { Pagination, Stack } from "@mui/material";
-import { useWebsite } from "../../contexts/WebsiteContext"; // Added import for website context
+// todo import { useWebsite } from "../../contexts/WebsiteContext"; // Added import for website context
 
 const List = () => {
   const [destination, setDestination] = useRecoilState(destinationAtom);
   const date = useRecoilValue(datesAtom);
   const guests = useRecoilValue(guestsAtom);
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const website = useWebsite(); // Use the website context
+  // todo const website = useWebsite(); // Use the website context
 
   return (
     <div>
@@ -76,7 +76,7 @@ const List = () => {
                     type="number"
                     min={1}
                     className="lsOptionInput"
-                    placeholder={guests.adult}
+                    placeholder={guests.adult.toString()}
                     disabled={true}
                   />
                 </div>
@@ -86,7 +86,7 @@ const List = () => {
                     type="number"
                     min={0}
                     className="lsOptionInput"
-                    placeholder={guests.children}
+                    placeholder={guests.children.toString()}
                     disabled={true}
                   />
                 </div>
@@ -96,7 +96,7 @@ const List = () => {
                     type="number"
                     min={1}
                     className="lsOptionInput"
-                    placeholder={guests.room}
+                    placeholder={guests.room.toString()}
                     disabled={true}
                   />
                 </div>

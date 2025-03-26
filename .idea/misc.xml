@@ -3,6 +3,9 @@
   <component name="Black">
     <option name="sdkName" value="Python 3.10 (python3.10_x64)" />
   </component>
+  <component name="JavaScriptSettings">
+    <option name="languageLevel" value="FLOW" />
+  </component>
   <component name="PWA">
     <option name="wasEnabledAtLeastOnce" value="true" />
   </component>

@@ -30,7 +30,7 @@ export default function ConfirmshamingPopup() {
     });
   };
 
-  const handleClose = (e, reason) => {
+  const handleClose = (_e: any, reason?: string) => {
     if (reason && reason === "backdropClick") return;
     sendEvent("confirmshaming/end");
     setOpen(false);

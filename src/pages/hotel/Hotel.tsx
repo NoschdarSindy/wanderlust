@@ -12,7 +12,7 @@ import {
   faPerson,
 } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
-import hotels from "../../data/hotels.json";
+import hotels from "src/data/hotels.json";
 import { useNavigate } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import { datesAtom, destinationAtom, guestsAtom, hotelAtom } from "../../atoms";
@@ -262,7 +262,7 @@ const Hotel = () => {
                     <input
                       type="number"
                       className="lsOptionInput"
-                      placeholder={guests.room}
+                      placeholder={guests.room.toString()}
                       disabled={true}
                     />
                   </TableCell>

@@ -31,8 +31,7 @@ export default function CityInput() {
       return;
     }
     setDestination(
-      e.target.value[0]?.toUpperCase() +
-        e.target.value.slice(1)?.toLowerCase() ?? "",
+      e.target.value[0]?.toUpperCase() + e.target.value.slice(1)?.toLowerCase(),
     );
   };
 

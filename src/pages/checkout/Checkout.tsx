@@ -5,13 +5,13 @@ import { Box, Card, CardContent, Zoom } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import PaymentForm from "../../components/PaymentForm";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
-import { sendEvent } from "../../util";
+import { sendEvent } from "src/util";
 import { useRecoilValue } from "recoil";
 import {
   cameraAccessGrantedAtom,
   showSkipIdButtonAtom,
   showSkipPaymentButtonAtom,
-} from "../../atoms";
+} from "src/atoms";
 import IdForm from "../../components/IdForm";
 
 const Checkout = () => {
