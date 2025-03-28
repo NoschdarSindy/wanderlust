@@ -53,7 +53,7 @@ const Camera = () => {
           width={cameraAccessGranted ? 830 : 0}
         />
         {!cameraAccessGranted && (
-          <img src={"/img/disabled-camera.png"} width={80} alt={""} />
+          <img src={"/disabled-camera.png"} width={80} alt={""} />
         )}
         {cameraAccessGranted && (
           <div className={"camera-overlay-container"}>

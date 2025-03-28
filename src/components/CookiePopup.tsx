@@ -18,15 +18,17 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogActions-root": {
     padding: theme.spacing(1),
   },
+  fontFamily: "var(--font-family)",
 }));
 
 export default function CookiePopup() {
   const [open, setOpen] = useState(false);
+  const [showMore, setShowMore] = useState(false);
   const [askedforCookies, setAskedForCookies] =
     useRecoilState(askedForCookiesAtom);
 
   const handleClose = (e: any, reason?: string) => {
-    if (reason && reason === "backdropClick") return;
+    if (reason === "backdropClick") return;
     sendEvent("cookies/end");
     setOpen(false);
     setAskedForCookies(true);
@@ -73,10 +75,28 @@ export default function CookiePopup() {
             </button>
             .
           </Typography>
+
+          {showMore && (
+            <Typography variant="body2" color="textSecondary" sx={{ mt: 2 }}>
+              Cookies help us analyze usage, personalize content, and improve
+              our marketing. We use both first-party and third-party cookies to
+              understand user behavior and serve relevant ads.
+            </Typography>
+          )}
         </DialogContent>
         <DialogActions>
-          <button onClick={handleClose} className=" btn btn-primary">
-            Accept
+          <button
+            onClick={() => setShowMore(true)}
+            className="btn btn-secondary"
+          >
+            Learn more
+          </button>
+          <button
+            onClick={handleClose}
+            className="btn btn-primary"
+            style={{ backgroundColor: "seagreen", borderColor: "seagreen" }}
+          >
+            Accept all
           </button>
         </DialogActions>
       </BootstrapDialog>

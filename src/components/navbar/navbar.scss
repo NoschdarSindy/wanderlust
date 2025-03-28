@@ -1,0 +1,66 @@
+.headerList {
+  display: flex;
+  gap: 40px;
+}
+
+.headerListItem {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.headerListItem:first-of-type {
+  border: 1px solid var(--color-on-background);
+  padding: 10px;
+
+  #hotels & {
+    border-radius: 20px;
+  }
+
+  #flights & {
+    border: none;
+    text-decoration: underline;
+  }
+
+  #cars & {
+    font-weight: bold;
+  }
+}
+
+.navbar {
+  background-color: var(--color-background);
+  display: flex;
+  justify-content: center;
+  padding-top: 0 !important;
+}
+
+.navContainer {
+  padding: 5px;
+  flex-direction: column;
+  width: 100%;
+  max-width: 1024px;
+  color: var(--color-on-background);
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+}
+
+.navContainer .firstRow {
+  padding: 5px 5px 20px;
+  flex-direction: row;
+  width: 100%;
+  max-width: 1024px;
+  color: var(--color-on-background);
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.navItems > * {
+  cursor: pointer;
+}
+
+.logo {
+  font-weight: bolder;
+}

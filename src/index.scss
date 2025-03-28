@@ -1,0 +1,40 @@
+body:has(#hotels) {
+  --color-primary: #0071c2;
+  --color-secondary: #003580;
+  --color-accent: #febb02;
+  --color-background: #003580;
+  --color-on-background: #ffffff;
+  --color-text: #1a1a1a;
+  --color-muted: #6c757d;
+  --font-family: "Arial", sans-serif;
+  font-family: var(--font-family);
+}
+
+body:has(#flights) {
+  --color-primary: #005ecb;
+  --color-secondary: #ebf5ff;
+  --color-accent: #ff6363;
+  --color-background: #bee1f8;
+  --color-on-background: #1a1a1a;
+  --color-text: #1a1a1a;
+  --color-muted: #7f8c8d;
+  --font-family: "Segoe UI", sans-serif;
+  font-family: var(--font-family);
+}
+
+body:has(#cars) {
+  --color-primary: #2e7d32;
+  --color-secondary: #1b5e20;
+  --color-accent: #f9a825;
+  --color-background: #1b3a2b;
+  --color-on-background: #ffffff;
+  --color-text: #1a1a1a;
+  --color-muted: #6c757d;
+  --font-family: "Tahoma", "Verdana", sans-serif;
+  font-family: var(--font-family);
+}
+
+.btn-primary {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+}

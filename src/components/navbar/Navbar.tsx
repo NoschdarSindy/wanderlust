@@ -1,31 +1,21 @@
-import "./navbar.css";
+import "./navbar.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faBed,
-  faCar,
-  faCircleQuestion,
-  faPlane,
-  faTaxi,
-} from "@fortawesome/free-solid-svg-icons";
+import * as icons from "@fortawesome/free-solid-svg-icons";
+import { useImage, useSite } from "src/contexts/WebsiteContext";
 
 const Navbar = () => {
+  const s = useSite();
+  const usEng = useImage("us-eng") as string;
+
   return (
     <div className="navbar">
       <div className="navContainer">
         <div className="firstRow">
-          <span className="logo">
-            Wanderlust Hotels{" "}
-            <sub>
-              <small>
-                <small>powered by Booking.com</small>
-              </small>
-            </sub>
-          </span>
-          <div className={"headerListContainer"}></div>
+          <span className="logo">{s.title}</span>
           <div className="navItems">
             <span>EUR</span> &nbsp;&nbsp;&nbsp;
             <img
-              src={"/img/us-eng.png"}
+              src={usEng}
               alt=""
               style={{
                 width: "1em",
@@ -36,32 +26,18 @@ const Navbar = () => {
               }}
             />
             &nbsp;&nbsp;&nbsp;
-            <FontAwesomeIcon icon={faCircleQuestion} />
-            &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;<span>List your offer</span>
+            <FontAwesomeIcon icon={icons.faCircleQuestion} />
+            &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;<span>{s.listYourOfferText}</span>
           </div>
         </div>
 
         <div className="headerList">
-          <div className="headerListItem active">
-            <FontAwesomeIcon icon={faBed} />
-            <span>Hotels</span>
-          </div>
-          <div className="headerListItem">
-            <FontAwesomeIcon icon={faPlane} />
-            <span>Flights</span>
-          </div>
-          <div className="headerListItem">
-            <FontAwesomeIcon icon={faCar} />
-            <span>Car rentals</span>
-          </div>
-          <div className="headerListItem">
-            <FontAwesomeIcon icon={faBed} />
-            <span>Attractions</span>
-          </div>
-          <div className="headerListItem">
-            <FontAwesomeIcon icon={faTaxi} />
-            <span>Airport taxis</span>
-          </div>
+          {s.headerItems.map(({ icon, label }) => (
+            <div className="headerListItem" key={label}>
+              <FontAwesomeIcon icon={icons[icon]} />
+              <span>{label}</span>
+            </div>
+          ))}
         </div>
       </div>
     </div>

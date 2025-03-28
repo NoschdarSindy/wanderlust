@@ -65,9 +65,8 @@ export default function CityInput() {
       value={destination}
       open={showAutomplete && !locationAccessGranted}
       openOnFocus={false}
-      disabled={showBackdrop || !askedForCookies}
       freeSolo
-      sx={{ width: 300 }}
+      sx={{ width: "100%" }}
       disablePortal
       options={options}
       onInputChange={(e, newValue) => {
@@ -85,31 +84,38 @@ export default function CityInput() {
           placeholder={"Where are you going?"}
           disabled={showBackdrop || !askedForCookies}
           variant="standard"
-          InputProps={{
-            disableUnderline: true,
-            endAdornment: (
-              <InputAdornment position="end">
-                <FontAwesomeIcon
-                  cursor={"pointer"}
-                  icon={faLocation}
-                  className="headerIcon location"
-                  onClick={handleTextFieldClick}
-                />
-                <Backdrop
-                  transitionDuration={500}
-                  sx={{
-                    color: "#777",
-                    zIndex: (theme) => theme.zIndex.drawer + 1,
-                  }}
-                  open={showBackdrop}
-                  onClick={() => {}}
-                ></Backdrop>
-              </InputAdornment>
-            ),
-            ...params.InputProps,
-          }}
+          fullWidth
           onChange={handleChange}
           onClick={handleTextFieldClick}
+          InputProps={{
+            ...params.InputProps,
+            disableUnderline: true,
+            endAdornment: (
+              <>
+                {params.InputProps?.endAdornment}
+                <InputAdornment position="end">
+                  <FontAwesomeIcon
+                    cursor="pointer"
+                    icon={faLocation}
+                    className="headerIcon location"
+                    onClick={handleTextFieldClick}
+                  />
+                  <Backdrop
+                    transitionDuration={500}
+                    sx={{
+                      color: "#777",
+                      zIndex: (theme) => theme.zIndex.drawer + 1,
+                    }}
+                    open={showBackdrop}
+                    onClick={() => {}}
+                  />
+                </InputAdornment>
+              </>
+            ),
+          }}
+          inputProps={{
+            ...params.inputProps,
+          }}
         />
       )}
     />

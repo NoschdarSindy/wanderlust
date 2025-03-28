@@ -5,7 +5,7 @@ import { useState } from "react";
 import { DateRange } from "react-date-range";
 import SearchItem from "../../components/searchItem/SearchItem";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { datesAtom, destinationAtom, guestsAtom } from "src/atoms";
+import { datesAtom, destinationAtom, countsAtom } from "src/atoms";
 import Footer from "../../components/footer/Footer";
 import { Pagination, Stack } from "@mui/material";
 // todo import { useWebsite } from "../../contexts/WebsiteContext"; // Added import for website context
@@ -13,7 +13,7 @@ import { Pagination, Stack } from "@mui/material";
 const List = () => {
   const [destination, setDestination] = useRecoilState(destinationAtom);
   const date = useRecoilValue(datesAtom);
-  const guests = useRecoilValue(guestsAtom);
+  const guests = useRecoilValue(countsAtom);
   const [showDatePicker, setShowDatePicker] = useState(false);
   // todo const website = useWebsite(); // Use the website context
 
@@ -86,7 +86,7 @@ const List = () => {
                     type="number"
                     min={0}
                     className="lsOptionInput"
-                    placeholder={guests.children.toString()}
+                    placeholder={guests.child.toString()}
                     disabled={true}
                   />
                 </div>

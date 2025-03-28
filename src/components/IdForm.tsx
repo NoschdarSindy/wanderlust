@@ -30,7 +30,7 @@ export default function IdForm() {
       </Typography>
       <Grid container spacing={4} sx={{ paddingY: 2 }}>
         <Grid item>
-          <img src={"/img/id.png"} height={100} alt={""} />
+          <img src={"/id.png"} height={100} alt={""} />
         </Grid>
         <Grid item>
           <Typography fontStyle={"italic"} color="#888">

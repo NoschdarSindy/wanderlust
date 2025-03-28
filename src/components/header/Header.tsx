@@ -4,34 +4,35 @@ import {
   faPerson,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import "./header.css";
+import "./header.scss";
 import { DateRange } from "react-date-range";
 import { useState } from "react";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { datesAtom, destinationAtom, guestsAtom } from "src/atoms";
+import { datesAtom, destinationAtom, countsAtom } from "src/atoms";
 import CityInput from "../CityInput";
 import { ClickAwayListener } from "@mui/base";
 import { pluralize } from "src/util";
-import { useWebsite } from "src/contexts/WebsiteContext";
+import { useImage, useSite } from "src/contexts/WebsiteContext";
 
 const Header = ({ type }: { type?: string }) => {
   const destination = useRecoilValue(destinationAtom);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [date, setDate] = useRecoilState(datesAtom);
-  const [showGuests, setShowGuests] = useState(false);
-  const [guests, setGuests] = useRecoilState(guestsAtom);
+  const [showCounters, setShowCounters] = useState(false);
+  const [counts, setCounts] = useRecoilState(countsAtom);
 
   const navigate = useNavigate();
-  const { t } = useWebsite();
+  const s = useSite();
+  const headerImg = useImage("header");
 
   const handleOption = (name, operation) => {
-    setGuests((prev) => {
+    setCounts((prev) => {
       return {
         ...prev,
-        [name]: operation === "i" ? guests[name] + 1 : guests[name] - 1,
+        [name]: operation === "i" ? counts[name] + 1 : counts[name] - 1,
       };
     });
   };
@@ -46,8 +47,9 @@ const Header = ({ type }: { type?: string }) => {
       style={
         type !== "list"
           ? {
-              backgroundImage: "url(img/wanderlust.jpeg)",
+              backgroundImage: `url(${headerImg})`,
               backgroundSize: "cover",
+              backgroundPosition: "50% 70%",
               resize: "both",
             }
           : {}
@@ -60,156 +62,118 @@ const Header = ({ type }: { type?: string }) => {
       >
         {type !== "list" && (
           <div className="backdrop">
-            <h1 className="headerTitle font-weight-bold">{t.title}</h1>
-            <p className="headerDesc">{t.description}</p>
-            <button className="btn btn-primary">{t.exploreButton}</button>
+            <h1 className="headerTitle font-weight-bold">{s.title}</h1>
+            <p className="headerDesc">{s.description}</p>
+            <button className="btn btn-primary">{s.exploreButton}</button>
             <div className="headerSearch">
-              <div className="headerSearchItem">
-                <span style={{ display: "flex", alignItems: "center" }}>
+              <div className="searchInputs">
+                <div className="headerSearchItem destination">
                   <FontAwesomeIcon icon={faBed} className="headerIcon" />
-                  &nbsp;&nbsp;
                   <CityInput />
-                </span>
-              </div>
-              <div className="headerSearchItem">
-                <span
-                  onClick={() => setShowDatePicker(!showDatePicker)}
-                  className="headerSearchText"
-                >
-                  <FontAwesomeIcon
-                    icon={faCalendarDays}
-                    className="headerIcon"
-                  />
-
-                  {`${new Date(date[0].startDate).toLocaleDateString(
-                    "en-GB",
-                  )} to ${new Date(date[0].endDate).toLocaleDateString(
-                    "en-GB",
-                  )}`}
-                </span>
-                {showDatePicker && (
-                  <DateRange
-                    editableDateInputs={true}
-                    onChange={(item) => {
-                      const selection = item.range1;
-                      setDate([
-                        {
-                          startDate: selection.startDate.toISOString(),
-                          endDate: selection.endDate.toISOString(),
-                        },
-                      ]);
-                    }}
-                    moveRangeOnFirstSelection={false}
-                    ranges={[
-                      {
-                        startDate: new Date(date[0].startDate),
-                        endDate: new Date(date[0].endDate),
-                      },
-                    ]}
-                    className="date"
-                    minDate={new Date()}
-                  />
-                )}
-              </div>
-              <div className="headerSearchItem">
-                <span
-                  onClick={() => {
-                    setShowGuests(!showGuests);
-                    setShowDatePicker(false);
-                  }}
-                  className="headerSearchText"
-                >
-                  <FontAwesomeIcon icon={faPerson} className="headerIcon" />
-                  {pluralize(guests.adult, t.adultLabel.toLowerCase())} ·{" "}
-                  {pluralize(
-                    guests.children,
-                    t.childrenLabel.toLowerCase(),
-                    "ren",
-                  )}{" "}
-                  · {pluralize(guests.room, t.roomLabel.toLowerCase())}
-                </span>
-                {showGuests && (
-                  <ClickAwayListener
-                    onClickAway={() => {
-                      setShowGuests(false);
-                    }}
+                </div>
+                <div className="headerSearchItem datepicker">
+                  <span
+                    onClick={() => setShowDatePicker(!showDatePicker)}
+                    className="headerSearchText"
                   >
-                    <div className="options">
-                      <div className="optionItem">
-                        <span className="optionText">{t.adultLabel}</span>
-                        <div className="optionCounter">
-                          <button
-                            disabled={guests.adult <= 1}
-                            className="optionCounterButton"
-                            onClick={() => handleOption("adult", "d")}
-                          >
-                            -
-                          </button>
-                          <span className="optionCounterNumber">
-                            {guests.adult}
-                          </span>
-                          <button
-                            className="optionCounterButton"
-                            onClick={() => handleOption("adult", "i")}
-                          >
-                            +
-                          </button>
-                        </div>
+                    <FontAwesomeIcon
+                      icon={faCalendarDays}
+                      className="headerIcon"
+                    />
+                    &nbsp;&nbsp;
+                    {`${new Date(date[0].startDate).toLocaleDateString(
+                      "en-GB",
+                    )} to ${new Date(date[0].endDate).toLocaleDateString(
+                      "en-GB",
+                    )}`}
+                  </span>
+                  {showDatePicker && (
+                    <DateRange
+                      editableDateInputs={true}
+                      onChange={(item) => {
+                        const selection = item.range1;
+                        setDate([
+                          {
+                            startDate: selection.startDate.toISOString(),
+                            endDate: selection.endDate.toISOString(),
+                          },
+                        ]);
+                      }}
+                      moveRangeOnFirstSelection={false}
+                      ranges={[
+                        {
+                          startDate: new Date(date[0].startDate),
+                          endDate: new Date(date[0].endDate),
+                        },
+                      ]}
+                      className="date"
+                      minDate={new Date()}
+                    />
+                  )}
+                </div>
+                <div className="headerSearchItem counters">
+                  <span
+                    onClick={() => {
+                      setShowCounters(!showCounters);
+                      setShowDatePicker(false);
+                    }}
+                    className="headerSearchText"
+                  >
+                    <FontAwesomeIcon icon={faPerson} className="headerIcon" />
+                    &nbsp;&nbsp;
+                    {Object.entries(s.counts)
+                      .map(([key, label]) =>
+                        pluralize(counts[key], label.toLowerCase()),
+                      )
+                      .join(" · ")}
+                  </span>
+                  {showCounters && (
+                    <ClickAwayListener
+                      onClickAway={() => {
+                        setShowCounters(false);
+                      }}
+                    >
+                      <div className="options">
+                        {Object.entries(s.counts).map(([key, label]) => {
+                          return (
+                            <div className="optionItem" key={key}>
+                              <span className="optionText">
+                                {pluralize(counts[key], label.toLowerCase())}
+                              </span>
+                              <div className="optionCounter">
+                                <button
+                                  disabled={counts[key] <= 1}
+                                  className="optionCounterButton"
+                                  onClick={() => handleOption(key, "d")}
+                                >
+                                  -
+                                </button>
+                                <span className="optionCounterNumber">
+                                  {counts[key]}
+                                </span>
+                                <button
+                                  className="optionCounterButton"
+                                  onClick={() => handleOption(key, "i")}
+                                >
+                                  +
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        })}
                       </div>
-                      <div className="optionItem">
-                        <span className="optionText">{t.childrenLabel}</span>
-                        <div className="optionCounter">
-                          <button
-                            disabled={guests.children <= 0}
-                            className="optionCounterButton"
-                            onClick={() => handleOption("children", "d")}
-                          >
-                            -
-                          </button>
-                          <span className="optionCounterNumber">
-                            {guests.children}
-                          </span>
-                          <button
-                            className="optionCounterButton"
-                            onClick={() => handleOption("children", "i")}
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                      <div className="optionItem">
-                        <span className="optionText">{t.roomLabel}</span>
-                        <div className="optionCounter">
-                          <button
-                            disabled={guests.room <= 1}
-                            className="optionCounterButton"
-                            onClick={() => handleOption("room", "d")}
-                          >
-                            -
-                          </button>
-                          <span className="optionCounterNumber">
-                            {guests.room}
-                          </span>
-                          <button
-                            className="optionCounterButton"
-                            onClick={() => handleOption("room", "i")}
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </ClickAwayListener>
-                )}
+                    </ClickAwayListener>
+                  )}
+                </div>
               </div>
-              <div className="headerSearchItem">
+              <div className="headerSearchItem searchButton">
                 <button
                   className="headerBtn btn btn-primary"
                   onClick={handleSearch}
                   disabled={destination.length === 0}
                   tabIndex={-1}
                 >
-                  {t.searchButton}
+                  {s.searchButton}
                 </button>
               </div>
             </div>

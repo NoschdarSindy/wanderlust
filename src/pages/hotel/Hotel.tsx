@@ -15,8 +15,8 @@ import { useState } from "react";
 import hotels from "src/data/hotels.json";
 import { useNavigate } from "react-router-dom";
 import { useRecoilValue } from "recoil";
-import { datesAtom, destinationAtom, guestsAtom, hotelAtom } from "../../atoms";
-import { getNights, getTotalPrice, pluralize } from "../../util";
+import { datesAtom, destinationAtom, countsAtom, hotelAtom } from "src/atoms";
+import { getNights, getTotalPrice, pluralize } from "src/util";
 import {
   Paper,
   Table,
@@ -34,7 +34,7 @@ const Hotel = () => {
   const [open, setOpen] = useState(false);
 
   const date = useRecoilValue(datesAtom);
-  const guests = useRecoilValue(guestsAtom);
+  const guests = useRecoilValue(countsAtom);
   const destination = useRecoilValue(destinationAtom);
   const id = useRecoilValue(hotelAtom);
 
@@ -42,22 +42,22 @@ const Hotel = () => {
 
   const photos = [
     {
-      src: `/img/rooms/entrance.jpeg`,
+      src: `/rooms/entrance.jpeg`,
     },
     {
-      src: `/img/hotel-thumbnail/${id}.webp`,
+      src: `/hotel-thumbnail/${id}.webp`,
     },
     {
-      src: `/img/rooms/bathroom.jpg`,
+      src: `/rooms/bathroom.jpg`,
     },
     {
-      src: `/img/rooms/checkin.jpeg`,
+      src: `/rooms/checkin.jpeg`,
     },
     {
-      src: `/img/rooms/breakfast.jpeg`,
+      src: `/rooms/breakfast.jpeg`,
     },
     {
-      src: `/img/rooms/tables.jpeg`,
+      src: `/rooms/tables.jpeg`,
     },
   ];
 
@@ -154,7 +154,7 @@ const Hotel = () => {
               </div>
             ))}
           </div>
-          <img src={"/img/perks.png"} alt={""} />
+          <img src={"/perks.png"} alt={""} />
           <div className="hotelDetails">
             <div className="hotelDetailsTexts">
               <h1 className="hotelTitle">Your stay at {hotel.name}</h1>
@@ -221,10 +221,10 @@ const Hotel = () => {
                     scope="row"
                     style={{ verticalAlign: "top" }}
                   >
-                    {roomSwitch(guests.adult + guests.children)}
+                    {roomSwitch(guests.adult + guests.child)}
                   </TableCell>
                   <TableCell style={{ verticalAlign: "top" }}>
-                    {[...Array(guests.adult + guests.children)].map((e, i) => (
+                    {[...Array(guests.adult + guests.child)].map((e, i) => (
                       <FontAwesomeIcon key={i} icon={faPerson} />
                     ))}
                   </TableCell>

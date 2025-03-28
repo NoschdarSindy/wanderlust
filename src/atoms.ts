@@ -8,10 +8,14 @@ const { persistAtom } = recoilPersist({
   converter: JSON,
 });
 
-export interface Guests {
+export interface Counts {
+  // hotels
   adult: number;
-  children: number;
+  child: number;
   room: number;
+
+  // flights
+  passenger: number;
 }
 
 export interface DateRangeItem {
@@ -25,12 +29,13 @@ export const destinationAtom = atom<string>({
   effects_UNSTABLE: [persistAtom],
 });
 
-export const guestsAtom = atom<Guests>({
-  key: "guests",
+export const countsAtom = atom<Counts>({
+  key: "counts",
   default: {
     adult: 1,
-    children: 0,
+    child: 0,
     room: 1,
+    passenger: 1,
   },
   effects_UNSTABLE: [persistAtom],
 });

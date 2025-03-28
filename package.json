@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@craco/craco": "^7.1.0",
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
     "@fortawesome/fontawesome-svg-core": "^6.1.1",
@@ -29,13 +28,15 @@
     "react-webcam": "^7.2.0",
     "recoil": "^0.7.7",
     "recoil-persist": "^5.1.0",
+    "sass": "^1.86.0",
     "survey-core": "^1.9.131",
     "survey-react": "^1.9.131",
     "survey-react-ui": "^1.9.131",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "node start-service.js"
+    "build:start": "tsc start-service.ts",
+    "start": "npm run build:start && node start-service.js"
   },
   "eslintConfig": {
     "extends": [

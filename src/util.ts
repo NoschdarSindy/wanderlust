@@ -1,7 +1,9 @@
 import { differenceInDays } from "date-fns";
 
-export const pluralize = (count, noun, suffix = "s") =>
-  `${count} ${noun}${count !== 1 ? suffix : ""}`;
+export const pluralize = (count, noun) => {
+  const suffix = noun === "child" ? "ren" : "s";
+  return `${count} ${noun}${count !== 1 ? suffix : ""}`;
+};
 
 export const getNights = (date) =>
   Math.max(

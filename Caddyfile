@@ -1,0 +1,15 @@
+{
+	local_certs
+}
+
+hotels.travel {
+	reverse_proxy localhost:3000
+}
+
+flights.travel {
+	reverse_proxy localhost:3001
+}
+
+cars.travel {
+	reverse_proxy localhost:3002
+}

@@ -1,0 +1,125 @@
+.homeContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+  font-family: inherit;
+}
+
+.homeTitle {
+  width: 1024px;
+  font-size: 20px;
+  margin-top: 50px;
+  margin-bottom: 20px;
+}
+
+/* Layout container for cards */
+.homeCards {
+  width: 100%;
+  max-width: 1024px;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.homeCards .card {
+  flex: 1;
+}
+
+.homeCards .card-body {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  flex: 1;
+  padding: 16px;
+}
+
+.homeCards img {
+  width: 150px;
+  height: auto;
+  object-fit: cover;
+}
+
+/* === Layout tweaks per section === */
+
+/* FLIGHTS: reverse row layout (image left, text right) */
+#flights .homeCards .card-body {
+  flex-direction: row-reverse;
+}
+
+/* CARS: stacked layout (image below text) */
+#cars .homeCards .card-body {
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+#cars .homeCards img {
+  width: 100%;
+  max-width: 300px;
+  border-left: none;
+  margin-top: 12px;
+}
+
+/* Optional: section-specific title width */
+#cars .homeTitle {
+  /*width: 1120px;*/
+}
+
+/* FLIGHTS: place image left, cardRow right */
+#flights .homeCards .card-body {
+  flex-direction: row;
+}
+
+#flights .homeCards .card-body img {
+  order: 0;
+
+  border: none;
+}
+
+#flights .homeCards .card-body .cardRow {
+  order: 1;
+}
+
+/* Link-style button (unchanged) */
+.link-button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  display: inline;
+  margin: 0;
+  padding: 0;
+}
+
+// Order and visibility of home items for each site
+$homeItemsMap: (
+  "hotels": (
+    "loved",
+    "types",
+    "offers",
+    "cities",
+  ),
+  "flights": (
+    "cities",
+    "offers",
+    "types",
+  ),
+  "cars": (
+    "types",
+    "offers",
+    "cities",
+  ),
+);
+
+.homeItem {
+  display: none;
+}
+@each $site, $homeItems in $homeItemsMap {
+  @each $section in $homeItems {
+    ##{$site} .homeItem[data-section="#{$section}"] {
+      display: initial !important;
+      order: index($homeItems, $section);
+    }
+  }
+}

@@ -1,7 +1,7 @@
 import "./searchItem.css";
 import hotels from "src/data/hotels.json";
 import { useRecoilValue, useSetRecoilState } from "recoil";
-import { datesAtom, destinationAtom, guestsAtom, hotelAtom } from "src/atoms";
+import { datesAtom, destinationAtom, countsAtom, hotelAtom } from "src/atoms";
 import { getNights, getTotalPrice, pluralize } from "src/util";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleRight, faCheck } from "@fortawesome/free-solid-svg-icons";
@@ -9,7 +9,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 const SearchItem = ({ number }) => {
   const date = useRecoilValue(datesAtom);
-  const guests = useRecoilValue(guestsAtom);
+  const guests = useRecoilValue(countsAtom);
   const destination = useRecoilValue(destinationAtom);
   const setHotel = useSetRecoilState(hotelAtom);
 
@@ -25,11 +25,7 @@ const SearchItem = ({ number }) => {
   return (
     <div className="searchItem">
       <Link to={`/hotel`}>
-        <img
-          src={`/img/hotel-thumbnail/${number}.webp`}
-          alt=""
-          className="siImg"
-        />
+        <img src={`/hotel-thumbnail/${number}.webp`} alt="" className="siImg" />
       </Link>
       <div className="siDesc">
         <a

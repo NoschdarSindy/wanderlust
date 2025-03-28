@@ -4,19 +4,17 @@ import "bootstrap/dist/css/bootstrap.css";
 import App from "./App";
 import { BrowserRouter } from "react-router-dom";
 import { sendEvent } from "./util";
-import { WebsiteProvider } from "./contexts/WebsiteContext";
 import { DesignModeProvider } from "./contexts/DesignModeContext";
+import "./index.scss";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
   <RecoilRoot>
     <DesignModeProvider>
-      <WebsiteProvider>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
-      </WebsiteProvider>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
     </DesignModeProvider>
   </RecoilRoot>,
 );

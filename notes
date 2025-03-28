@@ -3,7 +3,7 @@ Each website must include the following pages:
 1️⃣ **Homepage (Search)**
    - Users **cannot switch** between hotel, flight, and car rental (they are separate sites).
    - Users enter:
-     - **Hotels:** Location, check-in/out dates, number of guests.
+     - **Home:** Location, check-in/out dates, number of guests.
      - **Flights:** Departure & arrival locations, date, number of passengers, class (economy/business).
      - **Car Rentals:** Pickup location, rental period, car type.
    - The **cookie banner appears as a blocking modal before anything can be clicked**.
