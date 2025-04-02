@@ -13,7 +13,6 @@
   margin-bottom: 20px;
 }
 
-/* Layout container for cards */
 .homeCards {
   width: 100%;
   max-width: 1024px;
@@ -32,56 +31,31 @@
   gap: 10px;
   flex: 1;
   padding: 16px;
+
+  #cars & {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
 }
 
 .homeCards img {
-  width: 150px;
-  height: auto;
   object-fit: cover;
+  border-radius: 7px;
+
+  #flights & {
+    width: 150px;
+    height: auto;
+  }
+
+  #cars & {
+    width: 100%;
+    height: 100%;
+    max-width: 300px;
+    border-left: none;
+    margin-top: 12px;
+  }
 }
-
-/* === Layout tweaks per section === */
-
-/* FLIGHTS: reverse row layout (image left, text right) */
-#flights .homeCards .card-body {
-  flex-direction: row-reverse;
-}
-
-/* CARS: stacked layout (image below text) */
-#cars .homeCards .card-body {
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-#cars .homeCards img {
-  width: 100%;
-  max-width: 300px;
-  border-left: none;
-  margin-top: 12px;
-}
-
-/* Optional: section-specific title width */
-#cars .homeTitle {
-  /*width: 1120px;*/
-}
-
-/* FLIGHTS: place image left, cardRow right */
-#flights .homeCards .card-body {
-  flex-direction: row;
-}
-
-#flights .homeCards .card-body img {
-  order: 0;
-
-  border: none;
-}
-
-#flights .homeCards .card-body .cardRow {
-  order: 1;
-}
-
-/* Link-style button (unchanged) */
 .link-button {
   background-color: transparent;
   border: none;
@@ -97,7 +71,6 @@ $homeItemsMap: (
   "hotels": (
     "loved",
     "types",
-    "offers",
     "cities",
   ),
   "flights": (

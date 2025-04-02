@@ -5,11 +5,15 @@ import Checkout from "./pages/checkout/Checkout";
 import { useEffect, useState } from "react";
 import Questionnaire from "./pages/questionnaire/Questionnaire";
 import Hotel from "./pages/hotel/Hotel";
-import { useSite } from "./contexts/WebsiteContext";
+import { useSite } from "src/lib/composables";
+import { showBackdropAtom } from "src/lib/atoms";
+import { useRecoilValue } from "recoil";
+import { Backdrop } from "@mui/material";
 
 function App() {
   const location = useLocation();
   const [loading, setLoading] = useState(true);
+  const showBackdrop = useRecoilValue(showBackdropAtom);
   const s = useSite();
 
   setTimeout(() => {
@@ -23,8 +27,14 @@ function App() {
   return loading ? (
     <span />
   ) : (
-    <div id={s.name}>
+    <div
+      id={s.name}
+      style={{
+        ...(showBackdrop && { pointerEvents: "none", userSelect: "none" }),
+      }}
+    >
       <title>{s.title}</title>
+
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/results" element={<List />} />
@@ -32,6 +42,16 @@ function App() {
         <Route path="/checkout/*" element={<Checkout />} />
         <Route path="/questionnaire" element={<Questionnaire />} />
       </Routes>
+
+      <Backdrop
+        transitionDuration={500}
+        sx={{
+          color: "#777",
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+        }}
+        open={showBackdrop}
+        onClick={() => {}}
+      />
     </div>
   );
 }

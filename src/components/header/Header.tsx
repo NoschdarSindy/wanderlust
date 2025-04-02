@@ -1,8 +1,4 @@
-import {
-  faBed,
-  faCalendarDays,
-  faPerson,
-} from "@fortawesome/free-solid-svg-icons";
+import { faCalendarDays, faPerson } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "./header.scss";
 import { DateRange } from "react-date-range";
@@ -11,14 +7,52 @@ import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { datesAtom, destinationAtom, countsAtom } from "src/atoms";
-import CityInput from "../CityInput";
+import { datesAtom, locationsAtom, countsAtom } from "src/lib/atoms";
+import LocationInput from "../LocationInput";
 import { ClickAwayListener } from "@mui/base";
-import { pluralize } from "src/util";
-import { useImage, useSite } from "src/contexts/WebsiteContext";
+import { getCssVariable, pluralize } from "src/lib/util";
+import { useImage, useSite } from "src/lib/composables";
+import * as icons from "@fortawesome/free-solid-svg-icons";
+
+// Add helper functions above the Header component
+const formatDateRange = (start: string, end: string) =>
+  `${new Date(start).toLocaleDateString("en-GB")} to ${new Date(end).toLocaleDateString("en-GB")}`;
+
+const renderCounterSummary = (counts, countLabels) =>
+  Object.entries(countLabels)
+    .filter(([key]) => counts[key] > 0)
+    .map(([key, label]: [string, string]) =>
+      pluralize(counts[key], label.toLowerCase()),
+    )
+    .join(" · ");
+
+const renderCounterOptions = (counts, countLabels, handleOption) =>
+  Object.entries(countLabels).map(([key, label]: [string, string]) => (
+    <div className="optionItem" key={key}>
+      <span className="optionText">
+        {pluralize(counts[key], label.toLowerCase())}
+      </span>
+      <div className="optionCounter">
+        <button
+          disabled={counts[key] <= (label === "child" ? 0 : 1)}
+          className="optionCounterButton"
+          onClick={() => handleOption(key, "d")}
+        >
+          -
+        </button>
+        <span className="optionCounterNumber">{counts[key]}</span>
+        <button
+          className="optionCounterButton"
+          onClick={() => handleOption(key, "i")}
+        >
+          +
+        </button>
+      </div>
+    </div>
+  ));
 
 const Header = ({ type }: { type?: string }) => {
-  const destination = useRecoilValue(destinationAtom);
+  const locations = useRecoilValue(locationsAtom);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [date, setDate] = useRecoilState(datesAtom);
   const [showCounters, setShowCounters] = useState(false);
@@ -67,11 +101,17 @@ const Header = ({ type }: { type?: string }) => {
             <button className="btn btn-primary">{s.exploreButton}</button>
             <div className="headerSearch">
               <div className="searchInputs">
-                <div className="headerSearchItem destination">
-                  <FontAwesomeIcon icon={faBed} className="headerIcon" />
-                  <CityInput />
-                </div>
-                <div className="headerSearchItem datepicker">
+                {s.locationInputs.map(({ key, icon, label }) => (
+                  <div className="headerSearchItem" key={key}>
+                    <FontAwesomeIcon
+                      icon={icons[icon]}
+                      className="headerIcon"
+                    />
+                    <LocationInput accessor={key} placeholder={label} />
+                  </div>
+                ))}
+
+                <div className="headerSearchItem">
                   <span
                     onClick={() => setShowDatePicker(!showDatePicker)}
                     className="headerSearchText"
@@ -81,11 +121,7 @@ const Header = ({ type }: { type?: string }) => {
                       className="headerIcon"
                     />
                     &nbsp;&nbsp;
-                    {`${new Date(date[0].startDate).toLocaleDateString(
-                      "en-GB",
-                    )} to ${new Date(date[0].endDate).toLocaleDateString(
-                      "en-GB",
-                    )}`}
+                    {formatDateRange(date[0].startDate, date[0].endDate)}
                   </span>
                   {showDatePicker && (
                     <DateRange
@@ -106,71 +142,48 @@ const Header = ({ type }: { type?: string }) => {
                           endDate: new Date(date[0].endDate),
                         },
                       ]}
-                      className="date"
+                      className="datepicker"
+                      rangeColors={[getCssVariable("color-primary")]}
+                      color={getCssVariable("color-primary")}
                       minDate={new Date()}
                     />
                   )}
                 </div>
-                <div className="headerSearchItem counters">
-                  <span
-                    onClick={() => {
-                      setShowCounters(!showCounters);
-                      setShowDatePicker(false);
-                    }}
-                    className="headerSearchText"
-                  >
-                    <FontAwesomeIcon icon={faPerson} className="headerIcon" />
-                    &nbsp;&nbsp;
-                    {Object.entries(s.counts)
-                      .map(([key, label]) =>
-                        pluralize(counts[key], label.toLowerCase()),
-                      )
-                      .join(" · ")}
-                  </span>
-                  {showCounters && (
-                    <ClickAwayListener
-                      onClickAway={() => {
-                        setShowCounters(false);
+
+                {Object.keys(s.counts).length > 0 && (
+                  <div className="headerSearchItem counters">
+                    <span
+                      onClick={() => {
+                        setShowCounters(!showCounters);
+                        setShowDatePicker(false);
                       }}
+                      className="headerSearchText"
                     >
-                      <div className="options">
-                        {Object.entries(s.counts).map(([key, label]) => {
-                          return (
-                            <div className="optionItem" key={key}>
-                              <span className="optionText">
-                                {pluralize(counts[key], label.toLowerCase())}
-                              </span>
-                              <div className="optionCounter">
-                                <button
-                                  disabled={counts[key] <= 1}
-                                  className="optionCounterButton"
-                                  onClick={() => handleOption(key, "d")}
-                                >
-                                  -
-                                </button>
-                                <span className="optionCounterNumber">
-                                  {counts[key]}
-                                </span>
-                                <button
-                                  className="optionCounterButton"
-                                  onClick={() => handleOption(key, "i")}
-                                >
-                                  +
-                                </button>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </ClickAwayListener>
-                  )}
-                </div>
+                      <FontAwesomeIcon icon={faPerson} className="headerIcon" />
+                      &nbsp;&nbsp;
+                      {renderCounterSummary(counts, s.counts)}
+                      {s.isFlights && ", Economy"}
+                    </span>
+                    {showCounters && (
+                      <ClickAwayListener
+                        onClickAway={() => setShowCounters(false)}
+                      >
+                        <div className="options">
+                          {renderCounterOptions(counts, s.counts, handleOption)}
+                        </div>
+                      </ClickAwayListener>
+                    )}
+                  </div>
+                )}
               </div>
+
               <div className="headerSearchItem searchButton">
                 <button
                   className="headerBtn btn btn-primary"
                   onClick={handleSearch}
-                  disabled={destination.length === 0}
+                  disabled={s.locationInputs
+                    .map((i) => i.key)
+                    .some((key) => locations[key].length === 0)}
                   tabIndex={-1}
                 >
                   {s.searchButton}

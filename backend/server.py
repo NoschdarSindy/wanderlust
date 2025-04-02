@@ -18,7 +18,17 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
-events = ['app', 'cookies', 'geolocation', 'confirmshaming', 'personalDetails', 'confusingCheckbox', 'creditCard', 'id', 'cameraPermission']
+events = [
+    "app",
+    "cookies",
+    "geolocation",
+    "notifications",
+    "personalDetails",
+    "sneakIntoBasket",
+    "creditCard",
+    "videoIdent",
+    "cameraPermission",
+]
 
 
 info = StreamInfo("Frontend Events", "Markers",1, 0, 'string', 'frontend')
@@ -46,8 +56,8 @@ async def store_json(data: dict, filename_suffix: str):
         raise HTTPException(status_code=500, detail=f"Error storing data: {str(e)}")
 
 
-@app.get("/{event}/{start_or_end}")
-async def get_event(event: str, start_or_end: str):
+@app.get("/{participant}/{site}/{design}/{event}/{start_or_end}")
+async def get_event(participant: int, event: str, start_or_end: str):
     if event not in events:
         raise HTTPException(status_code=404, detail="Event not found")
     if start_or_end not in ['start', 'end']:

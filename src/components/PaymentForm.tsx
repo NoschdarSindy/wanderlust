@@ -5,11 +5,11 @@ import TextField from "@mui/material/TextField";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import { useEffect } from "react";
-import { sendEvent } from "../util";
-import { showSkipPaymentButtonAtom } from "../atoms";
+import { showSkipPaymentButtonAtom } from "../lib/atoms";
 import { useSetRecoilState } from "recoil";
 import { Accordion, AccordionDetails, AccordionSummary } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { sendEvent } from "src/lib/client";
 
 export default function PaymentForm() {
   const setShowSkipPaymentButton = useSetRecoilState(showSkipPaymentButtonAtom);

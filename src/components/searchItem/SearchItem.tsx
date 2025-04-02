@@ -1,8 +1,8 @@
 import "./searchItem.css";
 import hotels from "src/data/hotels.json";
 import { useRecoilValue, useSetRecoilState } from "recoil";
-import { datesAtom, destinationAtom, countsAtom, hotelAtom } from "src/atoms";
-import { getNights, getTotalPrice, pluralize } from "src/util";
+import { datesAtom, locationsAtom, countsAtom, hotelAtom } from "src/lib/atoms";
+import { getNights, getTotalPrice, pluralize } from "src/lib/util";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleRight, faCheck } from "@fortawesome/free-solid-svg-icons";
 import { Link, useNavigate } from "react-router-dom";
@@ -10,7 +10,7 @@ import { Link, useNavigate } from "react-router-dom";
 const SearchItem = ({ number }) => {
   const date = useRecoilValue(datesAtom);
   const guests = useRecoilValue(countsAtom);
-  const destination = useRecoilValue(destinationAtom);
+  const locations = useRecoilValue(locationsAtom);
   const setHotel = useSetRecoilState(hotelAtom);
 
   const navigate = useNavigate();
@@ -37,7 +37,7 @@ const SearchItem = ({ number }) => {
           </h1>
         </a>
         <span className="siDistance">
-          {hotel.location}, {destination}
+          {hotel.location}, {locations.destination}
         </span>
         <span className="siDistance">{hotel.metersFromCenter} from center</span>
         {hotel.freeAirportTaxi && (

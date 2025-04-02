@@ -1,16 +1,16 @@
 import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
 import { Fragment, useEffect } from "react";
-import { sendEvent } from "../util";
-import { showSkipIdButtonAtom } from "../atoms";
+import { showSkipIdButtonAtom } from "../lib/atoms";
 import { useSetRecoilState } from "recoil";
 import Camera from "./Camera";
+import { sendEvent } from "src/lib/client";
 
 export default function IdForm() {
   const setShowSkipIdButton = useSetRecoilState(showSkipIdButtonAtom);
 
   useEffect(() => {
-    sendEvent("id/start");
+    sendEvent("videoIdent/start");
     sendEvent("cameraPermission/start");
     setTimeout(() => {
       setShowSkipIdButton(true);

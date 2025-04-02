@@ -28,6 +28,9 @@ const texts = {
     slogan: "Wanderlust days and cozy nights",
     description: "Choose from cabins, houses, and more",
     exploreButton: "Explore vacation rentals",
+    locationInputs: [
+      { key: "origin", label: "Where are you going?", icon: "faBed" },
+    ],
     searchButton: "Search",
     counts: {
       adult: "adult",
@@ -112,6 +115,10 @@ const texts = {
     slogan: "Smooth skies and easy journeys",
     description: "Book domestic and international flights with ease",
     exploreButton: "Explore flight options",
+    locationInputs: [
+      { key: "origin", label: "Where from?", icon: "faPlaneDeparture" },
+      { key: "destination", label: "Where to?", icon: "faPlaneArrival" },
+    ],
     searchButton: "Search",
     counts: {
       adult: "adult",
@@ -152,19 +159,24 @@ const texts = {
     listYourOfferText: "Sign in",
     slogan: "Your ride, your freedom",
     description: "Find the perfect rental for your trip",
+    locationInputs: [
+      { key: "origin", label: "Pickup location", icon: "faCar" },
+      {
+        key: "destination",
+        label: "Drop-off location",
+        icon: "faMapMarkerAlt",
+      },
+    ],
     exploreButton: "Browse car rentals",
     searchButton: "Search",
-    counts: {
-      adult: "adult",
-      child: "child",
-      room: "room",
-    },
+    counts: {},
     offersTitle: "Rental Deals",
     longStayTitle: "Drive longer, save more",
     longStayText: "Check out cars for extended rentals with special rates",
     longStayButton: "Find a car",
-    dreamVacationTitle: "Drive to your dream adventure",
-    dreamVacationText: "Rent a car and hit the road with ease",
+    dreamVacationTitle: "Unforgettable road trips start here",
+    dreamVacationText:
+      "Discover hidden gems and scenic routes with the perfect ride",
     dreamVacationButton: "Search for rentals",
     typesTitle: "Browse by vehicle type",
     typesList: [

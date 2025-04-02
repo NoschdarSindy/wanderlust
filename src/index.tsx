@@ -3,19 +3,16 @@ import { RecoilRoot } from "recoil";
 import "bootstrap/dist/css/bootstrap.css";
 import App from "./App";
 import { BrowserRouter } from "react-router-dom";
-import { sendEvent } from "./util";
-import { DesignModeProvider } from "./contexts/DesignModeContext";
 import "./index.scss";
+import { sendEvent } from "src/lib/client";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
   <RecoilRoot>
-    <DesignModeProvider>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    </DesignModeProvider>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
   </RecoilRoot>,
 );
 sendEvent("app/start");

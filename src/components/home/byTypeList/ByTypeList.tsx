@@ -1,6 +1,6 @@
 import "./byTypeList.css";
-import { useImage, useSite } from "src/contexts/WebsiteContext";
-import { pluralize } from "src/util";
+import { useImage, useSite } from "src/lib/composables";
+import { pluralize } from "src/lib/util";
 
 const ByTypeList = () => {
   const s = useSite();

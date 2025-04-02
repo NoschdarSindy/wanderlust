@@ -2,12 +2,15 @@ import { execSync, spawn } from "child_process";
 import { once } from "events";
 import { resolve } from "path";
 import { writeFileSync } from "fs";
-import websiteData from "./src/data";
+import websiteData from "src/lib/siteData";
 
-const shell = "cmd.exe";
+const isWin = process.platform === "win32";
+const shell = isWin ? "cmd.exe" : "bash";
 const caddy = "caddy.exe";
 const caddyfile = resolve("Caddyfile");
-const prod = 1;
+let prod = 1;
+if (!isWin) prod = 0;
+const openBrowser = 0;
 
 const mapping: Record<string, string> = {};
 for (const name in websiteData) {
@@ -16,12 +19,14 @@ for (const name in websiteData) {
 const entries = Object.entries(mapping);
 
 (async () => {
-  if (prod) generateCaddyfile();
+  if (prod) {
+    generateCaddyfile();
+    startCaddy();
+  }
   killPorts();
   startApps();
-  if (prod) {
-    startCaddy();
-    await waitForHttpsReady();
+  if (openBrowser) {
+    await startupComplete();
     openApps();
   }
 })();
@@ -32,15 +37,17 @@ function startApps() {
     const port = String(3000 + i);
     console.log(`🚀 Starting ${site} site on port ${port}...`);
 
-    spawn(shell, ["/c", "react-scripts start"], {
+    spawn(shell, [isWin ? "/c" : "-c", "react-scripts start"], {
       stdio: "inherit",
       env: {
         ...process.env,
         PORT: port,
+        REACT_APP_PARTICIPANT: String(1),
         REACT_APP_SITE: site,
+        REACT_APP_DESIGN: "dark",
+        BROWSER: "none",
         ...(prod
           ? {
-              BROWSER: "none",
               HOST: domain,
               WDS_SOCKET_PORT: port,
               WDS_SOCKET_HOST: "localhost",
@@ -53,24 +60,37 @@ function startApps() {
   });
 }
 
-// === NEW: Wait for TLS certs to be served (https://domain)
-async function waitForHttpsReady() {
-  const urls = entries.map(([, domain]) => `https://${domain}`);
-  console.log("🔐 Waiting for HTTPS to be ready...");
+async function startupComplete() {
+  const urls = entries.map(([, domain], i) =>
+    prod ? `https://${domain}` : `http://localhost:${3000 + i}`,
+  );
+  console.log("🔐 Waiting for apps to be ready...");
 
-  const proc = spawn(shell, ["/c", `npx wait-on ${urls.join(" ")}`], {
-    stdio: "inherit",
-    env: process.env,
-  });
+  const proc = spawn(
+    shell,
+    [isWin ? "/c" : "-c", `npx wait-on ${urls.join(" ")}`],
+    {
+      stdio: "inherit",
+      env: process.env,
+    },
+  );
 
   await once(proc, "exit");
-  console.log("✅ HTTPS certs are valid and serving.");
+  console.log("✅ Apps are ready.");
 }
 
 // === Open apps in browser
 function openApps() {
-  const urls = entries.map(([, domain]) => `https://${domain}`);
-  spawn(shell, ["/c", `start chrome ${urls.join(" ")}`], {
+  const urls = entries
+    .map(([, domain], i) =>
+      prod ? `https://${domain}` : `http://localhost:${3000 + i}`,
+    )
+    .join(" ");
+  const openCmd = isWin
+    ? ["/c", `start chrome ${urls}`]
+    : ["-c", `open -a "Google Chrome" ${urls}`];
+
+  spawn(shell, openCmd, {
     stdio: "inherit",
   });
 }

@@ -1,4 +1,4 @@
-body:has(#hotels) {
+:root:has(#hotels) {
   --color-primary: #0071c2;
   --color-secondary: #003580;
   --color-accent: #febb02;
@@ -6,11 +6,10 @@ body:has(#hotels) {
   --color-on-background: #ffffff;
   --color-text: #1a1a1a;
   --color-muted: #6c757d;
-  --font-family: "Arial", sans-serif;
-  font-family: var(--font-family);
+  --font-family: "Arial";
 }
 
-body:has(#flights) {
+:root:has(#flights) {
   --color-primary: #005ecb;
   --color-secondary: #ebf5ff;
   --color-accent: #ff6363;
@@ -18,11 +17,10 @@ body:has(#flights) {
   --color-on-background: #1a1a1a;
   --color-text: #1a1a1a;
   --color-muted: #7f8c8d;
-  --font-family: "Segoe UI", sans-serif;
-  font-family: var(--font-family);
+  --font-family: "Segoe UI";
 }
 
-body:has(#cars) {
+:root:has(#cars) {
   --color-primary: #2e7d32;
   --color-secondary: #1b5e20;
   --color-accent: #f9a825;
@@ -30,8 +28,11 @@ body:has(#cars) {
   --color-on-background: #ffffff;
   --color-text: #1a1a1a;
   --color-muted: #6c757d;
-  --font-family: "Tahoma", "Verdana", sans-serif;
-  font-family: var(--font-family);
+  --font-family: "Tahoma", "Verdana";
+}
+
+* {
+  font-family: var(--font-family), sans-serif;
 }
 
 .btn-primary {

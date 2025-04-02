@@ -15,8 +15,8 @@ import { useState } from "react";
 import hotels from "src/data/hotels.json";
 import { useNavigate } from "react-router-dom";
 import { useRecoilValue } from "recoil";
-import { datesAtom, destinationAtom, countsAtom, hotelAtom } from "src/atoms";
-import { getNights, getTotalPrice, pluralize } from "src/util";
+import { datesAtom, locationsAtom, countsAtom, hotelAtom } from "src/lib/atoms";
+import { getNights, getTotalPrice, pluralize } from "src/lib/util";
 import {
   Paper,
   Table,
@@ -35,7 +35,7 @@ const Hotel = () => {
 
   const date = useRecoilValue(datesAtom);
   const guests = useRecoilValue(countsAtom);
-  const destination = useRecoilValue(destinationAtom);
+  const locations = useRecoilValue(locationsAtom);
   const id = useRecoilValue(hotelAtom);
 
   const hotel = hotels[id];
@@ -133,7 +133,7 @@ const Hotel = () => {
           <div className="hotelAddress">
             <FontAwesomeIcon icon={faLocationDot} />
             <span>
-              {hotel.location}, {destination}
+              {hotel.location}, {locations.destination}
             </span>
           </div>
           <span className="hotelDistance">

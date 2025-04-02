@@ -14,15 +14,14 @@ export const getNights = (date) =>
 export const getTotalPrice = (price, date, guests) =>
   price * getNights(date) * guests.adult * guests.room;
 
-// eventString is a string that represents the event, e.g. 'cookies/start'
-export const sendEvent = (eventString) => {
-  fetch("http://127.0.0.1:8000/" + eventString)
-    .then((response) => {
-      response.json().then((json) => {
-        console.log(json.message);
-      });
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+export const getCssVariable = (variableName: string): string => {
+  const formattedVariableName = variableName.startsWith("--")
+    ? variableName
+    : `--${variableName}`;
+
+  return getComputedStyle(document.documentElement)
+    .getPropertyValue(formattedVariableName)
+    .trim();
 };
+
+export default getCssVariable;

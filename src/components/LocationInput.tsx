@@ -3,49 +3,61 @@ import Autocomplete from "@mui/material/Autocomplete";
 import {
   askedForCookiesAtom,
   askedForLocationAtom,
-  destinationAtom,
-} from "../atoms";
-import { useRecoilState, useRecoilValue } from "recoil";
+  locationsAtom,
+  showBackdropAtom,
+} from "../lib/atoms";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { useState } from "react";
-import { Backdrop, InputAdornment } from "@mui/material";
+import { InputAdornment } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLocation } from "@fortawesome/free-solid-svg-icons";
-import { sendEvent } from "../util";
+import { cities } from "../lib/locationsData";
+import { sendEvent } from "src/lib/client";
 
-export default function CityInput() {
-  const [destination, setDestination] = useRecoilState(destinationAtom);
+export default function LocationInput({ accessor, placeholder }) {
+  const [locations, setLocations] = useRecoilState(locationsAtom);
   const [askedForLocation, setAskedForLocation] =
     useRecoilState(askedForLocationAtom);
-  const [showBackdrop, setShowBackdrop] = useState(false);
+  const setShowBackdrop = useSetRecoilState(showBackdropAtom);
   const askedForCookies = useRecoilValue(askedForCookiesAtom);
   const [showAutomplete, setShowAutocomplete] = useState(false);
   const [locationAccessGranted, setLocationAccessGranted] = useState(false);
+  const isOrigin = accessor === "origin";
+  const options = cities.map((city) => ({
+    label: city,
+  }));
+
+  const getLocation = () => locations[accessor];
+  const setLocation = (location: string) => {
+    setLocations((prev) => ({
+      ...prev,
+      [accessor]: location,
+    }));
+  };
 
   const handleChange = (e) => {
     if (!askedForCookies) {
       e.preventDefault();
       return;
     }
-    if (e.target.value.length === 0) {
-      setDestination("");
-      return;
-    }
-    setDestination(
-      e.target.value[0]?.toUpperCase() + e.target.value.slice(1)?.toLowerCase(),
+    setLocation(
+      e.target.value[0]?.toUpperCase() ||
+        "" + e.target.value.slice(1)?.toLowerCase(),
     );
   };
 
-  const handleTextFieldClick = () => {
-    if (askedForCookies && !askedForLocation) {
+  const handleTextFieldClick = (e) => {
+    if (askedForCookies && !askedForLocation && isOrigin) {
+      e.target.blur();
       setShowBackdrop(true);
       sendEvent("geolocation/start");
       navigator.geolocation.getCurrentPosition(
-        (pos) => {
+        () => {
           console.log("Location is enabled");
           sendEvent("geolocation/end");
           setShowBackdrop(false);
           //TODO set string to current city
-          setDestination("Berlin");
+          setLocation("Berlin");
           setLocationAccessGranted(true);
           setAskedForLocation(true);
         },
@@ -62,35 +74,42 @@ export default function CityInput() {
 
   return (
     <Autocomplete
-      value={destination}
+      disabled={!askedForCookies}
+      value={getLocation()}
       open={showAutomplete && !locationAccessGranted}
       openOnFocus={false}
       freeSolo
       sx={{ width: "100%" }}
       disablePortal
       options={options}
+      clearIcon={null}
       onInputChange={(e, newValue) => {
         if (newValue.length === 0) {
           if (showAutomplete) setShowAutocomplete(false);
         } else {
           if (!showAutomplete) setShowAutocomplete(true);
         }
-        setDestination(newValue);
+        setLocation(newValue);
       }}
       onClose={() => setShowAutocomplete(false)}
       renderInput={(params) => (
         <TextField
           {...params}
-          placeholder={"Where are you going?"}
-          disabled={showBackdrop || !askedForCookies}
+          placeholder={placeholder}
+          disabled={!askedForCookies}
           variant="standard"
           fullWidth
           onChange={handleChange}
           onClick={handleTextFieldClick}
+          sx={{
+            "& .MuiAutocomplete-inputRoot": {
+              paddingRight: "0 !important",
+            },
+          }}
           InputProps={{
             ...params.InputProps,
             disableUnderline: true,
-            endAdornment: (
+            endAdornment: isOrigin && (
               <>
                 {params.InputProps?.endAdornment}
                 <InputAdornment position="end">
@@ -99,15 +118,6 @@ export default function CityInput() {
                     icon={faLocation}
                     className="headerIcon location"
                     onClick={handleTextFieldClick}
-                  />
-                  <Backdrop
-                    transitionDuration={500}
-                    sx={{
-                      color: "#777",
-                      zIndex: (theme) => theme.zIndex.drawer + 1,
-                    }}
-                    open={showBackdrop}
-                    onClick={() => {}}
                   />
                 </InputAdornment>
               </>

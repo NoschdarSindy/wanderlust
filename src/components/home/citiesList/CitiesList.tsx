@@ -1,5 +1,5 @@
 import "./featured.css";
-import { useImage, useSite } from "src/contexts/WebsiteContext";
+import { useImage, useSite } from "src/lib/composables";
 
 const CitiesList = () => {
   const s = useSite();
@@ -13,7 +13,7 @@ const CitiesList = () => {
           <img src={citiesImgs[i]} alt={city.name} className="featuredImg" />
           <div className="featuredTitles">
             <h1>{city.name}</h1>
-            {s.name !== "flights" && <h2>{city.count}</h2>}
+            {!s.isFlights && <h2>{city.count}</h2>}
           </div>
         </div>
       ))}

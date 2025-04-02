@@ -1,14 +1,24 @@
 import { useMemo } from "react";
-import websitesData, { WebsiteData } from "../data";
+import websitesData, { WebsiteData } from "./siteData";
 
 const siteName = process.env.REACT_APP_SITE;
+const designMode = process.env.REACT_APP_DESIGN;
 
-export function useSite(): WebsiteData {
+export function useSite(): WebsiteData & {
+  isHotels: boolean;
+  isFlights: boolean;
+  isCars: boolean;
+} {
   if (!siteName || !(siteName in websitesData)) {
     throw new Error(`Invalid or missing REACT_APP_SITE: ${siteName}`);
   }
 
-  return websitesData[siteName];
+  return {
+    ...websitesData[siteName],
+    isHotels: siteName === "hotels",
+    isFlights: siteName === "flights",
+    isCars: siteName === "cars",
+  };
 }
 
 // @ts-ignore
@@ -44,4 +54,19 @@ export function useImage(path: string): string | string[] | null {
     console.log("Image not found for path:", path);
     return null;
   }, [path, siteName]);
+}
+
+const designModes = ["dark", "fair", "none"];
+
+export function useDesignMode() {
+  if (!designMode || !designModes.includes(designMode)) {
+    throw new Error(`Invalid or missing REACT_APP_DESIGN: ${designMode}`);
+  }
+
+  return {
+    design: designMode,
+    isDark: designMode === "dark",
+    isFair: designMode === "fair",
+    isNone: designMode === "none",
+  };
 }

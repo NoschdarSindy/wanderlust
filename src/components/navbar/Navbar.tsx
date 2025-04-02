@@ -1,7 +1,7 @@
 import "./navbar.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as icons from "@fortawesome/free-solid-svg-icons";
-import { useImage, useSite } from "src/contexts/WebsiteContext";
+import { useImage, useSite } from "src/lib/composables";
 
 const Navbar = () => {
   const s = useSite();

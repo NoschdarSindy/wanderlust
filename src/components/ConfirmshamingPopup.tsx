@@ -5,9 +5,9 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import Typography from "@mui/material/Typography";
 import { Fragment, useEffect, useState } from "react";
-import { sendEvent } from "../util";
-import { confirmshamingDoneAtom } from "../atoms";
+import { confirmshamingDoneAtom } from "../lib/atoms";
 import { useRecoilState } from "recoil";
+import { sendEvent } from "src/lib/client";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {

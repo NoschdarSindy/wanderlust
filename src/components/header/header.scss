@@ -58,6 +58,7 @@
 }
 
 .headerSearchItem {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -73,7 +74,7 @@
   background-color: transparent;
   padding: 0;
   justify-content: center;
-  align-items: center;
+  align-items: stretch;
   height: 100%;
 }
 
@@ -107,9 +108,11 @@
   cursor: pointer;
 }
 
-.date {
+.datepicker {
   position: absolute;
   top: 50px;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 2;
 }
 

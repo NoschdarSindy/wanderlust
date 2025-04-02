@@ -5,14 +5,14 @@ import { Box, Card, CardContent, Zoom } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import PaymentForm from "../../components/PaymentForm";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
-import { sendEvent } from "src/util";
 import { useRecoilValue } from "recoil";
 import {
   cameraAccessGrantedAtom,
   showSkipIdButtonAtom,
   showSkipPaymentButtonAtom,
-} from "src/atoms";
+} from "src/lib/atoms";
 import IdForm from "../../components/IdForm";
+import { sendEvent } from "src/lib/client";
 
 const Checkout = () => {
   const location = useLocation();
@@ -34,7 +34,7 @@ const Checkout = () => {
           navigate("/checkout/id");
           break;
         case "/checkout/id":
-          sendEvent("id/end");
+          sendEvent("videoIdent/end");
           sendEvent("app/end");
           navigate("/questionnaire");
           break;

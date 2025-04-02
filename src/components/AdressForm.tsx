@@ -13,8 +13,8 @@ import {
   RadioGroup,
 } from "@mui/material";
 import { TransitionGroup } from "react-transition-group";
-import { sendEvent } from "../util";
 import { useEffect } from "react";
+import { sendEvent } from "src/lib/client";
 
 export default function AddressForm() {
   const [radio, setRadio] = React.useState("no");

@@ -8,34 +8,31 @@ const { persistAtom } = recoilPersist({
   converter: JSON,
 });
 
-export interface Counts {
-  // hotels
-  adult: number;
-  child: number;
-  room: number;
-
-  // flights
-  passenger: number;
-}
-
 export interface DateRangeItem {
   startDate: string; // ISO format
   endDate: string;
 }
 
-export const destinationAtom = atom<string>({
-  key: "destination",
-  default: "",
+export const showBackdropAtom = atom<boolean>({
+  key: "showBackdrop",
+  default: false,
+});
+
+export const locationsAtom = atom<{ origin: string; destination: string }>({
+  key: "locations",
+  default: {
+    origin: "",
+    destination: "",
+  },
   effects_UNSTABLE: [persistAtom],
 });
 
-export const countsAtom = atom<Counts>({
+export const countsAtom = atom({
   key: "counts",
   default: {
     adult: 1,
-    child: 0,
-    room: 1,
-    passenger: 1,
+    child: 0, // hotels, flights
+    room: 1, // hotels
   },
   effects_UNSTABLE: [persistAtom],
 });

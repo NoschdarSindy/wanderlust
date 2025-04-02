@@ -1,6 +1,6 @@
 import "./lovedList.css";
-import { useImage, useSite } from "src/contexts/WebsiteContext";
-import { HotelData } from "src/data";
+import { useImage, useSite } from "src/lib/composables";
+import { HotelData } from "src/lib/siteData";
 
 const LovedList = () => {
   const s = useSite() as HotelData;

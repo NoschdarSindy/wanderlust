@@ -5,7 +5,7 @@ import IconButton from "@mui/material/IconButton";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCameraAlt } from "@fortawesome/free-solid-svg-icons";
 import "./camera.css";
-import { cameraAccessGrantedAtom } from "../atoms";
+import { cameraAccessGrantedAtom } from "../lib/atoms";
 import { useRecoilState } from "recoil";
 
 const videoConstraints = {

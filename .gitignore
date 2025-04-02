@@ -24,7 +24,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-data.js
+src/lib/siteData.js
 start-service.js
 
 notes

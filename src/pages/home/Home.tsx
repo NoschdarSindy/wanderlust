@@ -1,21 +1,21 @@
-import CitiesList from "src/pages/home/citiesList/CitiesList";
-import LovedList from "src/pages/home/lovedList/LovedList";
+import CitiesList from "src/components/home/citiesList/CitiesList";
+import LovedList from "src/components/home/lovedList/LovedList";
 import Footer from "../../components/footer/Footer";
 import Header from "../../components/header/Header";
 import Navbar from "../../components/navbar/Navbar";
-import ByTypeList from "src/pages/home/byTypeList/ByTypeList";
+import ByTypeList from "src/components/home/byTypeList/ByTypeList";
 import "./home.scss";
 import CookiePopup from "../../components/CookiePopup";
 import { useResetRecoilState } from "recoil";
-import { countsAtom, datesAtom, destinationAtom, hotelAtom } from "src/atoms";
+import { countsAtom, datesAtom, locationsAtom, hotelAtom } from "src/lib/atoms";
 import { useEffect } from "react";
-import { useImage, useSite } from "src/contexts/WebsiteContext";
+import { useImage, useSite } from "src/lib/composables";
 
 const Home = () => {
   const s = useSite();
   const homecards = useImage("homecards/interactive");
 
-  const resetDestination = useResetRecoilState(destinationAtom);
+  const resetDestination = useResetRecoilState(locationsAtom);
   const resetGuests = useResetRecoilState(countsAtom);
   const resetDates = useResetRecoilState(datesAtom);
   const resetHotel = useResetRecoilState(hotelAtom);
@@ -25,7 +25,7 @@ const Home = () => {
     resetGuests();
     resetDates();
     resetHotel();
-  }, []);
+  });
 
   return (
     <div>
