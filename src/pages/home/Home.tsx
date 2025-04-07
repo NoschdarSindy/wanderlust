@@ -7,25 +7,30 @@ import ByTypeList from "src/components/home/byTypeList/ByTypeList";
 import "./home.scss";
 import CookiePopup from "../../components/CookiePopup";
 import { useResetRecoilState } from "recoil";
-import { countsAtom, datesAtom, locationsAtom, hotelAtom } from "src/lib/atoms";
+import {
+  countsAtom,
+  datesAtom,
+  locationsAtom,
+  itemIndexAtom,
+} from "src/lib/atoms";
 import { useEffect } from "react";
-import { useImage, useSite } from "src/lib/composables";
+import { useImage, getSite } from "src/lib/composables";
 
 const Home = () => {
-  const s = useSite();
+  const s = getSite();
   const homecards = useImage("homecards/interactive");
 
   const resetDestination = useResetRecoilState(locationsAtom);
   const resetGuests = useResetRecoilState(countsAtom);
   const resetDates = useResetRecoilState(datesAtom);
-  const resetHotel = useResetRecoilState(hotelAtom);
+  const resetItemIndex = useResetRecoilState(itemIndexAtom);
 
   useEffect(() => {
     resetDestination();
     resetGuests();
     resetDates();
-    resetHotel();
-  });
+    resetItemIndex();
+  }, []);
 
   return (
     <div>
@@ -72,9 +77,11 @@ const Home = () => {
           <h1 className="homeTitle">{s.citiesTitle}</h1>
           <CitiesList />
         </div>
-        <div className="homeItem" data-section="loved">
-          <LovedList />
-        </div>
+        {s.isHotels && (
+          <div className="homeItem" data-section="loved">
+            <LovedList />
+          </div>
+        )}
       </div>
       <Footer />
     </div>

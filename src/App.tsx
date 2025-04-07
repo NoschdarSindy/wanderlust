@@ -4,55 +4,83 @@ import List from "./pages/list/List";
 import Checkout from "./pages/checkout/Checkout";
 import { useEffect, useState } from "react";
 import Questionnaire from "./pages/questionnaire/Questionnaire";
-import Hotel from "./pages/hotel/Hotel";
-import { useSite } from "src/lib/composables";
+import Detail from "./pages/hotel/Detail";
+import { getSite, useImage } from "src/lib/composables";
 import { showBackdropAtom } from "src/lib/atoms";
 import { useRecoilValue } from "recoil";
 import { Backdrop } from "@mui/material";
+import { sendEvent } from "src/lib/client";
+import Config from "src/pages/Config";
+import ConsentForm from "src/pages/Consent";
+import Demographics from "src/pages/Demographics";
+import TaskPage from "src/pages/Task";
+import Favicon from "react-favicon";
+import siteData from "src/lib/siteData";
 
 function App() {
   const location = useLocation();
   const [loading, setLoading] = useState(true);
   const showBackdrop = useRecoilValue(showBackdropAtom);
-  const s = useSite();
+  const s = getSite();
+  const favicon = useImage("favicon");
+  const itemNames = Object.values(siteData).map((s) => s.item_name);
 
-  setTimeout(() => {
-    setLoading(() => false);
-  }, 500);
+  useEffect(() => {
+    setTimeout(() => {
+      setLoading(() => false);
+      if (!s.isStudy) sendEvent(`routeChange/${location.pathname}`);
+    }, 500);
+  }, [location]);
 
   useEffect(() => {
     setLoading(() => true);
   }, [location]);
 
-  return loading ? (
-    <span />
-  ) : (
-    <div
-      id={s.name}
-      style={{
-        ...(showBackdrop && { pointerEvents: "none", userSelect: "none" }),
-      }}
-    >
-      <title>{s.title}</title>
+  return (
+    <>
+      {!s.isStudy && <Favicon url={favicon} />}
+      {loading ? (
+        <span />
+      ) : (
+        <div
+          id={s.name}
+          style={{
+            ...(showBackdrop && { pointerEvents: "none", userSelect: "none" }),
+          }}
+        >
+          <title>{s.title}</title>
 
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/results" element={<List />} />
-        <Route path={`/${s.item_name}`} element={<Hotel />} />
-        <Route path="/checkout/*" element={<Checkout />} />
-        <Route path="/questionnaire" element={<Questionnaire />} />
-      </Routes>
+          {s.isStudy ? (
+            <Routes>
+              <Route path="/config" element={<Config />} />
+              <Route path="/consent" element={<ConsentForm />} />
+              <Route path="/demographics" element={<Demographics />} />
+              <Route path="/task" element={<TaskPage />} />
+            </Routes>
+          ) : (
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/results" element={<List />} />
+              {itemNames.map((name) => (
+                <Route key={name} path={`/${name}`} element={<Detail />} />
+              ))}
+              <Route path="/checkout/*" element={<Checkout />} />
+              <Route path="/questionnaire" element={<Questionnaire />} />
+            </Routes>
+          )}
 
-      <Backdrop
-        transitionDuration={500}
-        sx={{
-          color: "#777",
-          zIndex: (theme) => theme.zIndex.drawer + 1,
-        }}
-        open={showBackdrop}
-        onClick={() => {}}
-      />
-    </div>
+          <Backdrop
+            transitionDuration={500}
+            sx={{
+              color: "#777",
+              zIndex: (theme) => theme.zIndex.drawer + 1,
+            }}
+            open={showBackdrop}
+            onClick={() => {}}
+          />
+        </div>
+      )}
+    </>
   );
 }
 

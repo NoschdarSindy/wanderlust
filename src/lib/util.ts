@@ -1,8 +1,8 @@
 import { differenceInDays } from "date-fns";
 
-export const pluralize = (count, noun) => {
+export const pluralize = (count, noun, nounOnly = false) => {
   const suffix = noun === "child" ? "ren" : "s";
-  return `${count} ${noun}${count !== 1 ? suffix : ""}`;
+  return `${!nounOnly ? count + " " : ""}${noun}${count !== 1 || nounOnly ? suffix : ""}`;
 };
 
 export const getNights = (date) =>
@@ -23,5 +23,8 @@ export const getCssVariable = (variableName: string): string => {
     .getPropertyValue(formattedVariableName)
     .trim();
 };
+
+export const formatDateRange = (start: string, end: string) =>
+  `${new Date(start).toLocaleDateString("en-GB")} to ${new Date(end).toLocaleDateString("en-GB")}`;
 
 export default getCssVariable;

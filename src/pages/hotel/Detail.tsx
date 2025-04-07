@@ -11,11 +11,15 @@ import {
   faLocationDot,
   faPerson,
 } from "@fortawesome/free-solid-svg-icons";
-import { useState } from "react";
-import hotels from "src/data/hotels.json";
+import { SetStateAction, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRecoilValue } from "recoil";
-import { datesAtom, locationsAtom, countsAtom, hotelAtom } from "src/lib/atoms";
+import {
+  datesAtom,
+  locationsAtom,
+  countsAtom,
+  itemIndexAtom,
+} from "src/lib/atoms";
 import { getNights, getTotalPrice, pluralize } from "src/lib/util";
 import {
   Paper,
@@ -27,8 +31,9 @@ import {
   TableRow,
 } from "@mui/material";
 import ConfirmshamingPopup from "../../components/ConfirmshamingPopup";
+import { getSite, useImage } from "src/lib/composables";
 
-const Hotel = () => {
+const Detail = () => {
   const navigate = useNavigate();
   const [slideNumber, setSlideNumber] = useState(0);
   const [open, setOpen] = useState(false);
@@ -36,38 +41,21 @@ const Hotel = () => {
   const date = useRecoilValue(datesAtom);
   const guests = useRecoilValue(countsAtom);
   const locations = useRecoilValue(locationsAtom);
-  const id = useRecoilValue(hotelAtom);
+  const id = useRecoilValue(itemIndexAtom);
+  const s = getSite();
+  const thumbnail = useImage("thumbnails")[id];
+  const roomPhotos = useImage("rooms") as string[];
+  const photos = roomPhotos.toSpliced(1, 0, thumbnail);
 
-  const hotel = hotels[id];
-
-  const photos = [
-    {
-      src: `/rooms/entrance.jpeg`,
-    },
-    {
-      src: `/hotel-thumbnail/${id}.webp`,
-    },
-    {
-      src: `/rooms/bathroom.jpg`,
-    },
-    {
-      src: `/rooms/checkin.jpeg`,
-    },
-    {
-      src: `/rooms/breakfast.jpeg`,
-    },
-    {
-      src: `/rooms/tables.jpeg`,
-    },
-  ];
+  const mock = s.mocks[id] as any;
 
   const handleOpen = (i) => {
     setSlideNumber(i);
     setOpen(true);
   };
 
-  const handleMove = (direction) => {
-    let newSlideNumber;
+  const handleMove = (direction: "l" | "r") => {
+    let newSlideNumber: SetStateAction<number>;
 
     if (direction === "l") {
       newSlideNumber = slideNumber === 0 ? 5 : slideNumber - 1;
@@ -78,7 +66,7 @@ const Hotel = () => {
     setSlideNumber(newSlideNumber);
   };
 
-  const roomSwitch = (guests) => {
+  const roomSwitch = (guests: number) => {
     switch (true) {
       case guests <= 2:
         return "Suite";
@@ -113,7 +101,7 @@ const Hotel = () => {
               onClick={() => handleMove("l")}
             />
             <div className="sliderWrapper">
-              <img src={photos[slideNumber].src} alt="" className="sliderImg" />
+              <img src={photos[slideNumber]} alt="" className="sliderImg" />
             </div>
             <FontAwesomeIcon
               icon={faCircleArrowRight}
@@ -128,16 +116,16 @@ const Hotel = () => {
             Reserve Now
           </button>
           <h1 className="hotelTitle">
-            <b>{hotel.name}</b>
+            <b>{mock.name}</b>
           </h1>
           <div className="hotelAddress">
             <FontAwesomeIcon icon={faLocationDot} />
             <span>
-              {hotel.location}, {locations.destination}
+              {mock.location}, {locations.destination}
             </span>
           </div>
           <span className="hotelDistance">
-            Good location – {hotel.metersFromCenter} from center
+            Good location – {mock.metersFromCenter} from center
           </span>
           <span className="hotelPriceHighlight">
             Book a stay over € 114 at this property and get a free airport taxi
@@ -147,19 +135,19 @@ const Hotel = () => {
               <div className="hotelImgWrapper" key={i}>
                 <img
                   onClick={() => handleOpen(i)}
-                  src={photo.src}
+                  src={photo}
                   alt=""
                   className="hotelImg"
                 />
               </div>
             ))}
           </div>
-          <img src={"/perks.png"} alt={""} />
+          <img src={useImage("perks") as string} alt={""} />
           <div className="hotelDetails">
             <div className="hotelDetailsTexts">
-              <h1 className="hotelTitle">Your stay at {hotel.name}</h1>
+              <h1 className="hotelTitle">Your stay at {mock.name}</h1>
               <p className="hotelDesc">
-                {hotel.name} has accommodations with air conditioning and free
+                {mock.name} has accommodations with air conditioning and free
                 WiFi. The units come with hardwood floors and feature a fully
                 equipped kitchenette with a microwave, a flat-screen TV, and a
                 private bathroom with shower and a hairdryer. A fridge is also
@@ -181,10 +169,10 @@ const Hotel = () => {
               <h1>Perfect for a {getNights(date)}-night stay!</h1>
               <span>
                 Secure this property with an excellent location score of{" "}
-                {hotel.rating}!
+                {mock.rating}!
               </span>
               <h2>
-                <b>€ {getTotalPrice(hotel.price, date, guests)}</b> (
+                <b>€ {getTotalPrice(mock.price, date, guests)}</b> (
                 {pluralize(getNights(date), "night")})
               </h2>
 
@@ -224,12 +212,12 @@ const Hotel = () => {
                     {roomSwitch(guests.adult + guests.child)}
                   </TableCell>
                   <TableCell style={{ verticalAlign: "top" }}>
-                    {[...Array(guests.adult + guests.child)].map((e, i) => (
+                    {[...Array(guests.adult + guests.child)].map((_, i) => (
                       <FontAwesomeIcon key={i} icon={faPerson} />
                     ))}
                   </TableCell>
                   <TableCell style={{ verticalAlign: "top" }}>
-                    € {getTotalPrice(hotel.price, date, guests)}
+                    € {getTotalPrice(mock.price, date, guests)}
                   </TableCell>
                   <TableCell style={{ verticalAlign: "top" }}>
                     <FontAwesomeIcon
@@ -260,7 +248,7 @@ const Hotel = () => {
                   </TableCell>
                   <TableCell style={{ verticalAlign: "top" }}>
                     <input
-                      type="number"
+                      type="index"
                       className="lsOptionInput"
                       placeholder={guests.room.toString()}
                       disabled={true}
@@ -268,7 +256,7 @@ const Hotel = () => {
                   </TableCell>
                   <TableCell style={{ verticalAlign: "top" }}>
                     {pluralize(guests.room, "room")} for <br />
-                    <h4>€ {getTotalPrice(hotel.price, date, guests)}</h4>
+                    <h4>€ {getTotalPrice(mock.price, date, guests)}</h4>
                     <span className="siTaxOp">Includes taxes and fees</span>
                     <br />
                     <br />
@@ -318,4 +306,4 @@ const Hotel = () => {
   );
 };
 
-export default Hotel;
+export default Detail;

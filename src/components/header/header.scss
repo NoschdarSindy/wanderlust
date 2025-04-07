@@ -40,6 +40,19 @@
   bottom: -25px;
   width: 100%;
   max-width: 1024px;
+
+  #flights & {
+    bottom: -50px;
+  }
+}
+
+#cars {
+  .searchOptionsContainer {
+    order: -2;
+  }
+  .spacer {
+    order: -1;
+  }
 }
 
 .searchInputs {
@@ -106,6 +119,7 @@
 .headerSearchText {
   color: black;
   cursor: pointer;
+  width: 100%;
 }
 
 .datepicker {

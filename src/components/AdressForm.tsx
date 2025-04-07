@@ -25,7 +25,7 @@ export default function AddressForm() {
     /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i;
 
   const handleValidEmail = () => {
-    if (!validEmail) sendEvent("confusingCheckbox/start");
+    if (!validEmail) sendEvent("sneakIntoBasket/start");
     setValidEmail(true);
     setShowConfusingCheckbox(true);
   };
@@ -101,7 +101,7 @@ export default function AddressForm() {
                     <Checkbox
                       defaultChecked
                       onChange={(e) => {
-                        !e.target.checked && sendEvent("confusingCheckbox/end");
+                        !e.target.checked && sendEvent("sneakIntoBasket/end");
                       }}
                     />
                   }

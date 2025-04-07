@@ -1,9 +1,9 @@
 import "./byTypeList.css";
-import { useImage, useSite } from "src/lib/composables";
+import { useImage, getSite } from "src/lib/composables";
 import { pluralize } from "src/lib/util";
 
 const ByTypeList = () => {
-  const s = useSite();
+  const s = getSite();
   const byTypeList = s.typesList;
   const byTypeImages = useImage("homecards/byType") as string[];
 

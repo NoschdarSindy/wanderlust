@@ -31,7 +31,7 @@
 .navbar {
   background-color: var(--color-background);
   display: flex;
-  justify-content: center;
+  justify-content: center !important;
   padding-top: 0 !important;
 }
 

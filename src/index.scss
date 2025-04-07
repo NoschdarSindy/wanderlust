@@ -31,11 +31,13 @@
   --font-family: "Tahoma", "Verdana";
 }
 
-* {
-  font-family: var(--font-family), sans-serif;
-}
+:root:has(#hotels, #flights, #cars) {
+  * {
+    font-family: var(--font-family), sans-serif;
+  }
 
-.btn-primary {
-  background-color: var(--color-primary);
-  border-color: var(--color-primary);
+  .btn-primary {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+  }
 }

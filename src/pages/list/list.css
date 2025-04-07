@@ -8,7 +8,7 @@
 .lsOptionInput,
 .lsItem > span {
   border-radius: 5px;
-  color: rgb(84, 84, 84);
+  color: var(--color-text);
 }
 
 .listWrapper {
@@ -20,7 +20,7 @@
 
 .listSearch {
   flex: 1;
-  background-color: #febb02;
+  background-color: var(--color-accent);
   padding: 10px;
   border-radius: 10px;
   position: sticky;
@@ -30,7 +30,7 @@
 
 .lsTitle {
   font-size: 20px;
-  color: #555;
+  color: var(--color-text);
   margin-bottom: 10px;
 }
 
@@ -68,8 +68,12 @@
   display: flex;
   justify-content: space-between;
   margin-bottom: 10px;
-  color: #555;
+  color: var(--color-text);
   font-size: 12px;
+
+  .lsOptionText:first-letter {
+    text-transform: capitalize;
+  }
 }
 
 .lsOptionInput {
@@ -80,7 +84,7 @@
 
 .listSearch > button {
   padding: 10px;
-  background-color: #0071c2;
+  background-color: var(--color-primary);
   color: white;
   border: none;
   width: 100%;

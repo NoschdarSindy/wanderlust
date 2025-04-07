@@ -1,0 +1,84 @@
+.carCard {
+  display: flex;
+
+  &__image {
+    flex: 0 0 200px;
+
+    img {
+      width: 100%;
+      height: auto;
+      display: block;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+  }
+
+  &__content {
+    flex: 1;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  &__header {
+    margin-bottom: 0.75rem;
+
+    .carCard__name {
+      font-size: 1.25rem;
+      margin: 0;
+    }
+
+    .carCard__company {
+      font-size: 0.9rem;
+      color: #777;
+    }
+
+    .carCard__category {
+      font-size: 0.95rem;
+      color: #444;
+      margin-top: 0.2rem;
+    }
+  }
+
+  &__specs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.4rem 1rem;
+    font-size: 0.9rem;
+    color: #333;
+    margin-bottom: 1rem;
+
+    svg {
+      margin-right: 6px;
+      color: #666;
+    }
+
+    div {
+      display: flex;
+      align-items: center;
+    }
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .carCard__price {
+      font-size: 1.2rem;
+      font-weight: 600;
+
+      &::after {
+        content: "/day";
+        font-size: 0.8rem;
+        color: #aaa;
+      }
+    }
+
+    .btn {
+      padding: 0.5rem 1rem;
+      font-size: 0.85rem;
+    }
+  }
+}

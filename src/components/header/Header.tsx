@@ -1,22 +1,19 @@
+import * as icons from "@fortawesome/free-solid-svg-icons";
 import { faCalendarDays, faPerson } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "./header.scss";
 import { DateRange } from "react-date-range";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { datesAtom, locationsAtom, countsAtom } from "src/lib/atoms";
+import { countsAtom, datesAtom, locationsAtom } from "src/lib/atoms";
 import LocationInput from "../LocationInput";
+import { formatDateRange, getCssVariable, pluralize } from "src/lib/util";
+import { getLocationsData, getSite, useImage } from "src/lib/composables";
+import { isEqual } from "date-fns";
 import { ClickAwayListener } from "@mui/base";
-import { getCssVariable, pluralize } from "src/lib/util";
-import { useImage, useSite } from "src/lib/composables";
-import * as icons from "@fortawesome/free-solid-svg-icons";
-
-// Add helper functions above the Header component
-const formatDateRange = (start: string, end: string) =>
-  `${new Date(start).toLocaleDateString("en-GB")} to ${new Date(end).toLocaleDateString("en-GB")}`;
 
 const renderCounterSummary = (counts, countLabels) =>
   Object.entries(countLabels)
@@ -57,10 +54,32 @@ const Header = ({ type }: { type?: string }) => {
   const [date, setDate] = useRecoilState(datesAtom);
   const [showCounters, setShowCounters] = useState(false);
   const [counts, setCounts] = useRecoilState(countsAtom);
+  const { options: locationOptions } = getLocationsData();
 
   const navigate = useNavigate();
-  const s = useSite();
+  const s = getSite();
   const headerImg = useImage("header");
+
+  const datePickerRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        datePickerRef.current &&
+        !datePickerRef.current.contains(event.target as Node)
+      ) {
+        if (s.isCars || date[0].startDate !== date[0].endDate) {
+          setShowDatePicker(false);
+        }
+      }
+    };
+    if (showDatePicker) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showDatePicker, date]);
 
   const handleOption = (name, operation) => {
     setCounts((prev) => {
@@ -101,15 +120,17 @@ const Header = ({ type }: { type?: string }) => {
             <button className="btn btn-primary">{s.exploreButton}</button>
             <div className="headerSearch">
               <div className="searchInputs">
-                {s.locationInputs.map(({ key, icon, label }) => (
-                  <div className="headerSearchItem" key={key}>
-                    <FontAwesomeIcon
-                      icon={icons[icon]}
-                      className="headerIcon"
-                    />
-                    <LocationInput accessor={key} placeholder={label} />
-                  </div>
-                ))}
+                {s.locationInputs
+                  .filter(({ label }) => label)
+                  .map(({ key, icon, label }) => (
+                    <div className="headerSearchItem" key={key}>
+                      <FontAwesomeIcon
+                        icon={icons[icon]}
+                        className="headerIcon"
+                      />
+                      <LocationInput accessor={key} placeholder={label} />
+                    </div>
+                  ))}
 
                 <div className="headerSearchItem">
                   <span
@@ -124,39 +145,47 @@ const Header = ({ type }: { type?: string }) => {
                     {formatDateRange(date[0].startDate, date[0].endDate)}
                   </span>
                   {showDatePicker && (
-                    <DateRange
-                      editableDateInputs={true}
-                      onChange={(item) => {
-                        const selection = item.range1;
-                        setDate([
+                    <span ref={datePickerRef}>
+                      <DateRange
+                        ref={datePickerRef}
+                        editableDateInputs={true}
+                        onChange={(item) => {
+                          const selection = item.range1;
+                          setDate([
+                            {
+                              startDate: selection.startDate.toISOString(),
+                              endDate: selection.endDate.toISOString(),
+                            },
+                          ]);
+                          if (
+                            !isEqual(selection.startDate, selection.endDate) ||
+                            (s.isCars &&
+                              selection.startDate.toISOString() ===
+                                date[0].endDate)
+                          ) {
+                            setShowDatePicker(false);
+                          }
+                        }}
+                        moveRangeOnFirstSelection={false}
+                        ranges={[
                           {
-                            startDate: selection.startDate.toISOString(),
-                            endDate: selection.endDate.toISOString(),
+                            startDate: new Date(date[0].startDate),
+                            endDate: new Date(date[0].endDate),
                           },
-                        ]);
-                      }}
-                      moveRangeOnFirstSelection={false}
-                      ranges={[
-                        {
-                          startDate: new Date(date[0].startDate),
-                          endDate: new Date(date[0].endDate),
-                        },
-                      ]}
-                      className="datepicker"
-                      rangeColors={[getCssVariable("color-primary")]}
-                      color={getCssVariable("color-primary")}
-                      minDate={new Date()}
-                    />
+                        ]}
+                        className="datepicker"
+                        rangeColors={[getCssVariable("color-primary")]}
+                        color={getCssVariable("color-primary")}
+                        minDate={new Date()}
+                      />
+                    </span>
                   )}
                 </div>
 
                 {Object.keys(s.counts).length > 0 && (
                   <div className="headerSearchItem counters">
                     <span
-                      onClick={() => {
-                        setShowCounters(!showCounters);
-                        setShowDatePicker(false);
-                      }}
+                      onClick={() => setShowCounters(!showCounters)}
                       className="headerSearchText"
                     >
                       <FontAwesomeIcon icon={faPerson} className="headerIcon" />
@@ -181,14 +210,44 @@ const Header = ({ type }: { type?: string }) => {
                 <button
                   className="headerBtn btn btn-primary"
                   onClick={handleSearch}
-                  disabled={s.locationInputs
-                    .map((i) => i.key)
-                    .some((key) => locations[key].length === 0)}
+                  disabled={
+                    s.locationInputs
+                      .map((input) => input.key)
+                      .some(
+                        (key) =>
+                          locations[key].length === 0 ||
+                          !locationOptions.includes(locations[key]),
+                      ) ||
+                    (!s.isCars && showDatePicker)
+                  }
                   tabIndex={-1}
                 >
                   {s.searchButton}
                 </button>
               </div>
+
+              {!!s.searchOptions.length && [
+                <div className={"searchOptionsContainer"} key={0}>
+                  {s.searchOptions.map(({ label, checked }) => {
+                    return (
+                      <div key={label} className="form-check form-check-inline">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          checked={checked}
+                          {...(checked !== undefined && {
+                            readOnly: true,
+                            tabIndex: -1,
+                            style: { pointerEvents: "none" },
+                          })}
+                        />
+                        <label className="form-check-label">{label}</label>
+                      </div>
+                    );
+                  })}
+                </div>,
+                <div className={"spacer"} key={1}></div>,
+              ]}
             </div>
           </div>
         )}

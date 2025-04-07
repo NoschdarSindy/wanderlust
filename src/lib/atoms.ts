@@ -1,6 +1,9 @@
 import { atom } from "recoil";
 import { add } from "date-fns";
 import { recoilPersist } from "recoil-persist";
+import { Site } from "src/lib/studyData";
+import { getSite } from "src/lib/composables";
+const { isCars } = getSite();
 
 const { persistAtom } = recoilPersist({
   key: "recoil-persist",
@@ -13,6 +16,11 @@ export interface DateRangeItem {
   endDate: string;
 }
 
+export const currentTaskAtom = atom<Site>({
+  key: "task",
+  effects_UNSTABLE: [persistAtom],
+});
+
 export const showBackdropAtom = atom<boolean>({
   key: "showBackdrop",
   default: false,
@@ -24,7 +32,15 @@ export const locationsAtom = atom<{ origin: string; destination: string }>({
     origin: "",
     destination: "",
   },
-  effects_UNSTABLE: [persistAtom],
+  effects_UNSTABLE: [
+    ({ onSet, setSelf }) => {
+      onSet(({ origin, destination }) => {
+        if (isCars && origin !== destination)
+          setSelf({ origin, destination: origin });
+      });
+    },
+    persistAtom,
+  ],
 });
 
 export const countsAtom = atom({
@@ -38,7 +54,7 @@ export const countsAtom = atom({
 });
 
 export const datesAtom = atom<DateRangeItem[]>({
-  key: "date",
+  key: "dates",
   default: [
     {
       startDate: new Date().toISOString(),
@@ -48,8 +64,8 @@ export const datesAtom = atom<DateRangeItem[]>({
   effects_UNSTABLE: [persistAtom],
 });
 
-export const hotelAtom = atom<number>({
-  key: "hotel",
+export const itemIndexAtom = atom<number>({
+  key: "itemIndex",
   default: 0,
   effects_UNSTABLE: [persistAtom],
 });
