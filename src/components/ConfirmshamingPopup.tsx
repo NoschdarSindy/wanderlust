@@ -5,7 +5,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import Typography from "@mui/material/Typography";
 import { Fragment, useEffect, useState } from "react";
-import { confirmshamingDoneAtom } from "../lib/atoms";
+import { askedForNotificationPermissionAtom } from "../lib/atoms";
 import { useRecoilState } from "recoil";
 import { sendEvent } from "src/lib/client";
 
@@ -21,7 +21,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 export default function ConfirmshamingPopup() {
   const [open, setOpen] = useState(false);
   const [confirmshamingDone, setConfirmshamingDone] = useRecoilState(
-    confirmshamingDoneAtom,
+    askedForNotificationPermissionAtom,
   );
 
   const handleAccept = (e) => {
@@ -53,12 +53,11 @@ export default function ConfirmshamingPopup() {
         open={open}
       >
         <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
-          Enable browser notifications
+          Don't miss out on our best offers!
         </DialogTitle>
         <DialogContent dividers>
           <Typography gutterBottom>
-            Don't miss out on our best offers! Get price alerts via your browser
-            by enabling browser notifications.
+            Get price alerts via your browser by enabling browser notifications.
           </Typography>
         </DialogContent>
         <DialogActions>

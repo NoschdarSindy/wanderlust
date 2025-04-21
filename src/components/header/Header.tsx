@@ -11,7 +11,7 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import { countsAtom, datesAtom, locationsAtom } from "src/lib/atoms";
 import LocationInput from "../LocationInput";
 import { formatDateRange, getCssVariable, pluralize } from "src/lib/util";
-import { getLocationsData, getSite, useImage } from "src/lib/composables";
+import { getLocationsData, getSite, getImage } from "src/lib/composables";
 import { isEqual } from "date-fns";
 import { ClickAwayListener } from "@mui/base";
 
@@ -58,7 +58,7 @@ const Header = ({ type }: { type?: string }) => {
 
   const navigate = useNavigate();
   const s = getSite();
-  const headerImg = useImage("header");
+  const headerImg = getImage("header");
 
   const datePickerRef = useRef(null);
 

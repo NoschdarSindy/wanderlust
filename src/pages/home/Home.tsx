@@ -11,19 +11,19 @@ import {
   countsAtom,
   datesAtom,
   locationsAtom,
-  itemIndexAtom,
+  mockIndexAtom,
 } from "src/lib/atoms";
 import { useEffect } from "react";
-import { useImage, getSite } from "src/lib/composables";
+import { getImage, getSite } from "src/lib/composables";
 
 const Home = () => {
   const s = getSite();
-  const homecards = useImage("homecards/interactive");
+  const homecards = getImage("homecards/interactive");
 
   const resetDestination = useResetRecoilState(locationsAtom);
   const resetGuests = useResetRecoilState(countsAtom);
   const resetDates = useResetRecoilState(datesAtom);
-  const resetItemIndex = useResetRecoilState(itemIndexAtom);
+  const resetItemIndex = useResetRecoilState(mockIndexAtom);
 
   useEffect(() => {
     resetDestination();

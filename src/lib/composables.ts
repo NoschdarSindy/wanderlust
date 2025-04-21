@@ -3,6 +3,11 @@ import useWebSocket from "react-use-websocket";
 import { SendJsonMessage } from "react-use-websocket/dist/lib/types";
 import locationsData from "src/lib/locationsData";
 import { Design, designs } from "src/lib/studyData";
+import { useRecoilValue } from "recoil";
+import { countsAtom, datesAtom, mockIndexAtom } from "src/lib/atoms";
+import { differenceInDays } from "date-fns";
+import { useLocation } from "react-router-dom";
+import { formatDateRange } from "src/lib/util";
 
 const siteName = process.env.REACT_APP_SITE;
 const design = process.env.REACT_APP_DESIGN as Design;
@@ -13,6 +18,8 @@ export function getSite(): WebsiteData & {
   isFlights: boolean;
   isCars: boolean;
 } {
+  const siteName = process.env.REACT_APP_SITE;
+
   const site = {
     ...websitesData[siteName],
     isStudy: siteName === "study",
@@ -35,7 +42,7 @@ const allImages = require.context(
   /\.(jpe?g|png|webp|svg|ico)$/,
 );
 
-export function useImage(path: string): string | string[] | null {
+export function getImage(path: string): string | string[] | null {
   const tryPaths = [`${siteName}/${path}`, `shared/${path}`];
   const extensions = ["jpg", "jpeg", "png", "webp", "svg", "ico"];
 
@@ -59,17 +66,62 @@ export function useImage(path: string): string | string[] | null {
     }
   }
 
-  console.log("Image not found for path:", path);
+  console.warn("Image not found for path:", path);
   return null;
 }
 
-export function getDesignMode() {
-  if (!design || !designs.includes(design)) {
-    throw new Error(`Invalid or missing REACT_APP_DESIGN: ${design}`);
+export function useMock(mockIndex?: number) {
+  const s = getSite();
+  const recoilMockIndex = useRecoilValue(mockIndexAtom);
+  mockIndex ??= recoilMockIndex;
+  return s.mocks[mockIndex] as any;
+}
+
+export function useThumbnail(mockIndex?: number) {
+  const s = getSite();
+  const recoilMockIndex = useRecoilValue(mockIndexAtom);
+  mockIndex ??= recoilMockIndex;
+  let accessor: number | string;
+
+  if (s.isHotels) {
+    accessor = mockIndex;
+  } else {
+    const mock = s.mocks[mockIndex] as any;
+    if (s.isFlights) {
+      accessor = mock.airline;
+    } else if (s.isCars) {
+      accessor = mock.image;
+    }
   }
 
+  return getImage("thumbnails")[accessor];
+}
+
+export const useNights = () => {
+  const dates = useRecoilValue(datesAtom);
+  return Math.max(
+    1,
+    differenceInDays(new Date(dates[0].endDate), new Date(dates[0].startDate)),
+  );
+};
+
+export function useTotalPrice() {
+  const s = getSite();
+  const mockIndex = useRecoilValue(mockIndexAtom);
+  const singlePrice = s.mocks[mockIndex].price;
+  const counts = useRecoilValue(countsAtom);
+  const factors = Object.keys(s.counts).map((c) => counts[c]);
+
+  return (
+    singlePrice *
+    useNights() *
+    factors.filter(Boolean).reduce((a, b) => a * b, 1)
+  );
+}
+
+export function getDesignMode() {
   return {
-    design: design,
+    design,
     isDark: design === "dark",
     isFair: design === "fair",
     isNone: design === "none",
@@ -107,4 +159,11 @@ export const useWebSocketChannel: () => {
     message: lastJsonMessage,
     sendMessage: sendJsonMessage,
   };
+};
+
+export const useIsResultsPage = () => useLocation().pathname === "/results";
+
+export const useFormatDateRange = () => {
+  const [{ startDate, endDate }] = useRecoilValue(datesAtom);
+  return formatDateRange(startDate, endDate);
 };

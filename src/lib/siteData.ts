@@ -111,6 +111,22 @@ const texts = {
         ratingText: "Excellent",
       },
     ],
+    detail: {
+      reserveButton: "Reserve Now",
+      pageTitle: ({ name }) => `Your stay at ${name}`,
+      introLine: ({ name }) =>
+        `${name} has accommodations with air conditioning and free WiFi.\n\nA buffet breakfast is served daily. The restaurant is open from 19:00 to 22:00 Monday to Friday.\n\nFree private parking is available.`,
+      locationNote: ({ metersFromCenter }) =>
+        `Good location – ${metersFromCenter} from center`,
+      pricePromo:
+        "Book a stay over € 114 at this property and get a free airport taxi",
+      availabilityHeading: "Availability",
+      badgeBreakfast: "Good breakfast included",
+      badgeCancellation: (date) =>
+        `Free cancellation before 6:00 PM on ${date}`,
+      badgePayLater: (date) => `Pay nothing until ${date}`,
+      packageTitle: "Your package:",
+    },
   },
   flights: {
     title: "SkyWay Flights",
@@ -165,6 +181,22 @@ const texts = {
       { name: "Chicago", count: "875 flights" },
     ],
     lovedTitle: "Flights travelers love",
+
+    detail: {
+      reserveButton: "Reserve Now",
+      pageTitle: ({ name }) => `Your stay at ${name}`,
+      introLine: ({ name }) =>
+        `${name} has accommodations with air conditioning and free WiFi.\n\nA buffet breakfast is served daily. The restaurant is open from 19:00 to 22:00 Monday to Friday.\n\nFree private parking is available.`,
+      locationNote: ({ metersFromCenter }) =>
+        `Earn up to 116 SkyPoints with this flight!`,
+      // pricePromo: "Earn up to 116 SkyPoints with this flight!",
+      // availabilityHeading: "Availability",
+      badgeBreakfast: "Good breakfast included",
+      badgeCancellation: (date) =>
+        `Free cancellation before 6:00 PM on ${date}`,
+      badgePayLater: (date) => `Pay nothing until ${date}`,
+      packageTitle: "Your package:",
+    },
   },
   cars: {
     title: "Overdrive Car Rentals",
@@ -215,6 +247,21 @@ const texts = {
       { name: "Denver", count: "390 rentals" },
     ],
     lovedTitle: "Cars renters love",
+    detail: {
+      reserveButton: "Reserve Now",
+      pageTitle: ({ name }) => `Your stay at ${name}`,
+      introLine: ({ name }) =>
+        `${name} has accommodations with air conditioning and free WiFi.\n\nA buffet breakfast is served daily. The restaurant is open from 19:00 to 22:00 Monday to Friday.\n\nFree private parking is available.`,
+      locationNote: ({ metersFromCenter }) =>
+        `Good location – ${metersFromCenter} from center`,
+      pricePromo: "✓ 400 km included",
+      availabilityHeading: "Availability",
+      badgeBreakfast: "Good breakfast included",
+      badgeCancellation: (date) =>
+        `Free cancellation before 6:00 PM on ${date}`,
+      badgePayLater: (date) => `Pay nothing until ${date}`,
+      packageTitle: "Your package:",
+    },
   },
 };
 
@@ -690,5 +737,6 @@ export type WebsiteData = (typeof websitesData)[keyof typeof websitesData];
 export type HotelData = typeof websitesData.hotels;
 export type FlightData = typeof websitesData.flights;
 export type CarData = typeof websitesData.cars;
+export type AnySiteData = HotelData | FlightData | CarData;
 
 export default websitesData;

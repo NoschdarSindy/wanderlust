@@ -10,6 +10,9 @@ from typing import Optional
 from pathlib import Path
 from typing import Dict, List
 
+from starlette.requests import Request
+from starlette.responses import JSONResponse
+
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
@@ -131,7 +134,7 @@ async def store_json(data: dict, filename_suffix: str):
 
 
 @app.get("/{participant}/{site}/{design}/{event}/{route_or_event_phase:path}")
-async def get_event(participant: str, site: str, event: str, route_or_event_phase: str):
+async def get_event(request: Request, participant: str, site: str, design: str, event: str, route_or_event_phase: str):
     global participantName
     if participant != participantName:
         print(f"⚠️  Participant mismatch: expected {participantName}, got {participant}")
@@ -143,6 +146,9 @@ async def get_event(participant: str, site: str, event: str, route_or_event_phas
         raise HTTPException(status_code=404, detail="Specify start or end for " + event)
 
     marker_name = event + '-' + route_or_event_phase
+    query_string = request.url.query
+    if query_string:
+        marker_name += f"?{query_string}"
 
     outlet.push_sample([marker_name], pylsl.local_clock())
     print('Pushed ' + marker_name)

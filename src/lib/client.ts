@@ -23,7 +23,7 @@ export const sendEvent = (eventString: EvenString) => {
   if (s.isStudy) return;
 
   const path = `${participant}/${s.name}/${design}/${eventString}`;
-  console.log(`${path}`);
+  // console.log(`${path}`);
   fetch("http://127.0.0.1:8000/" + path)
     .then((response) => {
       response.json().then((json) => {

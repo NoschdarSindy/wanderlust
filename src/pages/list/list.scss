@@ -1,7 +1,9 @@
 .listContainer {
   display: flex;
-  justify-content: center;
+  //justify-content: center;
+  align-items: center;
   margin-top: 20px;
+  flex-direction: column;
 }
 
 .lsItem > input,
@@ -94,4 +96,60 @@
 
 .listResult {
   flex: 3;
+}
+
+.promoBanner {
+  height: calc(40vh - 113px);
+  border-radius: 12px;
+  background-color: var(--color-background-transparent);
+  padding: 1rem;
+  position: relative;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.bannerCloseBtn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.bannerContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 960px;
+}
+
+.bannerIcon {
+  font-size: 5rem;
+  margin-right: 2rem;
+}
+
+.bannerText {
+  flex-grow: 1;
+}
+
+.bannerText h2 {
+  margin: 0;
+  font-size: 2rem;
+}
+
+.bannerText p {
+  margin: 0.5rem 0 0;
+  font-size: 1rem;
+}
+
+.bannerActionBtn {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
 }

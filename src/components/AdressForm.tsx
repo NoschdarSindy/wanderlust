@@ -1,33 +1,24 @@
-import * as React from "react";
+import { useEffect, useState } from "react";
+import { useRecoilState } from "recoil";
+import { fullNameAtom } from "../lib/atoms";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
-import {
-  Box,
-  Collapse,
-  FormControl,
-  FormLabel,
-  Radio,
-  RadioGroup,
-} from "@mui/material";
-import { TransitionGroup } from "react-transition-group";
-import { useEffect } from "react";
+import { Box, FormControl, FormLabel, Radio, RadioGroup } from "@mui/material";
 import { sendEvent } from "src/lib/client";
 
 export default function AddressForm() {
-  const [radio, setRadio] = React.useState("no");
-  const [validEmail, setValidEmail] = React.useState(null);
-  const [showConfusingCheckbox, setShowConfusingCheckbox] =
-    React.useState(false);
+  const [radio, setRadio] = useState("no");
+  const [fullName, setFullName] = useRecoilState(fullNameAtom);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [validEmail, setValidEmail] = useState(null);
   const re =
     /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i;
 
   const handleValidEmail = () => {
-    if (!validEmail) sendEvent("sneakIntoBasket/start");
     setValidEmail(true);
-    setShowConfusingCheckbox(true);
   };
 
   const handleEmailChange = (e) => {
@@ -48,8 +39,13 @@ export default function AddressForm() {
     sendEvent("personalDetails/start");
   }, []);
 
+  useEffect(() => {
+    console.log(`${firstName} ${lastName}`.trim());
+    setFullName(`${firstName} ${lastName}`.trim());
+  }, [firstName, lastName, setFullName]);
+
   return (
-    <React.Fragment>
+    <Box sx={{ padding: "24px" }}>
       <Typography variant="h6" gutterBottom>
         Enter your details
       </Typography>
@@ -63,6 +59,8 @@ export default function AddressForm() {
             fullWidth
             autoComplete="given-name"
             variant="standard"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
@@ -74,43 +72,29 @@ export default function AddressForm() {
             fullWidth
             autoComplete="family-name"
             variant="standard"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
           <TextField
             required
             id="emailAddress"
-            type={"email"}
+            type="email"
             name="emailAddress"
             label="Email address"
             fullWidth
-            autoComplete="email-address"
+            autoComplete="email"
             variant="standard"
             onBlur={handleEmailBlur}
             onChange={handleEmailChange}
             error={validEmail === false}
+            helperText={
+              validEmail === false ? "Please enter a valid email" : ""
+            }
           />
         </Grid>
         <Grid item xs={12} sm={6}></Grid>
-        <TransitionGroup>
-          {showConfusingCheckbox && (
-            <Collapse sx={{ paddingLeft: "24px" }}>
-              <Grid item xs={12} sm={12}>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      defaultChecked
-                      onChange={(e) => {
-                        !e.target.checked && sendEvent("sneakIntoBasket/end");
-                      }}
-                    />
-                  }
-                  label="I want to opt out of not receiving any news and special offers via email."
-                />
-              </Grid>
-            </Collapse>
-          )}
-        </TransitionGroup>
         <Box width="100%" height={0} />
         <br />
         <Grid item xs={12} sm={6} sx={{ paddingTop: "0 !important" }}>
@@ -119,7 +103,7 @@ export default function AddressForm() {
             name="phoneNumber"
             label="Phone number"
             fullWidth
-            autoComplete="phone-number"
+            autoComplete="tel"
             variant="standard"
           />
         </Grid>
@@ -185,7 +169,6 @@ export default function AddressForm() {
         </Grid>
         <Grid item xs={12} sm={6}>
           <TextField
-            required
             id="country"
             name="country"
             label="Country"
@@ -213,6 +196,6 @@ export default function AddressForm() {
           </FormControl>
         </Grid>
       </Grid>
-    </React.Fragment>
+    </Box>
   );
 }

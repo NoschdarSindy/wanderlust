@@ -1,10 +1,10 @@
 import "./featured.css";
-import { useImage, getSite } from "src/lib/composables";
+import { getImage, getSite } from "src/lib/composables";
 
 const CitiesList = () => {
   const s = getSite();
   const citiesList = s.citiesList;
-  const citiesImgs = useImage("homecards/cities");
+  const citiesImgs = getImage("homecards/cities");
 
   return (
     <div className="featured">

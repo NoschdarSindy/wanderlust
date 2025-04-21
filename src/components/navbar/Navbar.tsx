@@ -1,11 +1,11 @@
 import "./navbar.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as icons from "@fortawesome/free-solid-svg-icons";
-import { useImage, getSite } from "src/lib/composables";
+import { getImage, getSite } from "src/lib/composables";
 
 const Navbar = () => {
   const s = getSite();
-  const usEng = useImage("us-eng") as string;
+  const usEng = getImage("us-eng") as string;
 
   return (
     <div className="navbar">

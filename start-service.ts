@@ -14,8 +14,8 @@ import {
 import * as process from "node:process";
 
 let prod = 1;
-const customParticipantNumber = 0; // <=0 = none, >0 = custom
-const openBrowser = 0;
+const customParticipantNumber = 1; // <=0 = none, >0 = custom
+const openBrowser = 1;
 const currentCity = "Berlin";
 
 const minPort = 3001; // 3000 is reserved for the study UI
@@ -93,6 +93,7 @@ function getCounterbalancedEntries(participant: number) {
 function spawnApp({
   site,
   domain,
+  design,
   port,
   pName,
   tasks,
@@ -111,10 +112,12 @@ function spawnApp({
     stdio: "inherit",
     env: {
       ...process.env,
+      CHOKIDAR_USEPOLLING: "true",
+      NODE_OPTIONS: "--max_old_space_size=4096",
       PORT: String(port),
       REACT_APP_PARTICIPANT: pName,
       REACT_APP_SITE: site,
-      REACT_APP_DESIGN: "dark", // TODO: softcode
+      REACT_APP_DESIGN: design,
       REACT_APP_CITY: currentCity,
       REACT_APP_TASKS: tasks.join(),
       BROWSER: openBrowser ? `http://localhost:${port}/config` : "none",

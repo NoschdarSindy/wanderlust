@@ -1,27 +1,19 @@
-import { differenceInDays } from "date-fns";
-
 export const pluralize = (count, noun, nounOnly = false) => {
   const suffix = noun === "child" ? "ren" : "s";
   return `${!nounOnly ? count + " " : ""}${noun}${count !== 1 || nounOnly ? suffix : ""}`;
 };
-
-export const getNights = (date) =>
-  Math.max(
-    1,
-    differenceInDays(new Date(date[0].endDate), new Date(date[0].startDate)),
-  );
-
-export const getTotalPrice = (price, date, guests) =>
-  price * getNights(date) * guests.adult * guests.room;
 
 export const getCssVariable = (variableName: string): string => {
   const formattedVariableName = variableName.startsWith("--")
     ? variableName
     : `--${variableName}`;
 
-  return getComputedStyle(document.documentElement)
+  const result = getComputedStyle(document.documentElement)
     .getPropertyValue(formattedVariableName)
     .trim();
+
+  if (result) return result;
+  console.warn(`CSS variable ${formattedVariableName} not found`);
 };
 
 export const formatDateRange = (start: string, end: string) =>

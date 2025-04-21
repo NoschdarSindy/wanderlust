@@ -1,19 +1,73 @@
-import "./list.css";
+import "./list.scss";
 import Navbar from "../../components/navbar/Navbar";
-import Header from "../../components/header/Header";
 import SearchItem from "../../components/searchItem/SearchItem";
-import { useRecoilValue } from "recoil";
-import { datesAtom, locationsAtom, countsAtom } from "src/lib/atoms";
+import { useRecoilState, useRecoilValue } from "recoil";
+import {
+  datesAtom,
+  locationsAtom,
+  countsAtom,
+  askedForNotificationPermissionAtom,
+} from "src/lib/atoms";
 import Footer from "../../components/footer/Footer";
 import { Pagination, Stack } from "@mui/material";
 import { formatDateRange, pluralize } from "src/lib/util";
-import { getSite } from "src/lib/composables";
+import { getDesignMode, getSite } from "src/lib/composables";
+import { useEffect, useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faStar } from "@fortawesome/free-solid-svg-icons";
+import { sendEvent } from "src/lib/client";
+import ConfirmshamingPopup from "src/components/ConfirmshamingPopup";
+
+function NotificationPermissionBanner() {
+  const [askedForNotificationPermission, setAskedForNotificationPermission] =
+    useRecoilState(askedForNotificationPermissionAtom);
+
+  const handleAccept = () => Notification.requestPermission().then(handleClose);
+
+  const handleClose = () => {
+    sendEvent("confirmshaming/end");
+    setAskedForNotificationPermission(true);
+  };
+
+  useEffect(() => {
+    if (!askedForNotificationPermission) sendEvent("confirmshaming/start");
+  }, []);
+
+  if (!askedForNotificationPermission)
+    return (
+      <div className="promoBanner">
+        <button className="bannerCloseBtn" onClick={handleClose}>
+          ×
+        </button>
+        <div className="bannerContent">
+          <div className="bannerIcon">
+            <FontAwesomeIcon icon={faStar} size="1x" />
+          </div>
+          <div className="bannerText">
+            <h4>Don't miss out on our best offers!</h4>
+            <p>
+              Get price alerts via your browser by enabling browser
+              notifications.
+            </p>
+          </div>
+          <button
+            className="btn btn-primary bannerActionBtn"
+            onClick={handleAccept}
+          >
+            Enable notifications
+          </button>
+        </div>
+      </div>
+    );
+}
 
 const List = () => {
+  const design = getDesignMode();
   const { origin, destination } = useRecoilValue(locationsAtom);
   const date = useRecoilValue(datesAtom);
   const s = getSite();
   const counts = useRecoilValue(countsAtom);
+
   const additionalOptions =
     {
       cars: [
@@ -25,7 +79,7 @@ const List = () => {
   return (
     <div>
       <Navbar />
-      <Header type="list" />
+      {design.isDark && <ConfirmshamingPopup />}
       <div className="listContainer">
         <div className="listWrapper">
           <div className="listSearch">
@@ -78,9 +132,9 @@ const List = () => {
                   <div className={"searchOptionsContainer"}>
                     {[...s.searchOptions, ...additionalOptions]
                       .filter(Boolean)
-                      .map(({ label, checked }) => {
+                      .map(({ label, checked }, i) => {
                         return (
-                          <div className={"lsOptionItem"}>
+                          <div className={"lsOptionItem"} key={i}>
                             <span className="lsOptionText">{label} </span>
                             <input
                               className="form-check-input"
@@ -118,6 +172,7 @@ const List = () => {
             </div>
           </div>
           <div className="listResult">
+            {design.isFair && <NotificationPermissionBanner />}
             {[...Array(10)].map((_, i) => (
               <SearchItem index={i} key={i} />
             ))}

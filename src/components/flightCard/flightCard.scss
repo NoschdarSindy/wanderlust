@@ -4,6 +4,9 @@
   justify-content: space-evenly;
 
   .flightRouteContainer {
+    margin: 15px 0;
+    display: grid;
+    gap: 30px;
     width: 70%;
   }
 
@@ -47,14 +50,13 @@
       font-size: 12px;
       color: #666;
       position: relative;
-      top: 4px;
 
       &::before {
         content: "";
         position: absolute;
         top: 50%;
-        left: -70px;
-        right: -70px;
+        left: -115px;
+        right: -115px;
         border-bottom: 1px dotted #999;
         z-index: 0;
       }
@@ -99,5 +101,14 @@
   img {
     width: 80px;
     max-height: 25px;
+  }
+}
+
+.listResult {
+  .flightDuration {
+    &::before {
+      left: -70px !important;
+      right: -70px !important;
+    }
   }
 }

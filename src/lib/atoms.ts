@@ -64,8 +64,19 @@ export const datesAtom = atom<DateRangeItem[]>({
   effects_UNSTABLE: [persistAtom],
 });
 
-export const itemIndexAtom = atom<number>({
-  key: "itemIndex",
+export const fullNameAtom = atom({
+  key: "fullName",
+  default: "",
+  effects_UNSTABLE: [persistAtom],
+});
+
+export const travelProtectionSelectedAtom = atom({
+  key: "travelProtectionSelected",
+  default: process.env.REACT_APP_DESIGN === "dark" ? "yes" : "no",
+});
+
+export const mockIndexAtom = atom<number>({
+  key: "mockIndex",
   default: 0,
   effects_UNSTABLE: [persistAtom],
 });
@@ -75,9 +86,11 @@ export const askedForCookiesAtom = atom<boolean>({
   default: false,
 });
 
-export const confirmshamingDoneAtom = atom<boolean>({
-  key: "confirmshamingDone",
+export const askedForNotificationPermissionAtom = atom<boolean>({
+  key: "askedForNotificationPermission",
   default: false,
+  //TODO effects_UNSTABLE: [persistAtom],
+  // effects_UNSTABLE: [persistAtom],
 });
 
 export const askedForLocationAtom = atom<boolean>({

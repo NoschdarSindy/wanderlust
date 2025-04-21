@@ -15,4 +15,5 @@ browser:
 	  --remote-debugging-port=9222 \
 	  --no-first-run \
 	  --user-data-dir="$(PROFILE_DIR)" \
+	  --disable-features=PaymentRequest,AutofillSaveCardPrompt \
 	  http://localhost:3000/config

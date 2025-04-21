@@ -1,66 +1,81 @@
-import "./hotel.css";
+import "./detail.scss";
 import Navbar from "../../components/navbar/Navbar";
 import Footer from "../../components/footer/Footer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faCheck,
+  faCircleXmark,
+  faLocationDot,
+  faCircleCheck,
+  faCoffee,
   faCircleArrowLeft,
   faCircleArrowRight,
-  faCircleXmark,
-  faCoffee,
-  faLocationDot,
   faPerson,
+  faPlane,
+  faCar,
+  faUserGroup,
+  faSuitcase,
+  faGasPump,
+  faGear,
+  faSuitcaseRolling,
+  faCalendarDays,
 } from "@fortawesome/free-solid-svg-icons";
-import { SetStateAction, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import {
+  useTotalPrice,
+  getImage,
+  useThumbnail,
+  useNights,
+  useMock,
+  useFormatDateRange,
+} from "src/lib/composables";
+import { pluralize } from "src/lib/util";
+import { countsAtom, datesAtom, locationsAtom } from "src/lib/atoms";
 import { useRecoilValue } from "recoil";
-import {
-  datesAtom,
-  locationsAtom,
-  countsAtom,
-  itemIndexAtom,
-} from "src/lib/atoms";
-import { getNights, getTotalPrice, pluralize } from "src/lib/util";
-import {
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-} from "@mui/material";
-import ConfirmshamingPopup from "../../components/ConfirmshamingPopup";
-import { getSite, useImage } from "src/lib/composables";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Paper from "@mui/material/Paper";
+import { getSite } from "src/lib/composables";
+import ConfirmshamingPopup from "src/components/ConfirmshamingPopup";
+import FlightCard from "src/components/flightCard/FlightCard";
+import CarCard from "../../components/carCard/CarCard";
 
-const Detail = () => {
+export default function Detail() {
   const navigate = useNavigate();
-  const [slideNumber, setSlideNumber] = useState(0);
-  const [open, setOpen] = useState(false);
-
   const date = useRecoilValue(datesAtom);
   const guests = useRecoilValue(countsAtom);
   const locations = useRecoilValue(locationsAtom);
-  const id = useRecoilValue(itemIndexAtom);
   const s = getSite();
-  const thumbnail = useImage("thumbnails")[id];
-  const roomPhotos = useImage("rooms") as string[];
-  const photos = roomPhotos.toSpliced(1, 0, thumbnail);
+  const detail = (s as any).detail ?? {};
+  const mock = useMock();
+  const totalGuests = guests.adult + guests.child;
 
-  const mock = s.mocks[id] as any;
+  const thumbnail = useThumbnail();
+  const photos = ((getImage("rooms") || []) as string[]).toSpliced(
+    1,
+    0,
+    thumbnail,
+  );
 
-  const handleOpen = (i) => {
+  const [slideNumber, setSlideNumber] = useState(0);
+  const [open, setOpen] = useState(false);
+
+  const handleOpen = (i: number) => {
     setSlideNumber(i);
     setOpen(true);
   };
 
   const handleMove = (direction: "l" | "r") => {
-    let newSlideNumber: SetStateAction<number>;
+    let newSlideNumber: number;
 
     if (direction === "l") {
-      newSlideNumber = slideNumber === 0 ? 5 : slideNumber - 1;
+      newSlideNumber = slideNumber === 0 ? photos.length - 1 : slideNumber - 1;
     } else {
-      newSlideNumber = slideNumber === 5 ? 0 : slideNumber + 1;
+      newSlideNumber = slideNumber === photos.length - 1 ? 0 : slideNumber + 1;
     }
 
     setSlideNumber(newSlideNumber);
@@ -79,14 +94,40 @@ const Detail = () => {
     }
   };
 
+  const totalPrice = useTotalPrice();
+
   const handleClick = () => {
     navigate("/checkout/your-details");
   };
 
+  const dayBeforeStartDate = new Date(
+    new Date(date[0].startDate).setDate(
+      new Date(date[0].startDate).getDate() - 1,
+    ),
+  ).toLocaleDateString();
+
+  const startDate = new Date(date[0].startDate).toLocaleDateString();
+
+  // const getAirportCode = (location: string) =>
+  //   /.*\((\w+)\)/.exec(location)?.[1];
+  // const getAirportName = (location: string) => /(.*)\s\(/.exec(location)?.[1];
+
+  // Car specs helpers
+  const carSpecs = s.isCars
+    ? [
+        { icon: faUserGroup, value: `${mock.seats} seats` },
+        { icon: faSuitcase, value: pluralize(mock.luggage, "suitcase") },
+        { icon: faGear, value: mock.transmission },
+        { icon: faGasPump, value: mock.fuelPolicy },
+      ]
+    : [];
+
+  const nights = useNights();
+  const formatDateRange = useFormatDateRange();
+
   return (
     <div>
       <Navbar />
-      <ConfirmshamingPopup />
       <div className="hotelContainer m-0">
         {open && (
           <div className="slider">
@@ -110,200 +151,251 @@ const Detail = () => {
             />
           </div>
         )}
+
         <div className="hotelWrapper">
           <br />
-          <button className="bookNow btn btn-primary" onClick={handleClick}>
-            Reserve Now
-          </button>
+          {s.isHotels && (
+            <button className="bookNow btn btn-primary" onClick={handleClick}>
+              {detail.reserveButton}
+            </button>
+          )}
           <h1 className="hotelTitle">
-            <b>{mock.name}</b>
+            <b>
+              {s.isFlights ? `Your Flight` : s.isCars ? `Details` : mock.name}
+            </b>
           </h1>
           <div className="hotelAddress">
-            <FontAwesomeIcon icon={faLocationDot} />
-            <span>
-              {mock.location}, {locations.destination}
-            </span>
+            <div>
+              <FontAwesomeIcon
+                icon={
+                  s.isHotels
+                    ? faLocationDot
+                    : s.isFlights
+                      ? faPlane
+                      : s.isCars
+                        ? faCar
+                        : undefined
+                }
+              />{" "}
+              <span>
+                {s.isHotels ? (
+                  `${mock.location}, ${locations.destination}`
+                ) : s.isFlights ? (
+                  <b>
+                    {locations.origin} ⇔ {locations.destination}
+                  </b>
+                ) : s.isCars ? (
+                  `${locations.destination} ${mock.location}`
+                ) : (
+                  ""
+                )}
+              </span>
+            </div>
+
+            <div>
+              <FontAwesomeIcon icon={faCalendarDays} /> {formatDateRange}
+            </div>
+
+            {s.isFlights && (
+              <span>
+                <FontAwesomeIcon icon={faSuitcase} /> {totalGuests} Carry-on |{" "}
+                <FontAwesomeIcon icon={faSuitcaseRolling} /> {totalGuests}{" "}
+                Checked
+              </span>
+            )}
           </div>
           <span className="hotelDistance">
-            Good location – {mock.metersFromCenter} from center
+            {!s.isCars ? detail.locationNote(mock) : ""}
           </span>
-          <span className="hotelPriceHighlight">
-            Book a stay over € 114 at this property and get a free airport taxi
-          </span>
-          <div className="hotelImages">
-            {photos.map((photo, i) => (
-              <div className="hotelImgWrapper" key={i}>
-                <img
-                  onClick={() => handleOpen(i)}
-                  src={photo}
-                  alt=""
-                  className="hotelImg"
-                />
-              </div>
-            ))}
-          </div>
-          <img src={useImage("perks") as string} alt={""} />
+          <span className="hotelPriceHighlight">{detail.pricePromo}</span>
+          {s.isHotels && (
+            <div className="hotelImages">
+              {photos.map((photo, i) => (
+                <div className="hotelImgWrapper" key={i}>
+                  <img
+                    onClick={() => handleOpen(i)}
+                    src={photo}
+                    alt=""
+                    className="hotelImg"
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+          {s.isHotels && <img src={getImage("perks") as string} alt={""} />}
           <div className="hotelDetails">
             <div className="hotelDetailsTexts">
-              <h1 className="hotelTitle">Your stay at {mock.name}</h1>
-              <p className="hotelDesc">
-                {mock.name} has accommodations with air conditioning and free
-                WiFi. The units come with hardwood floors and feature a fully
-                equipped kitchenette with a microwave, a flat-screen TV, and a
-                private bathroom with shower and a hairdryer. A fridge is also
-                offered, as well as an electric tea pot and a coffee machine.
-              </p>
-              <p className="hotelDesc">
-                A buffet breakfast is served daily. The hotel's restaurant is
-                open from 19:00 to 22:00 Monday to Friday.
-              </p>
-              <p className="hotelDesc">Free private parking is available.</p>
+              {!s.isCars && (
+                <h1 className="hotelTitle">
+                  {s.isHotels ? detail.pageTitle(mock) : `Itinerary`}
+                </h1>
+              )}
+              <pre className="hotelDesc">
+                {s.isHotels ? detail.introLine(mock) : ""}
+
+                {s.isFlights && <FlightCard onClick={handleClick} />}
+                {s.isCars && <CarCard onClick={handleClick} />}
+              </pre>
+              {/*{s.isCars && (*/}
+              {/*  <div style={{ marginBottom: 8 }}>*/}
+              {/*    {carSpecs.map((spec, idx) => (*/}
+              {/*      <span key={idx} style={{ marginRight: 16 }}>*/}
+              {/*        <FontAwesomeIcon icon={spec.icon} /> {spec.value}*/}
+              {/*      </span>*/}
+              {/*    ))}*/}
+              {/*  </div>*/}
+              {/*)}*/}
               <small>
                 <small className={"text-secondary"}>
-                  Distance in property description is calculated using ©
-                  OpenStreetMap
+                  {s.isHotels
+                    ? "Distance in property description is calculated using © OpenStreetMap"
+                    : s.isFlights
+                      ? "All times are in local time."
+                      : s.isCars
+                        ? "Car details subject to availability"
+                        : ""}
                 </small>
               </small>
             </div>
-            <div className="hotelDetailsPrice">
-              <h1>Perfect for a {getNights(date)}-night stay!</h1>
-              <span>
-                Secure this property with an excellent location score of{" "}
-                {mock.rating}!
-              </span>
-              <h2>
-                <b>€ {getTotalPrice(mock.price, date, guests)}</b> (
-                {pluralize(getNights(date), "night")})
-              </h2>
 
-              <span className="siTaxOp">Includes taxes and fees</span>
-              <button className="btn btn-primary" onClick={handleClick}>
-                Reserve Now
-              </button>
-            </div>
+            {!s.isFlights && (
+              <div className="hotelDetailsPrice">
+                <h2>
+                  {s.isCars && (
+                    <small className="siTaxOp" style={{ fontWeight: "bold" }}>
+                      TOTAL
+                      <br />
+                    </small>
+                  )}
+                  <b>€ {totalPrice}</b>
+                  {s.isHotels ? ` (${pluralize(nights, "night")})` : ""}
+                </h2>
+
+                {s.isHotels && (
+                  <span className="siTaxOp">Includes taxes and fees</span>
+                )}
+                <button className="btn btn-primary" onClick={handleClick}>
+                  {detail.reserveButton}
+                </button>
+              </div>
+            )}
           </div>
 
-          <h1 className="hotelTitle">Availability</h1>
-          <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 650 }} aria-label="simple table">
-              <TableHead>
-                <TableRow>
-                  <TableCell>Type</TableCell>
-                  <TableCell>Number of guests</TableCell>
-                  <TableCell>
-                    Price for {pluralize(getNights(date), "night")}
-                  </TableCell>
-                  <TableCell>Your choices</TableCell>
-                  <TableCell>Included rooms</TableCell>
-                  <TableCell></TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                <TableRow
-                  sx={{
-                    "&:last-child td, &:last-child th": { border: 0 },
-                  }}
-                >
-                  <TableCell
-                    component="th"
-                    scope="row"
-                    style={{ verticalAlign: "top" }}
+          {!s.isCars && (
+            <h1 className="hotelTitle">{detail.availabilityHeading}</h1>
+          )}
+          {s.isHotels && (
+            <TableContainer component={Paper}>
+              <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Type</TableCell>
+                    <TableCell>Number of guests</TableCell>
+                    <TableCell>
+                      Price for {pluralize(nights, "night")}
+                    </TableCell>
+                    <TableCell>Your choices</TableCell>
+                    <TableCell>Included rooms</TableCell>
+                    <TableCell></TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  <TableRow
+                    sx={{
+                      "&:last-child td, &:last-child th": { border: 0 },
+                    }}
                   >
-                    {roomSwitch(guests.adult + guests.child)}
-                  </TableCell>
-                  <TableCell style={{ verticalAlign: "top" }}>
-                    {[...Array(guests.adult + guests.child)].map((_, i) => (
-                      <FontAwesomeIcon key={i} icon={faPerson} />
-                    ))}
-                  </TableCell>
-                  <TableCell style={{ verticalAlign: "top" }}>
-                    € {getTotalPrice(mock.price, date, guests)}
-                  </TableCell>
-                  <TableCell style={{ verticalAlign: "top" }}>
-                    <FontAwesomeIcon
-                      icon={faCoffee}
-                      width={"1em"}
-                      className={"text-success"}
-                    />{" "}
-                    <span className={"text-success"}>
-                      <b>Good breakfast</b> included
-                    </span>
-                    <br />
-                    <FontAwesomeIcon
-                      icon={faCheck}
-                      width={"1em"}
-                      className={"text-success"}
-                    />{" "}
-                    <span className={"text-success"}>
-                      <b>Free cancellation</b> before 6:00 PM on{" "}
-                      {new Date(
-                        new Date(date[0].startDate).setDate(
-                          new Date(date[0].startDate).getDate() - 1,
-                        ),
-                      ).toLocaleDateString()}
-                    </span>
-                    <br />
-                    &nbsp;•&nbsp;&nbsp;Pay nothing until{" "}
-                    {new Date(date[0].startDate).toLocaleDateString()}
-                  </TableCell>
-                  <TableCell style={{ verticalAlign: "top" }}>
-                    <input
-                      type="index"
-                      className="lsOptionInput"
-                      placeholder={guests.room.toString()}
-                      disabled={true}
-                    />
-                  </TableCell>
-                  <TableCell style={{ verticalAlign: "top" }}>
-                    {pluralize(guests.room, "room")} for <br />
-                    <h4>€ {getTotalPrice(mock.price, date, guests)}</h4>
-                    <span className="siTaxOp">Includes taxes and fees</span>
-                    <br />
-                    <br />
-                    <button
-                      className="w-100 btn btn-primary"
-                      onClick={handleClick}
+                    <TableCell
+                      component="th"
+                      scope="row"
+                      style={{ verticalAlign: "top" }}
                     >
-                      I'll reserve
-                    </button>
-                    <br />
-                    <br />
-                    <small>
-                      <p>
-                        <b>Your package:</b>
-                      </p>
-                      <p>
-                        <FontAwesomeIcon icon={faCoffee} width={"1em"} />{" "}
-                        <span>
-                          <b>Good breakfast</b> included
-                        </span>
-                      </p>
-                      <p>
-                        <FontAwesomeIcon icon={faCheck} width={"1em"} />{" "}
-                        <span>
-                          <b>Free cancellation</b> before 6:00 PM on{" "}
-                          {new Date(
-                            new Date(date[0].startDate).setDate(
-                              new Date(date[0].startDate).getDate() - 1,
-                            ),
-                          ).toLocaleDateString()}
-                        </span>
-                      </p>
-                      <p>
-                        &nbsp;•&nbsp;&nbsp;Pay nothing until{" "}
-                        {new Date(date[0].startDate).toLocaleDateString()}
-                      </p>
-                    </small>
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-          </TableContainer>
+                      {roomSwitch(totalGuests)}
+                    </TableCell>
+                    <TableCell style={{ verticalAlign: "top" }}>
+                      {[...Array(totalGuests)].map((_, i) => (
+                        <FontAwesomeIcon key={i} icon={faPerson} />
+                      ))}
+                    </TableCell>
+                    <TableCell style={{ verticalAlign: "top" }}>
+                      € {totalPrice}
+                    </TableCell>
+                    <TableCell style={{ verticalAlign: "top" }}>
+                      <FontAwesomeIcon
+                        icon={faCoffee}
+                        width={"1em"}
+                        className={"text-success"}
+                      />{" "}
+                      <span className={"text-success"}>
+                        <b>{detail.badgeBreakfast}</b>
+                      </span>
+                      <br />
+                      <FontAwesomeIcon
+                        icon={faCircleCheck}
+                        width={"1em"}
+                        className={"text-success"}
+                      />{" "}
+                      <span className={"text-success"}>
+                        <b>{detail.badgeCancellation(dayBeforeStartDate)}</b>
+                      </span>
+                      <br />
+                      &nbsp;•&nbsp;&nbsp;
+                      {detail.badgePayLater(startDate)}
+                    </TableCell>
+                    <TableCell style={{ verticalAlign: "top" }}>
+                      <input
+                        type="index"
+                        className="lsOptionInput"
+                        placeholder={guests.room.toString()}
+                        disabled={true}
+                      />
+                    </TableCell>
+                    <TableCell style={{ verticalAlign: "top" }}>
+                      {pluralize(guests.room, "room")} for <br />
+                      <h4>€ {totalPrice}</h4>
+                      <span className="siTaxOp">Includes taxes and fees</span>
+                      <br />
+                      <br />
+                      <button
+                        className="w-100 btn btn-primary"
+                        onClick={handleClick}
+                      >
+                        Reserve
+                      </button>
+                      <br />
+                      <br />
+                      <small>
+                        <p>
+                          <b>{detail.packageTitle}</b>
+                        </p>
+                        <p>
+                          <FontAwesomeIcon icon={faCoffee} width={"1em"} />{" "}
+                          <span>
+                            <b>{detail.badgeBreakfast}</b>
+                          </span>
+                        </p>
+                        <p>
+                          <FontAwesomeIcon icon={faCircleCheck} width={"1em"} />{" "}
+                          <span>
+                            <b>
+                              {detail.badgeCancellation(dayBeforeStartDate)}
+                            </b>
+                          </span>
+                        </p>
+                        <p>
+                          &nbsp;•&nbsp;&nbsp;
+                          {detail.badgePayLater(startDate)}
+                        </p>
+                      </small>
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
         </div>
         <Footer />
       </div>
     </div>
   );
-};
-
-export default Detail;
+}
