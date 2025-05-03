@@ -2,7 +2,8 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Model } from "survey-core";
 import { Survey } from "survey-react-ui";
-import "survey-core/defaultV2.min.css"; // Default SurveyJS CSS (replaces jquery_defaultV2.css)
+import "survey-core/defaultV2.min.css";
+import { storeJson } from "src/lib/client";
 
 const Demographics: React.FC = () => {
   const navigate = useNavigate();
@@ -302,11 +303,7 @@ const Demographics: React.FC = () => {
     const results = JSON.stringify(sender.data);
     console.log("Survey results:", results);
 
-    fetch("http://127.0.0.1:8000/store-json/demographics", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: results,
-    })
+    storeJson(results, "demographics")
       .then((response) => {
         if (!response.ok) throw new Error("Failed to submit survey");
         return response.json();

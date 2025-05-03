@@ -36,11 +36,10 @@ export default function AddressForm() {
   };
 
   useEffect(() => {
-    sendEvent("personalDetails/start");
+    // sendEvent("personalDetails/start");
   }, []);
 
   useEffect(() => {
-    console.log(`${firstName} ${lastName}`.trim());
     setFullName(`${firstName} ${lastName}`.trim());
   }, [firstName, lastName, setFullName]);
 

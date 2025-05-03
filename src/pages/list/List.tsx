@@ -25,12 +25,12 @@ function NotificationPermissionBanner() {
   const handleAccept = () => Notification.requestPermission().then(handleClose);
 
   const handleClose = () => {
-    sendEvent("confirmshaming/end");
+    sendEvent("notification/end");
     setAskedForNotificationPermission(true);
   };
 
   useEffect(() => {
-    if (!askedForNotificationPermission) sendEvent("confirmshaming/start");
+    if (!askedForNotificationPermission) sendEvent("notification/start");
   }, []);
 
   if (!askedForNotificationPermission)

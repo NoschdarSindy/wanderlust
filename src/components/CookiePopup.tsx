@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { askedForCookiesAtom } from "../lib/atoms";
 import { useRecoilState } from "recoil";
 import { sendEvent } from "src/lib/client";
+import { getDesignMode } from "src/lib/composables";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -22,8 +23,9 @@ export default function CookiePopup() {
   const [showMore, setShowMore] = useState(false);
   const [askedforCookies, setAskedForCookies] =
     useRecoilState(askedForCookiesAtom);
+  const d = getDesignMode();
 
-  const handleClose = (e: any, reason?: string) => {
+  const handleClose = (_?: any, reason?: string) => {
     if (reason === "backdropClick") return;
     sendEvent("cookies/end");
     setOpen(false);
@@ -35,51 +37,63 @@ export default function CookiePopup() {
       setTimeout(() => {
         setOpen(true);
         sendEvent("cookies/start");
+        if (d.isNone) handleClose();
       }, 800);
   }, []);
 
-  return (
-    <BootstrapDialog
-      onClose={handleClose}
-      aria-labelledby="customized-dialog-title"
-      open={open}
-      disableScrollLock
-    >
-      <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
-        We Value Your Privacy
-      </DialogTitle>
-      <DialogContent dividers>
-        <Typography gutterBottom>
-          This website uses cookies to collect website performance and usage
-          data to provide better experiences and content. This may also include
-          showing you more relevant advertisements. By clicking "Accept", you
-          agree to this. You can learn more via our{" "}
-          <button className={"link-button"} style={{ color: "initial" }}>
-            privacy policy
-          </button>
-          .
-        </Typography>
-
-        {showMore && (
-          <Typography variant="body2" color="textSecondary" sx={{ mt: 2 }}>
-            Cookies help us analyze usage, personalize content, and improve our
-            marketing. We use both first-party and third-party cookies to
-            understand user behavior and serve relevant ads.
+  if (!d.isNone)
+    return (
+      <BootstrapDialog
+        onClose={handleClose}
+        aria-labelledby="customized-dialog-title"
+        open={open}
+        disableScrollLock
+      >
+        <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
+          We Value Your Privacy
+        </DialogTitle>
+        <DialogContent dividers>
+          <Typography gutterBottom>
+            This website uses cookies to collect website performance and usage
+            data to provide better experiences and content. This may also
+            include showing you more relevant advertisements. By clicking
+            "Accept", you agree to this. You can learn more via our{" "}
+            <button className={"link-button"} style={{ color: "initial" }}>
+              privacy policy
+            </button>
+            .
           </Typography>
-        )}
-      </DialogContent>
-      <DialogActions>
-        <button onClick={() => setShowMore(true)} className="btn btn-secondary">
-          Learn more
-        </button>
-        <button
-          onClick={handleClose}
-          className="btn btn-primary"
-          style={{ backgroundColor: "#0071c2", borderColor: "#0071c2" }}
-        >
-          Accept all
-        </button>
-      </DialogActions>
-    </BootstrapDialog>
-  );
+
+          {showMore && (
+            <Typography variant="body2" color="textSecondary" sx={{ mt: 2 }}>
+              Cookies help us analyze usage, personalize content, and improve
+              our marketing. We use both first-party and third-party cookies to
+              understand user behavior and serve relevant ads.
+            </Typography>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <button onClick={() => setShowMore(true)} className="btn btn-light">
+            Learn more
+          </button>
+
+          {d.isFair && (
+            <button
+              onClick={handleClose}
+              className="btn btn-primary"
+              style={{ backgroundColor: "#0071c2", borderColor: "#0071c2" }}
+            >
+              Reject all
+            </button>
+          )}
+          <button
+            onClick={handleClose}
+            className="btn btn-primary"
+            style={{ backgroundColor: "#0071c2", borderColor: "#0071c2" }}
+          >
+            Accept all
+          </button>
+        </DialogActions>
+      </BootstrapDialog>
+    );
 }

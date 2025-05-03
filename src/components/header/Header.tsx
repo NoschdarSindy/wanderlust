@@ -83,6 +83,7 @@ const Header = ({ type }: { type?: string }) => {
 
   const handleOption = (name, operation) => {
     setCounts((prev) => {
+      if (s.isCars && counts[name] === 5 && operation === "i") return prev;
       return {
         ...prev,
         [name]: operation === "i" ? counts[name] + 1 : counts[name] - 1,

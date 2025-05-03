@@ -32,7 +32,7 @@ export default function ConfirmshamingPopup() {
 
   const handleClose = (_e: any, reason?: string) => {
     if (reason && reason === "backdropClick") return;
-    sendEvent("confirmshaming/end");
+    sendEvent("notification/end");
     setOpen(false);
     setConfirmshamingDone(true);
   };
@@ -41,7 +41,7 @@ export default function ConfirmshamingPopup() {
     if (!confirmshamingDone)
       setTimeout(() => {
         setOpen(true);
-        sendEvent("confirmshaming/start");
+        sendEvent("notification/start");
       }, 800);
   }, []);
 

@@ -110,7 +110,7 @@ export function useTotalPrice() {
   const mockIndex = useRecoilValue(mockIndexAtom);
   const singlePrice = s.mocks[mockIndex].price;
   const counts = useRecoilValue(countsAtom);
-  const factors = Object.keys(s.counts).map((c) => counts[c]);
+  const factors = s.isCars ? [1] : Object.keys(s.counts).map((c) => counts[c]);
 
   return (
     singlePrice *

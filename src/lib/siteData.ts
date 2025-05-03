@@ -223,7 +223,9 @@ const texts = {
     ],
     exploreButton: "Browse car rentals",
     searchButton: "Search cars",
-    counts: {},
+    counts: {
+      adult: "passenger",
+    },
     offersTitle: "Rental Deals",
     longStayTitle: "Drive longer, save more",
     longStayText: "Check out cars for extended rentals with special rates",

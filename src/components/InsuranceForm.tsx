@@ -28,7 +28,7 @@ export default function InsuranceForm() {
   );
 
   useEffect(() => {
-    sendEvent("sneakIntoBasket/start");
+    sendEvent("travelProtection/start");
   }, []);
 
   return (

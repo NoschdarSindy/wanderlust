@@ -6,9 +6,8 @@ import uvicorn
 from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from pylsl import StreamInfo, StreamOutlet, pylsl
-from typing import Optional
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from starlette.requests import Request
 from starlette.responses import JSONResponse
@@ -33,16 +32,15 @@ sites = [
 
 events = [
     "routeChange",
-    
     "app",
     "cookies",
     "geolocation",
-    "confirmshaming",
-    "personalDetails",
-    "sneakIntoBasket",
-    "creditCard",
+    "notification",
+    # "personalDetails",
+    "travelProtection",
+    "paymentMethod",
     "videoIdent",
-    "cameraPermission",
+    "camera",
 ]
 
 event_phases = ['start', 'end']
@@ -116,12 +114,12 @@ async def get_next_participant(custom_participant_number: Optional[int] = None):
     return {"pNumber": next_number, "pName": next_name}
 
 
-@app.post("/store-json/{filename_suffix}")
-async def store_json(data: dict, filename_suffix: str):
+@app.post("/store-json/{participant}/{filename_suffix}")
+async def store_json(data: dict, participant: str, filename_suffix: str):
     print('Storing data')
     try:
         datetime_string = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
-        folder = os.path.join(output_dir, participantName)
+        folder = os.path.join(output_dir, participant)
         os.makedirs(folder, exist_ok=True)
         filename = os.path.join(folder, f"{datetime_string}_{filename_suffix}.json")
 

@@ -5,6 +5,7 @@ import { domains } from "src/lib/studyData"; // Import Bootstrap CSS
 
 const Config = () => {
   const navigate = useNavigate();
+  const entries = JSON.parse(process.env.REACT_APP_ENTRIES);
 
   useEffect(() => {
     copySettingsUrl();
@@ -19,7 +20,7 @@ const Config = () => {
     navigator.clipboard
       .writeText(url)
       .then(() => console.log("URL copied to clipboard:", url))
-      .catch(() => alert("Unable to copy URL to clipboard"));
+      .catch(() => console.warn("Unable to copy URL to clipboard"));
   };
 
   const handleBeginStudy = () => {
@@ -28,7 +29,7 @@ const Config = () => {
 
   const getUrls = () => {
     return Object.values(domains).map((domain) => (
-      <p>
+      <p key={domain}>
         {generateSettingsUrl(domain)}{" "}
         <button onClick={() => copySettingsUrl(domain)}>
           Copy to clipboard
@@ -40,11 +41,12 @@ const Config = () => {
   return (
     <div className="m-5 p-xl-5">
       <p>Participant: {process.env.REACT_APP_PARTICIPANT}</p>
+      <pre>{entries.map(({ site, design }) => `${site}: ${design}\n`)}</pre>
       <p>
         Make sure and site data and permissions are reset before conducting the
         study. To check permissions, open a new tab and paste:
       </p>
-      <p>{getUrls()}</p>
+      <div>{getUrls()}</div>
       <p>
         <button className="btn btn-primary" onClick={handleBeginStudy}>
           Begin study

@@ -16,7 +16,7 @@ import { useRecoilValue } from "recoil";
 import {
   cameraAccessGrantedAtom,
   showSkipIdButtonAtom,
-  showSkipPaymentButtonAtom,
+  // showSkipPaymentButtonAtom,
 } from "src/lib/atoms";
 import IdForm from "../../components/IdForm";
 import { sendEvent } from "src/lib/client";
@@ -100,32 +100,41 @@ const Checkout = () => {
     if (e.target.checkValidity()) {
       switch (location.pathname) {
         case "/checkout/your-details":
-          sendEvent("personalDetails/end");
-          navigate(d.isNone ? "/checkout/summary" : "/checkout/insurance");
+          // sendEvent("personalDetails/end");
+          navigate(d.isNone ? "/summary" : "/checkout/travelProtection");
           break;
-        case "/checkout/insurance":
-          sendEvent("sneakIntoBasket/end");
+        case "/checkout/travelProtection":
+          sendEvent("travelProtection/end");
           navigate("/checkout/payment");
           break;
         case "/checkout/payment":
-          sendEvent("creditCard/end");
+          sendEvent("paymentMethod/end");
           navigate("/checkout/id" + (d.isFair ? "?briefing" : ""));
           break;
         case "/checkout/id":
           if (isBriefing) {
             navigate("/checkout/id");
           } else {
-            sendEvent("videoIdent/end");
-            sendEvent("app/end");
-            navigate("/summary");
+            endVideoIdent();
           }
           break;
-        // case "/checkout/summary"
-        //   navigate("/questionnaire");
-        //   navigate("/questionnaire");
         default:
           break;
       }
+    }
+  };
+
+  const endVideoIdent = () => {
+    sendEvent("videoIdent/end");
+    navigate("/summary");
+  };
+
+  const handleSkip = (e) => {
+    e.preventDefault();
+    if (isBriefing) {
+      endVideoIdent();
+    } else {
+      handleSubmit(e);
     }
   };
 
@@ -153,7 +162,7 @@ const Checkout = () => {
               <form onSubmit={handleSubmit}>
                 <Routes>
                   <Route path="/your-details" element={<AddressForm />} />
-                  <Route path="/insurance" element={<InsuranceForm />} />
+                  <Route path="/travelProtection" element={<InsuranceForm />} />
                   <Route path="/payment" element={<PaymentForm />} />
                   <Route path="/id" element={<IdForm />} />
                 </Routes>
@@ -172,7 +181,7 @@ const Checkout = () => {
                     {location.pathname.includes("/id") && (
                       <Zoom in={showSkipIdButton}>
                         <button
-                          onClick={handleSubmit}
+                          onClick={handleSkip}
                           className={`btn btn-${d.isFair ? "primary" : "light"}`}
                         >
                           Skip identification

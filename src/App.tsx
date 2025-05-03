@@ -17,13 +17,13 @@ import TaskPage from "src/pages/Task";
 import Favicon from "react-favicon";
 import siteData from "src/lib/siteData";
 import Success from "src/pages/success/Success";
+import ScrollToTop from "src/components/ScrollToTop";
 
 function App() {
   const location = useLocation();
   const [loading, setLoading] = useState(true);
   const showBackdrop = useRecoilValue(showBackdropAtom);
   const s = getSite();
-  const favicon = getImage("favicon");
   const itemNames = Object.values(siteData).map((s) => s.item_name);
 
   useEffect(() => {
@@ -40,7 +40,8 @@ function App() {
 
   return (
     <>
-      {!s.isStudy && <Favicon url={favicon} />}
+      <ScrollToTop />
+      {!s.isStudy && <Favicon url={getImage("favicon")} />}
       <div
         id={s.name}
         style={{

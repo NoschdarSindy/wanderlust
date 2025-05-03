@@ -18,7 +18,7 @@ export default function PaymentForm() {
   const fullName = useRecoilValue(fullNameAtom);
 
   useEffect(() => {
-    sendEvent("creditCard/start");
+    sendEvent("paymentMethod/start");
     // setTimeout(() => {
     //   setShowSkipPaymentButton(true);
     // }, 4000);

@@ -4,14 +4,14 @@ const events = [
   "app",
   "cookies",
   "geolocation",
-  "confirmshaming",
-  "personalDetails",
-  "sneakIntoBasket",
-  "creditCard",
+  "notification",
+  // "personalDetails",
+  "travelProtection",
+  "paymentMethod",
   "videoIdent",
-  "cameraPermission",
+  "camera",
 ] as const;
-type EventName = (typeof events)[number];
+export type EventName = (typeof events)[number];
 type EventPhase = "start" | "end";
 type EvenString = `${EventName}/${EventPhase}` | `routeChange/${string}`;
 
@@ -33,4 +33,12 @@ export const sendEvent = (eventString: EvenString) => {
     .catch((error) => {
       console.error(error);
     });
+};
+
+export const storeJson = (name, body) => {
+  return fetch(`http://127.0.0.1:8000/store-json/${name}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: body,
+  });
 };

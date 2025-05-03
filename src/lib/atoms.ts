@@ -73,6 +73,7 @@ export const fullNameAtom = atom({
 export const travelProtectionSelectedAtom = atom<string>({
   key: "travelProtectionSelected",
   default: process.env.REACT_APP_DESIGN === "dark" ? "yes" : "no",
+  effects_UNSTABLE: [persistAtom],
 });
 
 export const mockIndexAtom = atom<number>({
@@ -84,13 +85,13 @@ export const mockIndexAtom = atom<number>({
 export const askedForCookiesAtom = atom<boolean>({
   key: "askedForCookies",
   default: false,
+  effects_UNSTABLE: [persistAtom],
 });
 
 export const askedForNotificationPermissionAtom = atom<boolean>({
   key: "askedForNotificationPermission",
   default: false,
-  //TODO effects_UNSTABLE: [persistAtom],
-  // effects_UNSTABLE: [persistAtom],
+  effects_UNSTABLE: [persistAtom],
 });
 
 export const askedForLocationAtom = atom<boolean>({

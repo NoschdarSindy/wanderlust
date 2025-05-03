@@ -96,6 +96,7 @@ function spawnApp({
   design,
   port,
   pName,
+  entries,
   tasks,
   openBrowser,
 }: {
@@ -104,6 +105,7 @@ function spawnApp({
   design?: Design;
   port: number;
   pName?: string;
+  entries?: Entry[];
   tasks: Site[];
   openBrowser?: boolean;
 }) {
@@ -116,6 +118,7 @@ function spawnApp({
       NODE_OPTIONS: "--max_old_space_size=4096",
       PORT: String(port),
       REACT_APP_PARTICIPANT: pName,
+      REACT_APP_ENTRIES: JSON.stringify(entries),
       REACT_APP_SITE: site,
       REACT_APP_DESIGN: design,
       REACT_APP_CITY: currentCity,
@@ -144,6 +147,7 @@ function startApps({ pName, entries }: { pName: string; entries: Entry[] }) {
     port: 3000,
     pName,
     tasks,
+    entries,
     openBrowser: true,
   });
 

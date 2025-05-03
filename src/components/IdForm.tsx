@@ -28,7 +28,7 @@ export default function IdForm() {
   useEffect(() => {
     if (!isBriefing) {
       (async () => {
-        sendEvent("cameraPermission/start");
+        sendEvent("camera/start");
         try {
           const stream = await navigator.mediaDevices.getUserMedia({
             video: true,
@@ -36,7 +36,7 @@ export default function IdForm() {
           setCameraAccessGranted(true);
         } catch (e) {
         } finally {
-          sendEvent("cameraPermission/end");
+          sendEvent("camera/end");
         }
       })();
     }

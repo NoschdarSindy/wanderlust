@@ -5,6 +5,7 @@ import Footer from "src/components/footer/Footer";
 import { CheckCircle, Plane, Home, Car } from "lucide-react";
 import { domains } from "src/lib/studyData";
 import LoadingOverlay from "src/components/LoadingOverlay";
+import { sendEvent } from "src/lib/client";
 
 export default function Success() {
   const s = getSite();
@@ -18,6 +19,7 @@ export default function Success() {
     }, 3000);
 
     const redirectTimeout = setTimeout(() => {
+      sendEvent("app/end");
       window.close();
       console.log("Redirecting to the homepage...");
     }, 6000);
@@ -175,9 +177,9 @@ export default function Success() {
                   {d.isNone
                     ? "Your request has been received, and we’re currently processing it. You’ll receive a confirmation email within 24 hours."
                     : s.isHotels
-                      ? "A confirmation of your reservation has been sent to your inbox."
+                      ? "A confirmation of your reservation will be sent to your inbox."
                       : s.isFlights
-                        ? "Your e-ticket and flight details have been sent to your email."
+                        ? "Your e-ticket and flight details will be sent to your email."
                         : "Pickup instructions and rental details are on the way."}
                 </span>
                 <br />
