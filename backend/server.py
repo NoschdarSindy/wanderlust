@@ -23,7 +23,6 @@ app.add_middleware(
 )
 
 output_dir = Path("output")
-output_dir.mkdir(exist_ok=True)
 participantName = "unknown"
 
 sites = [
@@ -63,6 +62,7 @@ async def get_next_participant(custom_participant_number: Optional[int] = None):
     """Generate the next participant index and name, create a folder for them."""
 
     # Read all folder names
+    output_dir.mkdir(exist_ok=True)
     dirnames = {d for d in os.listdir(output_dir) if os.path.isdir(os.path.join(output_dir, d))}
     # Extract numbers from folder names that start with digits
     numbers = set()

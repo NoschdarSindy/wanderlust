@@ -16,6 +16,7 @@ import Demographics from "src/pages/Demographics";
 import TaskPage from "src/pages/Task";
 import Favicon from "react-favicon";
 import siteData from "src/lib/siteData";
+import Success from "src/pages/success/Success";
 
 function App() {
   const location = useLocation();
@@ -64,6 +65,8 @@ function App() {
               <Route key={name} path={`/${name}`} element={<Detail />} />
             ))}
             <Route path="/checkout/*" element={<Checkout />} />
+            <Route path="/summary" element={<Detail />} />
+            <Route path="/success" element={<Success />} />
             <Route path="/questionnaire" element={<Questionnaire />} />
           </Routes>
         )}

@@ -1,6 +1,7 @@
 import {
   getImage,
   useIsResultsPage,
+  useIsSummaryPage,
   useMock,
   useTotalPrice,
 } from "src/lib/composables";
@@ -21,16 +22,21 @@ export default function FlightCard(props: {
   const locations = useRecoilValue(locationsAtom);
   const locationsArray = Object.values(locations);
   const isResults = useIsResultsPage();
+  const isSummary = useIsSummaryPage();
+  const totalPrice = useTotalPrice();
   const getAirportCode = (location: string) =>
     /.*\((\w+)\)/.exec(location)?.[1];
   const getAirportName = (location: string) => /(.*)\s\(/.exec(location)?.[1];
 
   return (
-    <div className="searchItem">
-      <div className="flightInfo">
+    <div className="searchItem hotelDetailsTexts">
+      <div className={`flightInfo`}>
         <div className={"flightRouteContainer"}>
           {["", "Return"].map((suffix, i) => (
-            <div className="flightRoute" key={i}>
+            <div
+              className={`flightRoute ${isSummary ? "summary" : ""}`}
+              key={i}
+            >
               <div className="flightAirline">
                 <img src={thumbnail} alt="" />
               </div>
@@ -61,14 +67,18 @@ export default function FlightCard(props: {
             </div>
           ))}
         </div>
-        <div className={"separator"}></div>
-        <div className="flightDetails">
-          <div className="flightPrice">€ {useTotalPrice()}</div>
-          <button onClick={onClick} className="btn btn-primary">
-            {isResults ? "Select" : "Reserve"}{" "}
-            <FontAwesomeIcon icon={faAngleRight} size="xs" />
-          </button>
-        </div>
+        {!isSummary && (
+          <>
+            <div className={"separator"}></div>
+            <div className="flightDetails">
+              <div className="flightPrice">€ {totalPrice}</div>
+              <button onClick={onClick} className="btn btn-primary">
+                {isResults ? "Select" : "Reserve"}{" "}
+                <FontAwesomeIcon icon={faAngleRight} size="xs" />
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

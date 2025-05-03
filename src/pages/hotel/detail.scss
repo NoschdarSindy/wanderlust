@@ -5,13 +5,18 @@
   margin-top: 20px;
 }
 
-.hotelWrapper {
+.hotelWrapper,
+.hotelWrapperChild {
   width: 100%;
   max-width: 1024px;
   display: flex;
   flex-direction: column;
   gap: 10px;
   position: relative;
+}
+
+#flights .hotelWrapperChild {
+  flex-direction: row;
 }
 
 .bookNow {
@@ -90,6 +95,7 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
+  border-radius: 5px;
 }
 
 .hotelDetailsPrice > h1 {

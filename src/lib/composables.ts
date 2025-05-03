@@ -162,6 +162,7 @@ export const useWebSocketChannel: () => {
 };
 
 export const useIsResultsPage = () => useLocation().pathname === "/results";
+export const useIsSummaryPage = () => useLocation().pathname === "/summary";
 
 export const useFormatDateRange = () => {
   const [{ startDate, endDate }] = useRecoilValue(datesAtom);

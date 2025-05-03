@@ -7,7 +7,10 @@
     margin: 15px 0;
     display: grid;
     gap: 30px;
-    width: 70%;
+
+    &:not(:has(.summary)) {
+      width: 70%;
+    }
   }
 
   .separator {
@@ -19,6 +22,10 @@
     justify-content: space-between;
     align-items: center;
     padding: 7px 0;
+
+    &.summary {
+      gap: 85px;
+    }
 
     .flightSegment {
       display: flex;

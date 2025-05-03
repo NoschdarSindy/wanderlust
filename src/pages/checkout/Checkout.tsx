@@ -117,9 +117,12 @@ const Checkout = () => {
           } else {
             sendEvent("videoIdent/end");
             sendEvent("app/end");
-            navigate("/questionnaire");
+            navigate("/summary");
           }
           break;
+        // case "/checkout/summary"
+        //   navigate("/questionnaire");
+        //   navigate("/questionnaire");
         default:
           break;
       }

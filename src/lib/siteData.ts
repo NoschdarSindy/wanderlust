@@ -252,8 +252,8 @@ const texts = {
       pageTitle: ({ name }) => `Your stay at ${name}`,
       introLine: ({ name }) =>
         `${name} has accommodations with air conditioning and free WiFi.\n\nA buffet breakfast is served daily. The restaurant is open from 19:00 to 22:00 Monday to Friday.\n\nFree private parking is available.`,
-      locationNote: ({ metersFromCenter }) =>
-        `Good location – ${metersFromCenter} from center`,
+      locationNote: () =>
+        `ⓘ All cars come with basic insurance and flexible rental terms`,
       pricePromo: "✓ 400 km included",
       availabilityHeading: "Availability",
       badgeBreakfast: "Good breakfast included",

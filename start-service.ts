@@ -15,7 +15,7 @@ import * as process from "node:process";
 
 let prod = 1;
 const customParticipantNumber = 1; // <=0 = none, >0 = custom
-const openBrowser = 1;
+const openBrowser = 0;
 const currentCity = "Berlin";
 
 const minPort = 3001; // 3000 is reserved for the study UI

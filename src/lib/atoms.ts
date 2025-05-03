@@ -70,7 +70,7 @@ export const fullNameAtom = atom({
   effects_UNSTABLE: [persistAtom],
 });
 
-export const travelProtectionSelectedAtom = atom({
+export const travelProtectionSelectedAtom = atom<string>({
   key: "travelProtectionSelected",
   default: process.env.REACT_APP_DESIGN === "dark" ? "yes" : "no",
 });
