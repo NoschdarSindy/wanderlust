@@ -1,6 +1,8 @@
 {
   "compilerOptions": {
+    "allowImportingTsExtensions": true,
     "target": "ES2024",
+    "module": "esnext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "esModuleInterop": true,
@@ -9,5 +11,6 @@
       "src/*": ["src/*"]
     },
     "jsx": "react-jsx",
+    "types": ["vite/client"]
   }
 }

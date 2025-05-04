@@ -4,7 +4,6 @@ import { locationsAtom, countsAtom, mockIndexAtom } from "src/lib/atoms";
 import { pluralize } from "src/lib/util";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleRight, faCheck } from "@fortawesome/free-solid-svg-icons";
-import { useNavigate } from "react-router-dom";
 import {
   useTotalPrice,
   getImage,
@@ -14,6 +13,7 @@ import {
 } from "src/lib/composables";
 import FlightCard from "src/components/flightCard/FlightCard";
 import CarCard from "src/components/carCard/CarCard";
+import { useCustomNavigate } from "src/components/NavigationProvider.tsx";
 
 function HotelCard(props: {
   onClick: () => void;
@@ -84,14 +84,14 @@ const SearchItem = ({ index }) => {
   const guests = useRecoilValue(countsAtom);
   const locations = useRecoilValue(locationsAtom);
   const setItemIndex = useSetRecoilState(mockIndexAtom);
-  const navigate = useNavigate();
+  const navigateDelayed = useCustomNavigate();
   const s = getSite();
   const thumbnail = getImage("thumbnails")[index];
   const mock = useMock(index);
 
   const handleClick = () => {
     setItemIndex(index);
-    navigate(`/${s.item_name}`);
+    navigateDelayed(`/${s.item_name}`);
   };
 
   return (

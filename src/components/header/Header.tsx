@@ -14,6 +14,7 @@ import { formatDateRange, getCssVariable, pluralize } from "src/lib/util";
 import { getLocationsData, getSite, getImage } from "src/lib/composables";
 import { isEqual } from "date-fns";
 import { ClickAwayListener } from "@mui/base";
+import { useCustomNavigate } from "src/components/NavigationProvider.tsx";
 
 const renderCounterSummary = (counts, countLabels) =>
   Object.entries(countLabels)
@@ -56,7 +57,7 @@ const Header = ({ type }: { type?: string }) => {
   const [counts, setCounts] = useRecoilState(countsAtom);
   const { options: locationOptions } = getLocationsData();
 
-  const navigate = useNavigate();
+  const navigateDelayed = useCustomNavigate();
   const s = getSite();
   const headerImg = getImage("header");
 
@@ -92,7 +93,7 @@ const Header = ({ type }: { type?: string }) => {
   };
 
   const handleSearch = () => {
-    navigate("/results");
+    navigateDelayed("/results");
   };
 
   return (

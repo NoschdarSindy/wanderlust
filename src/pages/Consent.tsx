@@ -1,16 +1,17 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { useCustomNavigate } from "src/components/NavigationProvider.tsx";
 
 const ConsentForm: React.FC = () => {
-  const navigate = useNavigate();
+  const navigateDelayed = useCustomNavigate();
   const [consentGiven, setConsentGiven] = useState(false);
   const [dataConsentGiven, setDataConsentGiven] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (consentGiven && dataConsentGiven) {
-      navigate("/demographics"); // Redirect to demographics page
+      navigateDelayed("/demographics"); // Redirect to demographics page
     } else {
       alert("Please agree to all required terms before submitting.");
     }
@@ -105,13 +106,14 @@ const ConsentForm: React.FC = () => {
               <p>
                 Your participation in this user study is completely voluntary.
                 You will be one of approximately 10–12 people being tested for
-                this research. You will receive 1 EUR as compensation for your
-                participation. You may withdraw and discontinue participation at
-                any time without penalty or losing the compensation. If you
-                decline to participate or withdraw from the user study, no one
-                on the campus will be told. The investigator may withdraw you
-                from this research if continued participation will not meet the
-                study goals or affect your well-being.
+                this research. You will receive X{/*TODO*/}
+                EUR as compensation for your participation. You may withdraw and
+                discontinue participation at any time without penalty or losing
+                the compensation. If you decline to participate or withdraw from
+                the user study, no one on the campus will be told. The
+                investigator may withdraw you from this research if continued
+                participation will not meet the study goals or affect your
+                well-being.
               </p>
             </div>
             <div className="pageBreak">

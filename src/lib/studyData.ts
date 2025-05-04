@@ -1,5 +1,3 @@
-const city = process.env.REACT_APP_CITY;
-
 export type Site = (typeof sites)[number];
 export type Design = (typeof designs)[number];
 
@@ -7,9 +5,9 @@ const sites = ["hotels", "flights", "cars"] as const;
 const designs = ["dark", "fair", "none"] as const;
 
 const domains = {
-  hotels: "hotels.travel",
-  flights: "flights.travel",
-  cars: "cars.travel",
+  hotels: "wanderlust.travel",
+  flights: "flyskyway.com",
+  cars: "overdrive.cars",
 } satisfies Record<Site, string>;
 
 const sitesMap = {
@@ -38,9 +36,9 @@ const taskInfo = Object.fromEntries(
     site,
     {
       todo: {
-        hotels: "reserve any hotel in",
-        flights: `book a round-trip flight from ${city} to`,
-        cars: "book a rental car in",
+        hotels: () => "reserve any hotel in",
+        flights: (city) => `book a round-trip flight from ${city} to`,
+        cars: () => "book a rental car in",
       }[site],
       additionalText: {
         hotels:
@@ -52,6 +50,9 @@ const taskInfo = Object.fromEntries(
       domain: domains[site],
     },
   ]),
-) as Record<Site, { todo: string; additionalText: string; domain: string }>;
+) as Record<
+  Site,
+  { todo: (city?) => string; additionalText: string; domain: string }
+>;
 
 export { sites, designs, domains, sitesMap, designsMap, latinSquare, taskInfo };

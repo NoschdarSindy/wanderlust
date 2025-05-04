@@ -15,7 +15,7 @@ export type EventName = (typeof events)[number];
 type EventPhase = "start" | "end";
 type EvenString = `${EventName}/${EventPhase}` | `routeChange/${string}`;
 
-const participant = process.env.REACT_APP_PARTICIPANT;
+const participant = VITE_PARTICIPANT;
 const s = getSite();
 const { design } = getDesignMode();
 
@@ -35,8 +35,8 @@ export const sendEvent = (eventString: EvenString) => {
     });
 };
 
-export const storeJson = (name, body) => {
-  return fetch(`http://127.0.0.1:8000/store-json/${name}`, {
+export const storeJson = (body, name) => {
+  return fetch(`http://127.0.0.1:8000/store-json/${participant}/${name}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: body,

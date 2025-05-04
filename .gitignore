@@ -30,3 +30,5 @@ start-service.js
 notes
 _browser-profile
 output
+
+backend/pycache

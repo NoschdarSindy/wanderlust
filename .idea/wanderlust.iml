@@ -6,6 +6,7 @@
       <excludeFolder url="file://$MODULE_DIR$/.idea" />
       <excludeFolder url="file://$MODULE_DIR$/_browser-profile" />
       <excludeFolder url="file://$MODULE_DIR$/venv" />
+      <excludeFolder url="file://$MODULE_DIR$/.venv" />
       <excludePattern pattern="*jquery*" />
     </content>
     <orderEntry type="inheritedJdk" />

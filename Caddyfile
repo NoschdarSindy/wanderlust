@@ -1,15 +1,14 @@
-{
-	local_certs
-}
-
-hotels.travel {
-	reverse_proxy localhost:3000
-}
-
-flights.travel {
+wanderlust.travel {
+	tls C:/Users/Nosch/Desktop/wanderlust/certs/cert.pem C:/Users/Nosch/Desktop/wanderlust/certs/key.pem
 	reverse_proxy localhost:3001
 }
 
-cars.travel {
+flyskyway.com {
+	tls C:/Users/Nosch/Desktop/wanderlust/certs/cert.pem C:/Users/Nosch/Desktop/wanderlust/certs/key.pem
 	reverse_proxy localhost:3002
+}
+
+overdrive.cars {
+	tls C:/Users/Nosch/Desktop/wanderlust/certs/cert.pem C:/Users/Nosch/Desktop/wanderlust/certs/key.pem
+	reverse_proxy localhost:3003
 }

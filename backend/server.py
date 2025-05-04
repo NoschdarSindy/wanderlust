@@ -2,15 +2,17 @@ import json
 import os
 import re
 from datetime import datetime
+from pathlib import Path
+from typing import Dict, List, Optional
+
 import uvicorn
 from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from pylsl import StreamInfo, StreamOutlet, pylsl
-from pathlib import Path
-from typing import Dict, List, Optional
-
 from starlette.requests import Request
-from starlette.responses import JSONResponse
+
+# logging.basicConfig(level=logging.DEBUG)
+# logger = logging.getLogger(__name__)
 
 app = FastAPI()
 app.add_middleware(
@@ -21,7 +23,7 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
-output_dir = Path("output")
+output_dir = Path("C:/Users/Nosch/Desktop/wanderlust/output")
 participantName = "unknown"
 
 sites = [
@@ -48,7 +50,6 @@ event_phases = ['start', 'end']
 info = StreamInfo("Frontend Events", "Markers", 1, 0, 'string', 'frontend')
 outlet = StreamOutlet(info)
 print("✅  LSL outlet ready — Ready to send data.")
-
 
 @app.get("/")
 async def hello():
@@ -118,10 +119,11 @@ async def get_next_participant(custom_participant_number: Optional[int] = None):
 async def store_json(data: dict, participant: str, filename_suffix: str):
     print('Storing data')
     try:
-        datetime_string = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
+        datetime_string = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         folder = os.path.join(output_dir, participant)
         os.makedirs(folder, exist_ok=True)
         filename = os.path.join(folder, f"{datetime_string}_{filename_suffix}.json")
+        print(f"Storing data in {filename}")
 
         with open(filename, "w") as file:
             json.dump(data, file, indent=2)
@@ -143,15 +145,15 @@ async def get_event(request: Request, participant: str, site: str, design: str, 
     if event != "routeChange" and route_or_event_phase not in event_phases:
         raise HTTPException(status_code=404, detail="Specify start or end for " + event)
 
-    marker_name = event + '-' + route_or_event_phase
-    query_string = request.url.query
-    if query_string:
-        marker_name += f"?{query_string}"
+    full_path = request.url.path
+    if request.url.query:
+        full_path += f"?{request.url.query}"
 
-    outlet.push_sample([marker_name], pylsl.local_clock())
-    print('Pushed ' + marker_name)
+    # Push the full path to the LSL stream
+    outlet.push_sample([full_path], pylsl.local_clock())
+    print(f"Pushed {full_path}")
 
-    return {"message": "[BE] Pushed " + marker_name + " to stream."}
+    return {"message": f"[BE] Pushed {full_path} to stream."}
 
 class ConnectionManager:
     def __init__(self):
@@ -197,3 +199,11 @@ async def websocket_endpoint(websocket: WebSocket, channel: str):
 
 if __name__ == "__main__":
     uvicorn.run("server:app", host="127.0.0.1", port=8000, reload=True)
+
+# @app.middleware("http")
+# async def catch_all_exceptions(request: Request, call_next):
+#     try:
+#         return await call_next(request)
+#     except Exception as e:
+#         print(f"🔥 Unhandled Exception: {e}")
+#         return JSONResponse(status_code=500, content={"detail": "Internal Server Error"})

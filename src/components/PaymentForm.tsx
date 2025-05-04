@@ -6,7 +6,7 @@ import Checkbox from "@mui/material/Checkbox";
 import Radio from "@mui/material/Radio";
 import { Fragment, useEffect } from "react";
 import { showSkipPaymentButtonAtom, fullNameAtom } from "../lib/atoms";
-import { useSetRecoilState, useRecoilValue } from "recoil";
+import { useSetRecoilState, useRecoilValue, useRecoilState } from "recoil";
 import { Accordion, AccordionDetails, AccordionSummary } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { sendEvent } from "src/lib/client";

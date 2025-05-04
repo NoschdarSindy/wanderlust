@@ -1,11 +1,11 @@
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import Home from "./pages/home/Home";
 import List from "./pages/list/List";
 import Checkout from "./pages/checkout/Checkout";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Questionnaire from "./pages/questionnaire/Questionnaire";
 import Detail from "./pages/hotel/Detail";
-import { getSite, getImage } from "src/lib/composables";
+import { getImage, getSite } from "src/lib/composables";
 import { showBackdropAtom } from "src/lib/atoms";
 import { useRecoilValue } from "recoil";
 import { Backdrop } from "@mui/material";
@@ -21,22 +21,15 @@ import ScrollToTop from "src/components/ScrollToTop";
 
 function App() {
   const location = useLocation();
-  const [loading, setLoading] = useState(true);
   const showBackdrop = useRecoilValue(showBackdropAtom);
   const s = getSite();
   const itemNames = Object.values(siteData).map((s) => s.item_name);
 
   useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-      if (!s.isStudy)
-        sendEvent(`routeChange/${location.pathname + location.search}`);
-    }, 500);
-  }, [location]);
-
-  useEffect(() => {
-    setLoading(true);
-  }, [location]);
+    if (!s.isStudy) {
+      sendEvent(`routeChange/${location.pathname + location.search}`);
+    }
+  }, [location, s.isStudy]);
 
   return (
     <>
@@ -46,17 +39,17 @@ function App() {
         id={s.name}
         style={{
           ...(showBackdrop && { pointerEvents: "none", userSelect: "none" }),
-          ...(loading && { opacity: 0, pointerEvents: "none" }),
+          position: "relative",
         }}
       >
         <title>{s.title}</title>
-
         {s.isStudy ? (
           <Routes>
-            <Route path="/config" element={<Config />} />
+            <Route path="/" element={<Config />} />
             <Route path="/consent" element={<ConsentForm />} />
             <Route path="/demographics" element={<Demographics />} />
             <Route path="/task" element={<TaskPage />} />
+            <Route path="/questionnaire" element={<Questionnaire />} />
           </Routes>
         ) : (
           <Routes>
@@ -68,10 +61,8 @@ function App() {
             <Route path="/checkout/*" element={<Checkout />} />
             <Route path="/summary" element={<Detail />} />
             <Route path="/success" element={<Success />} />
-            <Route path="/questionnaire" element={<Questionnaire />} />
           </Routes>
         )}
-
         <Backdrop
           transitionDuration={500}
           sx={{

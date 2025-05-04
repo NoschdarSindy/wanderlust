@@ -70,9 +70,7 @@ export default function InsuranceForm() {
                   style={{ width: 92, height: 92, borderRadius: 10 }}
                 />
                 <Typography>{label}</Typography>
-                <Typography color="text.secondary" fontWeight="bold">
-                  {price}
-                </Typography>
+                <Typography fontWeight="bold">{price}</Typography>
                 <Radio
                   checked={selectedOption === value}
                   value={value}

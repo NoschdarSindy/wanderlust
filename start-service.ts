@@ -1,30 +1,32 @@
 import { execSync, spawn } from "child_process";
 import { once } from "events";
 import { resolve } from "path";
-import { writeFileSync } from "fs";
+import { existsSync, mkdirSync, rmSync, writeFileSync } from "fs";
 import fetch from "node-fetch";
 import {
-  domains,
-  sitesMap,
-  latinSquare,
-  designsMap,
-  Site,
   Design,
-} from "./src/lib/studyData";
+  designsMap,
+  domains,
+  latinSquare,
+  Site,
+  sitesMap,
+} from "./src/lib/studyData.ts";
 import * as process from "node:process";
 
-let prod = 1;
 const customParticipantNumber = 1; // <=0 = none, >0 = custom
-const openBrowser = 0;
+const openfakeSites = 0;
+const certs = 1;
+const kioskMode = 1;
 const currentCity = "Berlin";
 
 const minPort = 3001; // 3000 is reserved for the study UI
 const maxPort = 3003;
-const isWin = process.platform === "win32";
-const shell = isWin ? "cmd.exe" : "bash";
+const shell = "cmd.exe";
 const caddy = "caddy.exe";
 const caddyfile = resolve("Caddyfile");
-if (!isWin) prod = 0;
+const certsDir = resolve("certs");
+const certPath = resolve(certsDir, "cert.pem");
+const keyPath = resolve(certsDir, "key.pem");
 
 interface ParticipantResponse {
   pNumber: number;
@@ -36,39 +38,44 @@ type Entry = ReturnType<typeof getCounterbalancedEntries>[number];
   const { pNumber, pName } = await createNextParticipant();
   const entries = getCounterbalancedEntries(pNumber);
 
-  if (prod) {
+  if (certs) {
+    // generateCertificates(); // run only once if domains change, then add to trust store and comment out again
     generateCaddyfile();
     startCaddy();
   }
 
+  // await new Promise((resolve) => setTimeout(resolve, 1000000));
   killPorts();
   startApps({ pName, entries });
 
-  if (openBrowser) {
-    await startupComplete();
-    openApps();
-  }
+  await startupComplete();
+  openBrowser();
 })();
 
 async function createNextParticipant(): Promise<ParticipantResponse> {
-  try {
-    const response = await fetch(
-      `http://127.0.0.1:8000/create-participant/${customParticipantNumber}`,
-      {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-      },
-    );
+  while (true) {
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:8000/create-participant/${customParticipantNumber}`,
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        },
+      );
 
-    if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+      if (!response.ok) {
+        throw new Error(
+          `HTTP error! Status: ${response.status}, ${response.statusText}`,
+        );
+      }
 
-    const data = (await response.json()) as ParticipantResponse;
-    console.log(`✅  Received participant with name ${data.pName}`);
-
-    return data;
-  } catch (error) {
-    console.error("❌ Error fetching next participant:", error);
-    throw error;
+      const data = (await response.json()) as ParticipantResponse;
+      console.log(`✅ Received participant with name ${data.pName}`);
+      return data;
+    } catch (error) {
+      console.error("❌ Failed to fetch participant, retrying in 500ms...");
+      await new Promise((resolve) => setTimeout(resolve, 500));
+    }
   }
 }
 
@@ -98,7 +105,6 @@ function spawnApp({
   pName,
   entries,
   tasks,
-  openBrowser,
 }: {
   site: string;
   domain?: string;
@@ -107,32 +113,24 @@ function spawnApp({
   pName?: string;
   entries?: Entry[];
   tasks: Site[];
-  openBrowser?: boolean;
 }) {
   console.log(`🚀 Starting ${site} site on port ${port}...`);
-  spawn(shell, [isWin ? "/c" : "-c", "react-scripts start"], {
+
+  spawn(shell, ["/c", "vite"], {
     stdio: "inherit",
     env: {
       ...process.env,
       CHOKIDAR_USEPOLLING: "true",
       NODE_OPTIONS: "--max_old_space_size=4096",
       PORT: String(port),
-      REACT_APP_PARTICIPANT: pName,
-      REACT_APP_ENTRIES: JSON.stringify(entries),
-      REACT_APP_SITE: site,
-      REACT_APP_DESIGN: design,
-      REACT_APP_CITY: currentCity,
-      REACT_APP_TASKS: tasks.join(),
-      BROWSER: openBrowser ? `http://localhost:${port}/config` : "none",
-      ...(prod
-        ? {
-            HOST: domain,
-            WDS_SOCKET_PORT: String(port),
-            WDS_SOCKET_HOST: "localhost",
-            WDS_SOCKET_PROTOCOL: "wss",
-            CI: "true",
-          }
-        : {}),
+      VITE_PARTICIPANT: pName ?? "",
+      VITE_ENTRIES: JSON.stringify(entries ?? []),
+      VITE_SITE: site,
+      VITE_DESIGN: design ?? "",
+      VITE_CITY: currentCity,
+      VITE_TASKS: tasks.join(","),
+      VITE_HOST: domain ?? "localhost",
+      BROWSER: "none",
     },
   });
 }
@@ -148,7 +146,6 @@ function startApps({ pName, entries }: { pName: string; entries: Entry[] }) {
     pName,
     tasks,
     entries,
-    openBrowser: true,
   });
 
   // Other apps
@@ -159,48 +156,100 @@ function startApps({ pName, entries }: { pName: string; entries: Entry[] }) {
 }
 
 async function startupComplete() {
-  const urls = Object.values(domains).map((domain, i) =>
-    prod ? `https://${domain}` : `http://localhost:${minPort + i}`,
+  const urls = Object.values(domains).map(
+    (domain, i) => `http://localhost:${minPort + i}`,
   );
   console.log("🔐 Waiting for apps to be ready...");
 
-  const proc = spawn(
-    shell,
-    [isWin ? "/c" : "-c", `npx wait-on ${urls.join(" ")}`],
-    { stdio: "inherit", env: process.env },
-  );
+  const proc = spawn(shell, ["/c", `npx wait-on ${urls.join(" ")}`], {
+    stdio: "inherit",
+    env: process.env,
+  });
   await once(proc, "exit");
   console.log("✅ Apps are ready.");
 }
 
 // === Open apps in browser
-function openApps() {
-  const urls = Object.values(domains)
-    .map((domain, i) =>
-      prod ? `https://${domain}` : `http://localhost:${minPort + i}`,
-    )
-    .join(" ");
-  spawn(
-    shell,
-    [
-      isWin ? "/c" : "-c",
-      isWin ? `start chrome ${urls}` : `open -a "Google Chrome" ${urls}`,
-    ],
-    { stdio: "inherit" },
-  );
+function openBrowser() {
+  const profileDir = resolve("_browser-profile");
+  if (existsSync(profileDir)) {
+    try {
+      rmSync(profileDir, { recursive: true, force: true });
+      console.log(`🗑️ Deleted browser profile directory: ${profileDir}`);
+    } catch (error) {
+      console.error(`❌ Failed to delete browser profile directory: ${error}`);
+      process.exit(1);
+    }
+  }
+
+  let urls = [
+    "http://localhost:3000",
+    ...(openfakeSites
+      ? Object.values(domains).map((domain, i) =>
+          certs ? `https://${domain}` : `http://localhost:${minPort + i}`,
+        )
+      : []),
+  ];
+  const urlStr = urls.join(" ");
+
+  const chromeOptions = kioskMode
+    ? [
+        // "--kiosk",
+        "--remote-debugging-port=9222",
+        "--no-first-run",
+        "--new-window",
+        `--user-data-dir=${profileDir}`,
+        "--disable-extensions",
+        "--no-default-browser-check",
+        "--disable-restore-session-state",
+        "--disable-popup-blocking",
+        "--disable-features=PaymentRequest,AutofillSaveCardPrompt,Translate,PrivacySandboxPrompt",
+        "--no-experiments",
+        "--disable-background-networking",
+        "--disable-background-apps",
+        "--disable-sync",
+        "--start-maximized",
+        "--disable-infobars",
+        "--disable-save-password-bubble",
+        "--disable-client-side-phishing-detection",
+      ].join(" ")
+    : "";
+
+  spawn(shell, ["/c", `start chrome.exe ${chromeOptions} ${urlStr}`], {
+    stdio: "inherit",
+  });
+}
+
+// === Generate self-signed certificates if they don't exist
+function generateCertificates() {
+  console.log("🔑 Generating self-signed certificates...");
+  mkdirSync(certsDir, { recursive: true });
+
+  const domainList = Object.values(domains)
+    .map((d) => `DNS:${d}`)
+    .join(",");
+  const opensslCmd = `openssl req -x509 -newkey rsa:4096 -keyout "${keyPath}" -out "${certPath}" -days 3650 -nodes -subj "/CN=*.travel" -addext "subjectAltName=${domainList}"`;
+
+  try {
+    execSync(opensslCmd, { stdio: "inherit" });
+    console.log(`✅ Generated certificates at ${certPath} and ${keyPath}`);
+  } catch (error) {
+    console.error("❌ Failed to generate certificates:", error);
+    process.exit(1);
+  }
 }
 
 // === Generate Caddyfile
 function generateCaddyfile() {
+  const certPathEscaped = certPath.replace(/\\/g, "/");
+  const keyPathEscaped = keyPath.replace(/\\/g, "/");
   const content =
-    `{\n\tlocal_certs\n}\n\n` +
     Object.values(domains)
       .map(
         (domain, i) =>
-          `${domain} {\n\treverse_proxy localhost:${minPort + i}\n}`,
+          `${domain} {\n\ttls ${certPathEscaped} ${keyPathEscaped}\n\treverse_proxy localhost:${minPort + i}\n}`,
       )
-      .join("\n\n") +
-    "\n";
+      .join("\n\n") + "\n";
   writeFileSync(caddyfile, content);
   console.log("📝 Generated Caddyfile:\n" + content);
 }

@@ -49,9 +49,10 @@ import { getSite } from "src/lib/composables";
 import FlightCard from "src/components/flightCard/FlightCard";
 import CarCard from "../../components/carCard/CarCard";
 import { Grid, Chip } from "@mui/material";
+import { useCustomNavigate } from "src/components/NavigationProvider.tsx";
 
 export default function Detail() {
-  const navigate = useNavigate();
+  const navigateDelayed = useCustomNavigate();
   const isSummary = useIsSummaryPage();
   const date = useRecoilValue(datesAtom);
   const guests = useRecoilValue(countsAtom);
@@ -103,8 +104,8 @@ export default function Detail() {
   const hasTravelProtection =
     useRecoilValue(travelProtectionSelectedAtom) === "yes";
 
-  const handleReserve = () => navigate("/checkout/your-details");
-  const handleBook = () => navigate("/success");
+  const handleReserve = () => navigateDelayed("/checkout/your-details");
+  const handleBook = () => navigateDelayed("/success");
 
   const dayBeforeStartDate = new Date(
     new Date(date[0].startDate).setDate(

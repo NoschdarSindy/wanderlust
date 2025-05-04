@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { getDesignMode, getSite } from "src/lib/composables";
+import {
+  getDesignMode,
+  getSite,
+  useWebSocketChannel,
+} from "src/lib/composables";
 import Navbar from "src/components/navbar/Navbar";
 import Footer from "src/components/footer/Footer";
 import { CheckCircle, Plane, Home, Car } from "lucide-react";
@@ -10,6 +14,7 @@ import { sendEvent } from "src/lib/client";
 export default function Success() {
   const s = getSite();
   const d = getDesignMode();
+  const { sendMessage } = useWebSocketChannel();
 
   const [showOverlay, setShowOverlay] = useState(false);
 
@@ -20,8 +25,8 @@ export default function Success() {
 
     const redirectTimeout = setTimeout(() => {
       sendEvent("app/end");
-      window.close();
       console.log("Redirecting to the homepage...");
+      sendMessage({ finishedTask: s.name });
     }, 6000);
 
     return () => {

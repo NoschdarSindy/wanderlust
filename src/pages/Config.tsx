@@ -5,11 +5,7 @@ import { domains } from "src/lib/studyData"; // Import Bootstrap CSS
 
 const Config = () => {
   const navigate = useNavigate();
-  const entries = JSON.parse(process.env.REACT_APP_ENTRIES);
-
-  useEffect(() => {
-    copySettingsUrl();
-  }, []);
+  const entries = JSON.parse(VITE_ENTRIES);
 
   const generateSettingsUrl = (domain) =>
     `chrome://settings/content/siteDetails?site=https%3A%2F%2F${domain}`;
@@ -40,7 +36,7 @@ const Config = () => {
 
   return (
     <div className="m-5 p-xl-5">
-      <p>Participant: {process.env.REACT_APP_PARTICIPANT}</p>
+      <p>Participant: {VITE_PARTICIPANT}</p>
       <pre>{entries.map(({ site, design }) => `${site}: ${design}\n`)}</pre>
       <p>
         Make sure and site data and permissions are reset before conducting the

@@ -11,8 +11,8 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import PaymentForm from "../../components/PaymentForm";
-import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
-import { useRecoilValue } from "recoil";
+import { Route, Routes, useLocation } from "react-router-dom";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import {
   cameraAccessGrantedAtom,
   showSkipIdButtonAtom,
@@ -24,6 +24,7 @@ import InsuranceForm from "src/components/InsuranceForm";
 import getCssVariable from "src/lib/util";
 import { useEffect, useState } from "react";
 import { getDesignMode } from "src/lib/composables";
+import { useCustomNavigate } from "src/components/NavigationProvider.tsx";
 
 const createSiteTheme = () =>
   createTheme({
@@ -88,32 +89,33 @@ const Checkout = () => {
   const d = getDesignMode();
   const [theme, setTheme] = useState(null);
   const location = useLocation();
-  const navigate = useNavigate();
+  const navigateDelayed = useCustomNavigate();
   // const showSkipPaymentButton = useRecoilValue(showSkipPaymentButtonAtom);
   const showSkipIdButton = useRecoilValue(showSkipIdButtonAtom);
   const cameraAccessGranted = useRecoilValue(cameraAccessGrantedAtom);
   const params = new URLSearchParams(location.search);
   const isBriefing = params.has("briefing");
 
-  const handleSubmit = (e) => {
+  const handleNext = (e) => {
     e.preventDefault();
-    if (e.target.checkValidity()) {
+    const form = e.target.closest("form");
+    if (form && form.checkValidity()) {
       switch (location.pathname) {
         case "/checkout/your-details":
           // sendEvent("personalDetails/end");
-          navigate(d.isNone ? "/summary" : "/checkout/travelProtection");
+          navigateDelayed(d.isNone ? "/summary" : "/checkout/travelProtection");
           break;
         case "/checkout/travelProtection":
           sendEvent("travelProtection/end");
-          navigate("/checkout/payment");
+          navigateDelayed("/checkout/payment");
           break;
         case "/checkout/payment":
           sendEvent("paymentMethod/end");
-          navigate("/checkout/id" + (d.isFair ? "?briefing" : ""));
+          navigateDelayed("/checkout/id" + (d.isFair ? "?briefing" : ""));
           break;
         case "/checkout/id":
           if (isBriefing) {
-            navigate("/checkout/id");
+            navigateDelayed("/checkout/id");
           } else {
             endVideoIdent();
           }
@@ -126,7 +128,7 @@ const Checkout = () => {
 
   const endVideoIdent = () => {
     sendEvent("videoIdent/end");
-    navigate("/summary");
+    navigateDelayed("/summary");
   };
 
   const handleSkip = (e) => {
@@ -134,7 +136,7 @@ const Checkout = () => {
     if (isBriefing) {
       endVideoIdent();
     } else {
-      handleSubmit(e);
+      handleNext(e);
     }
   };
 
@@ -159,7 +161,7 @@ const Checkout = () => {
             }}
           >
             <CardContent>
-              <form onSubmit={handleSubmit}>
+              <form>
                 <Routes>
                   <Route path="/your-details" element={<AddressForm />} />
                   <Route path="/travelProtection" element={<InsuranceForm />} />
@@ -189,11 +191,10 @@ const Checkout = () => {
                       </Zoom>
                     )}
                   </Box>
-                  &nbsp;
+
                   <button
-                    id={"submit-btn"}
-                    type="submit"
-                    className={"btn btn-primary"}
+                    className="btn btn-primary"
+                    onClick={handleNext}
                     disabled={
                       location.pathname.includes("/id") &&
                       !isBriefing &&

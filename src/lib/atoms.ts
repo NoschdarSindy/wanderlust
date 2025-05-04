@@ -18,7 +18,8 @@ export interface DateRangeItem {
 
 export const currentTaskAtom = atom<Site>({
   key: "task",
-  effects_UNSTABLE: [persistAtom],
+  default: undefined,
+  // effects_UNSTABLE: [persistAtom],
 });
 
 export const showBackdropAtom = atom<boolean>({
@@ -72,7 +73,7 @@ export const fullNameAtom = atom({
 
 export const travelProtectionSelectedAtom = atom<string>({
   key: "travelProtectionSelected",
-  default: process.env.REACT_APP_DESIGN === "dark" ? "yes" : "no",
+  default: VITE_DESIGN === "dark" ? "yes" : "no",
   effects_UNSTABLE: [persistAtom],
 });
 

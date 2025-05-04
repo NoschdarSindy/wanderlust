@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Site, taskInfo } from "src/lib/studyData";
 import { useWebSocketChannel } from "src/lib/composables";
 import { useRecoilState } from "recoil";
 import { currentTaskAtom } from "src/lib/atoms";
 import { Box, CircularProgress } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { useCustomNavigate } from "src/components/NavigationProvider.tsx";
 
-const tasks = process.env.REACT_APP_TASKS?.split(",") as Site[];
+const tasks = VITE_TASKS?.split(",") as Site[];
 
 const getNextTask = (currentTask?: Site): Site | undefined => {
   const nextIndex = tasks.indexOf(currentTask) + 1;
@@ -15,26 +15,37 @@ const getNextTask = (currentTask?: Site): Site | undefined => {
 };
 
 const TaskPage = () => {
-  const navigate = useNavigate();
-  const [buttonDisabled, setButtonDisabled] = useState(true);
+  const navigateDelayed = useCustomNavigate();
   const [showTask, setShowTask] = useState(false);
-  const [task, setTask] = useRecoilState(currentTaskAtom);
+  const [currentTask, setCurrentTask] = useRecoilState(currentTaskAtom);
   const [loading, setLoading] = useState(false);
+  const [showTasksButtonDisabled, setShowTasksButtonDisabled] = useState(true);
+  const [startButtonDisabled, setStartButtonDisabled] = useState(true);
 
   const { message } = useWebSocketChannel();
 
+  const loadNextTask = (nextTask) => {
+    setShowTask(true);
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      setCurrentTask(nextTask);
+    }, 1500);
+  };
+
   useEffect(() => {
-    if (task) {
-      setLoading(true);
+    if (currentTask) {
       setShowTask(true);
     }
-  }, [task]);
+  }, [currentTask]);
 
   useEffect(() => {
     if (showTask) {
-      const nextTask = getNextTask(message.finishedTask);
-      if (nextTask) setTask(nextTask);
-      else navigate("/questionnaire");
+      const nextTask = getNextTask(message?.finishedTask);
+      if (nextTask) {
+        closePreviousTaskTab();
+        loadNextTask(nextTask);
+      } else navigateDelayed("/questionnaire");
     }
   }, [showTask, message]);
 
@@ -43,8 +54,8 @@ const TaskPage = () => {
   }, [loading]);
 
   useEffect(() => {
-    if (!task) setTimeout(() => setButtonDisabled(false), 0); // TODO set higher again
-  }, []);
+    console.log("TaskPage message", message);
+  }, [message]);
 
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
@@ -56,24 +67,73 @@ const TaskPage = () => {
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, []);
 
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout> | undefined;
+
+    const updateState = () => {
+      if (!currentTask) {
+        timer = setTimeout(() => setShowTasksButtonDisabled(false), 60000);
+      } else if (showTask) {
+        timer = setTimeout(() => setStartButtonDisabled(false), 2000);
+      }
+    };
+
+    updateState();
+
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (e.key.toLowerCase() === "k") {
+        if (!currentTask) setShowTasksButtonDisabled(false);
+        else if (showTask) setStartButtonDisabled(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyPress);
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("keydown", handleKeyPress);
+    };
+  }, [showTask, currentTask]);
+
+  const tabRef = useRef<Window | null>(null);
+
+  const openNewTab = (url: string) => {
+    const win = window.open(`https://${url}`, "_blank");
+    if (win) {
+      tabRef.current = win;
+    } else {
+      alert("Popup blocked!"); //TODO
+    }
+  };
+
+  const closePreviousTaskTab = () => {
+    console.log("Closing tab", tabRef.current);
+    tabRef.current?.close();
+    tabRef.current = null; // clear after closing
+  };
+
   const getTaskInstructions = () => {
-    const info = taskInfo[task];
+    const info = taskInfo[currentTask];
 
     return (
       <p>
-        The {tasks.indexOf(task) ? "task now" : "next task"} is to visit{" "}
-        <a href={`https://${info.domain}`} target="_blank">
+        The {tasks.indexOf(currentTask) ? "next task" : "task now"} is to visit{" "}
+        <a
+          href={startButtonDisabled ? undefined : `https://${info.domain}`}
+          target="_blank"
+        >
           {info.domain}
         </a>{" "}
-        and {info.todo} Lindfurt. {info.additionalText}
+        and {info.todo(VITE_CITY)} Lindfurt. {info.additionalText}
         <br />
-        <a
-          href={`https://${info.domain}`}
-          target="_blank"
+        <br />
+        <button
           className="btn btn-primary"
+          onClick={() => openNewTab(info.domain)}
+          disabled={startButtonDisabled}
         >
           Start
-        </a>
+        </button>
       </p>
     );
   };
@@ -90,7 +150,7 @@ const TaskPage = () => {
           </p>
           <button
             className="btn btn-primary"
-            disabled={buttonDisabled}
+            disabled={showTasksButtonDisabled}
             onClick={() => setShowTask(true)}
           >
             Continue
@@ -98,7 +158,7 @@ const TaskPage = () => {
         </>
       )}
 
-      {showTask && task && (
+      {showTask && currentTask && (
         <div>
           <br />
           <h3>Your Task</h3>

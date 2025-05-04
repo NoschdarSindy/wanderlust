@@ -4,9 +4,10 @@ import { Model } from "survey-core";
 import { Survey } from "survey-react-ui";
 import "survey-core/defaultV2.min.css";
 import { storeJson } from "src/lib/client";
+import { useCustomNavigate } from "src/components/NavigationProvider.tsx";
 
 const Demographics: React.FC = () => {
-  const navigate = useNavigate();
+  const navigateDelayed = useCustomNavigate();
 
   const surveyJson = {
     elements: [
@@ -310,11 +311,11 @@ const Demographics: React.FC = () => {
       })
       .then((json) => {
         console.log("Server response:", json.message);
-        navigate("/task"); // Redirect to task page
+        navigateDelayed("/task"); // Redirect to task page
       })
       .catch((err) => {
         console.error("Error submitting survey:", err);
-        navigate("/task"); // Proceed anyway (matches your finally block)
+        navigateDelayed("/task"); // Proceed anyway (matches your finally block)
       });
   });
 

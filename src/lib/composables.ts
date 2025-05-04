@@ -2,15 +2,15 @@ import websitesData, { WebsiteData } from "./siteData";
 import useWebSocket from "react-use-websocket";
 import { SendJsonMessage } from "react-use-websocket/dist/lib/types";
 import locationsData from "src/lib/locationsData";
-import { Design, designs } from "src/lib/studyData";
+import { Design } from "src/lib/studyData";
 import { useRecoilValue } from "recoil";
 import { countsAtom, datesAtom, mockIndexAtom } from "src/lib/atoms";
 import { differenceInDays } from "date-fns";
 import { useLocation } from "react-router-dom";
 import { formatDateRange } from "src/lib/util";
 
-const siteName = process.env.REACT_APP_SITE;
-const design = process.env.REACT_APP_DESIGN as Design;
+const siteName = VITE_SITE;
+const design = VITE_DESIGN as Design;
 
 export function getSite(): WebsiteData & {
   isStudy: boolean;
@@ -18,7 +18,7 @@ export function getSite(): WebsiteData & {
   isFlights: boolean;
   isCars: boolean;
 } {
-  const siteName = process.env.REACT_APP_SITE;
+  const siteName = VITE_SITE;
 
   const site = {
     ...websitesData[siteName],
@@ -35,34 +35,35 @@ export function getSite(): WebsiteData & {
   return site;
 }
 
-// @ts-ignore
-const allImages = require.context(
-  "src/assets",
-  true,
-  /\.(jpe?g|png|webp|svg|ico)$/,
-);
+const allImages = import.meta.glob(
+  "/src/assets/**/*.{jpg,jpeg,png,webp,svg,ico}",
+  { query: "?url", eager: true },
+) as Record<string, { default: string }>;
 
 export function getImage(path: string): string | string[] | null {
+  const siteName = VITE_SITE;
   const tryPaths = [`${siteName}/${path}`, `shared/${path}`];
   const extensions = ["jpg", "jpeg", "png", "webp", "svg", "ico"];
 
+  // Try single image
   for (const base of tryPaths) {
     for (const ext of extensions) {
-      try {
-        const fullPath = `./${base}.${ext}`;
-        return allImages(fullPath); // found as single image
-      } catch {}
+      const fullPath = `/src/assets/${base}.${ext}`;
+      if (allImages[fullPath]) {
+        return allImages[fullPath].default; // Found as single image
+      }
     }
   }
 
+  // Try folder with multiple images
   for (const folder of tryPaths) {
-    const prefix = `./${folder}/`;
-    const regex = new RegExp(`^\\${prefix}[^\\/]*\\.(jpe?g|png|webp|svg|ico)$`);
-    const matches = allImages.keys().filter((key: string) => key.match(regex));
+    const prefix = `/src/assets/${folder}/`;
+    const regex = new RegExp(`^${prefix}[^/]*\\.(jpe?g|png|webp|svg|ico)$`);
+    const matches = Object.keys(allImages).filter((key) => key.match(regex));
     if (matches.length === 1) {
-      return allImages(matches[0]);
+      return allImages[matches[0]].default;
     } else if (matches.length > 1) {
-      return matches.map((match: string) => allImages(match));
+      return matches.map((match) => allImages[match].default);
     }
   }
 
@@ -130,7 +131,7 @@ export function getDesignMode() {
 
 export const getLocationsData = () => {
   const s = getSite();
-  const city = process.env.REACT_APP_CITY;
+  const city = VITE_CITY;
   return {
     options: s.isFlights
       ? [...new Set(Object.values(locationsData))]
