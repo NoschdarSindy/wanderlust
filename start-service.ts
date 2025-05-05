@@ -32,7 +32,7 @@ interface ParticipantResponse {
   pNumber: number;
   pName: string;
 }
-type Entry = ReturnType<typeof getCounterbalancedEntries>[number];
+export type Entry = ReturnType<typeof getCounterbalancedEntries>[number];
 
 (async () => {
   const { pNumber, pName } = await createNextParticipant();
@@ -194,7 +194,7 @@ function openBrowser() {
 
   const chromeOptions = kioskMode
     ? [
-        // "--kiosk",
+        "--kiosk",
         "--remote-debugging-port=9222",
         "--no-first-run",
         "--new-window",

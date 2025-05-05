@@ -51,6 +51,7 @@ export default function InsuranceForm() {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
+                borderWidth: 2,
                 borderColor:
                   selectedOption === value ? `${color}.main` : "grey.300",
                 cursor: "pointer",

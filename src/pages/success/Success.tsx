@@ -27,6 +27,7 @@ export default function Success() {
       sendEvent("app/end");
       console.log("Redirecting to the homepage...");
       sendMessage({ finishedTask: s.name });
+      window.close();
     }, 6000);
 
     return () => {
@@ -192,7 +193,7 @@ export default function Success() {
                   style={{
                     display: "block",
                     marginTop: "0.5rem",
-                    textAlign: s.isFlights ? "center" : "left",
+                    textAlign: s.isCars ? "left" : "center",
                   }}
                 >
                   {s.isFlights && (

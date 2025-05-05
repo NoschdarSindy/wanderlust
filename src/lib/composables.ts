@@ -9,16 +9,13 @@ import { differenceInDays } from "date-fns";
 import { useLocation } from "react-router-dom";
 import { formatDateRange } from "src/lib/util";
 
-const siteName = VITE_SITE;
-const design = VITE_DESIGN as Design;
-
-export function getSite(): WebsiteData & {
+export function getSite(customSite?): WebsiteData & {
   isStudy: boolean;
   isHotels: boolean;
   isFlights: boolean;
   isCars: boolean;
 } {
-  const siteName = VITE_SITE;
+  const siteName = customSite ?? VITE_SITE;
 
   const site = {
     ...websitesData[siteName],
@@ -121,6 +118,7 @@ export function useTotalPrice() {
 }
 
 export function getDesignMode() {
+  const design = VITE_DESIGN as Design;
   return {
     design,
     isDark: design === "dark",

@@ -168,7 +168,7 @@ const Checkout = () => {
                   <Route path="/payment" element={<PaymentForm />} />
                   <Route path="/id" element={<IdForm />} />
                 </Routes>
-                <Grid container justifyContent="flex-end">
+                <Grid container justifyContent="flex-end" gap={1}>
                   <Box sx={{ display: "flex" }}>
                     {/*{location.pathname.includes("/payment") && (*/}
                     {/*  <Zoom in={showSkipPaymentButton}>*/}

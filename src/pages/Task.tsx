@@ -4,7 +4,7 @@ import { Site, taskInfo } from "src/lib/studyData";
 import { useWebSocketChannel } from "src/lib/composables";
 import { useRecoilState } from "recoil";
 import { currentTaskAtom } from "src/lib/atoms";
-import { Box, CircularProgress } from "@mui/material";
+import { Box, Button, CircularProgress } from "@mui/material";
 import { useCustomNavigate } from "src/components/NavigationProvider.tsx";
 
 const tasks = VITE_TASKS?.split(",") as Site[];
@@ -116,15 +116,26 @@ const TaskPage = () => {
     const info = taskInfo[currentTask];
 
     return (
-      <p>
+      <p style={{ userSelect: "none" }}>
         The {tasks.indexOf(currentTask) ? "next task" : "task now"} is to visit{" "}
         <a
-          href={startButtonDisabled ? undefined : `https://${info.domain}`}
-          target="_blank"
+          href={"#"}
+          onClick={
+            startButtonDisabled ? undefined : () => openNewTab(info.domain)
+          }
         >
           {info.domain}
         </a>{" "}
+        {/*<a*/}
+        {/*  href={startButtonDisabled ? undefined : `https://${info.domain}`}*/}
+        {/*  target="_blank"*/}
+        {/*  onClick={(e) => e.preventDefault()}*/}
+        {/*>*/}
+        {/*  {info.domain}*/}
+        {/*</a>{" "}*/}
         and {info.todo(VITE_CITY)} Lindfurt. {info.additionalText}
+        <br />
+        When you click Start, the website will automatically open in a new tab.
         <br />
         <br />
         <button

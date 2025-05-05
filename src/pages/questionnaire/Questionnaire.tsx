@@ -4,6 +4,8 @@ import { Survey } from "survey-react-ui";
 import "survey-core/defaultV2.min.css";
 import "./questionnaire.css";
 import { EventName, storeJson } from "src/lib/client";
+import { Entry } from "../../../start-service.ts";
+import { getSite } from "src/lib/composables.ts";
 
 const likert = [
   {
@@ -54,18 +56,21 @@ const json = {
 };
 
 // My own questions
-const part1: { value: EventName; text: string }[] = [
+const part1: { value: EventName; text: (site: string) => string }[] = [
   {
     value: "cookies",
-    text: "When the cookie banner gave me no real choice, I felt concerned about my privacy.",
+    text: (site) =>
+      `When the ${site} website showed a cookie banner with no real choice, I felt concerned about my privacy.`,
   },
   {
     value: "geolocation",
-    text: "When the website asked for my location, I felt concerned about my privacy.",
+    text: (site) =>
+      `When the ${site} website asked for my location, I felt concerned about my privacy.`,
   },
   {
     value: "notification",
-    text: "When the website asked to enable browser notifications, I felt concerned about my privacy.",
+    text: (site) =>
+      `When the ${site} website asked to enable browser notifications, I felt concerned about my privacy.`,
   },
   // {
   //   value: "personalDetailsConcern",
@@ -77,11 +82,13 @@ const part1: { value: EventName; text: string }[] = [
   // },
   {
     value: "paymentMethod",
-    text: "When the website asked for my payment information, I felt concerned about my privacy.",
+    text: (site) =>
+      `When the ${site} website asked for my payment information, I felt concerned about my privacy.`,
   },
   {
     value: "travelProtection",
-    text: "When travel protection was preselected and added to my basket by default, I felt concerned about my privacy.",
+    text: (site) =>
+      `When the ${site} website preselected travel protection and added it to my basket by default, I felt concerned about my privacy.`,
   },
   // {
   //   value: "idConcern",
@@ -89,11 +96,13 @@ const part1: { value: EventName; text: string }[] = [
   // },
   {
     value: "videoIdent",
-    text: "When the website asked to verify my identity using my ID, I felt concerned about my privacy.",
+    text: (site) =>
+      `When the ${site} website asked me to verify my identity using my ID, I felt concerned about my privacy.`,
   },
   {
     value: "camera",
-    text: "When the website asked for access to my camera, I felt concerned about my privacy.",
+    text: (site) =>
+      `When the ${site} website asked for access to my camera, I felt concerned about my privacy.`,
   },
 ];
 
@@ -144,12 +153,21 @@ const part2 = [
 const allQuestions = part1.concat(part2);
 
 export default function Questionnaire() {
+  const entries = JSON.parse(VITE_ENTRIES);
+  const { site: darkSiteName, domain: darkDomain } = entries.find(
+    (entry: Entry) => entry.design === "dark",
+  );
+  const darkSite = getSite(darkSiteName);
+
   const survey = new Model({
     ...json,
-    elements: allQuestions.map((q) => ({ ...json.elements[0], rows: [q] })),
+    elements: allQuestions.map((q) => ({
+      ...json.elements[0],
+      rows: [{ ...q, text: q.text(darkSite.item_name) }],
+    })),
   });
   survey.onComplete.add((sender) => {
-    const results = JSON.stringify(sender.data);
+    const results = JSON.stringify({ ...sender.data, entries });
     console.log(results);
 
     storeJson(results, "questionnaire")
@@ -176,9 +194,10 @@ export default function Questionnaire() {
         <br />
         <p>
           Thank you for your participation so far. We will finish off with a
-          small questionnaire about your experience with the website from a
-          privacy perspective{/*as well as your overall privacy concern*/}.
-          After completing this questionnaire, the study will be finished.
+          small questionnaire about your experience with the{" "}
+          {darkSite.item_name} website ({darkDomain}) from a privacy perspective
+          {/*as well as your overall privacy concern*/}. After completing this
+          questionnaire, the study will be finished.
         </p>
       </Box>
       <Survey model={survey} />
