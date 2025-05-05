@@ -102,7 +102,7 @@ const TaskPage = () => {
     if (win) {
       tabRef.current = win;
     } else {
-      alert("Popup blocked!"); //TODO
+      alert("Popup blocked!");
     }
   };
 
