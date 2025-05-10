@@ -47,11 +47,8 @@ const ConsentForm: React.FC = () => {
             <div className="pageBreak">
               <h1>Informed Consent of Participation</h1>
               <p>
-                You are invited to participate in the user study{" "}
-                <b>
-                  Exploring Physiological Indicators For Predicting User Privacy
-                  Awareness
-                </b>{" "}
+                You are invited to participate in the user study "Exploring
+                Physiological Indicators For Predicting User Privacy Awareness"
                 initiated and conducted by Noschdar Sindy. The research is
                 supervised by Prof. Dr. Thomas Kosch. Please note:
               </p>
@@ -106,7 +103,7 @@ const ConsentForm: React.FC = () => {
               <p>
                 Your participation in this user study is completely voluntary.
                 You will be one of approximately 10–12 people being tested for
-                this research. You will receive X{/*TODO*/}
+                this research. You will receive X{/*TODO*/ " "}
                 EUR as compensation for your participation. You may withdraw and
                 discontinue participation at any time without penalty or losing
                 the compensation. If you decline to participate or withdraw from
@@ -132,13 +129,13 @@ const ConsentForm: React.FC = () => {
                   2. Calibrating the eye tracker and attaching sensors to your
                   hands
                   <br />
-                  3. Browsing the web for a few minutes to get used to the
-                  setting
+                  {/*3. Browsing the web for a few minutes to get used to the*/}
+                  {/*setting*/}
+                  {/*<br />*/}
+                  3. Completing the task involving booking websites
                   <br />
-                  4. Completing the task involving a booking website
-                  <br />
-                  5. Filling out a questionnaire about your experience with the
-                  website
+                  4. Filling out a questionnaire about your experience with one
+                  of the websites
                 </p>
               </div>
               <p>
@@ -152,17 +149,19 @@ const ConsentForm: React.FC = () => {
                 There are no risks associated with this user study. Discomforts
                 or inconveniences will be minor and are not likely to happen. If
                 any discomforts become a problem, you may discontinue your
-                participation. In order to minimize any risk of infection,
-                hygiene regulations of the Humboldt University of Berlin apply
-                and must be followed. Any violations of the hygiene regulations
-                or house rules of this institution can mean immediate
-                termination of the study. If you get injured as a direct result
-                of participation in this research, please reach out to the
-                principal investigator. Enrolled students are automatically
-                insured against the consequences of accidents through statutory
-                accident insurance and with private liability insurance in case
-                of any damages. The confirmation of participation in this study
-                can be obtained directly from the researchers.
+                participation.
+                {/*In order to minimize any risk of infection,*/}
+                {/*hygiene regulations of the Humboldt University of Berlin apply*/}
+                {/*and must be followed. Any violations of the hygiene regulations*/}
+                {/*or house rules of this institution can mean immediate*/}
+                {/*termination of the study.*/ " "}
+                If you get injured as a direct result of participation in this
+                research, please reach out to the principal investigator.
+                Enrolled students are automatically insured against the
+                consequences of accidents through statutory accident insurance
+                and with private liability insurance in case of any damages. The
+                confirmation of participation in this study can be obtained
+                directly from the researchers.
               </p>
             </div>
             <div className="pageBreak">
@@ -170,7 +169,7 @@ const ConsentForm: React.FC = () => {
               <p>
                 We are planning to publish our results from this and other
                 sessions in scientific articles or other media. These
-                publications will neither include your name nor can be
+                publications will neither include your name nor can they be
                 associated with your identity. Any demographic information will
                 be published anonymized and in aggregated form. Contact details
                 (such as e-mails) can be used to track potential infection

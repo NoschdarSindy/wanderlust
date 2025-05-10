@@ -36,6 +36,7 @@ export default function LocationInput({ accessor, placeholder }) {
   if (accessor === "destination")
     options = options.filter((option) => option.label !== locations.origin);
   const [showLocationPopup, setShowLocationPopup] = useState(false);
+  const dataListId = `${s.name}-${accessor}-locations`;
 
   const getLocation = () => locations[accessor] || "";
 
@@ -56,14 +57,15 @@ export default function LocationInput({ accessor, placeholder }) {
       e.preventDefault();
       return;
     }
-    const newValue =
-      (e.target.value[0]?.toUpperCase() || "") +
-      (e.target.value.slice(1)?.toLowerCase() || "");
-    setLocation(newValue);
+    let value = e.target.value;
+    // value =
+    //   (value[0]?.toUpperCase() || "") + (value.slice(1)?.toLowerCase() || "");
+    setLocation(value);
+    // hasError.current = !isValidOption(newValue);
   };
 
   const handleBlur = () => {
-    hasError.current = !isValidOption(currentValue);
+    hasError.current = !isValidOption(getLocation());
   };
 
   const handleGeolocationSuccess = () => {
@@ -77,7 +79,7 @@ export default function LocationInput({ accessor, placeholder }) {
     endGeolocationEvent();
   };
 
-  const startGeolocationEvent = (e) => {
+  const startGeolocationEvent = () => {
     sendEvent("geolocation/start");
     getGeolocationPermission();
   };
@@ -99,11 +101,9 @@ export default function LocationInput({ accessor, placeholder }) {
   };
 
   const handleTextFieldClick = (e) => {
-    if (askedForCookies && !askedForLocation && showGpsButton) {
-      if (d.isDark) {
-        e.stopPropagation();
-        setShowLocationPopup(true);
-      }
+    if (askedForCookies && !askedForLocation && showGpsButton && d.isDark) {
+      e.stopPropagation();
+      setShowLocationPopup(true);
     }
   };
 
@@ -112,109 +112,80 @@ export default function LocationInput({ accessor, placeholder }) {
     getGeolocationPermission();
   };
 
-  const currentValue = getLocation();
-
   return (
     <>
       {showLocationPopup && <LocationPopup accept={getGeolocationPermission} />}
-      <Autocomplete
-        disabled={!askedForCookies}
+      <TextField
+        autoComplete={"off"}
         value={getLocation()}
-        openOnFocus={false}
-        freeSolo
-        sx={{ width: "100%" }}
-        disablePortal
-        options={
-          askedForLocation
-            ? options.filter(({ label }) =>
-                label.toLowerCase().includes(getLocation().toLowerCase()),
-              )
-            : []
-        }
-        clearIcon={null}
-        onInputChange={(_, newValue, reason) => {
-          hasError.current = false;
-          if (reason === "reset" && isValidOption(newValue)) {
-            setLocation(newValue);
-          }
-        }}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            value={getLocation()}
-            placeholder={placeholder}
-            disabled={!askedForCookies}
-            variant="standard"
-            fullWidth
-            onChange={handleChange}
-            onClick={handleTextFieldClick}
-            onBlur={handleBlur}
-            error={hasError.current} // Boolean: true if invalid, false if valid or empty
-            helperText={
-              hasError.current ? "Please select a valid location" : ""
-            }
-            sx={{
-              "& .MuiAutocomplete-inputRoot": {
-                paddingRight: "0 !important",
-              },
-            }}
-            InputProps={{
-              ...params.InputProps,
-              disableUnderline: true,
-              endAdornment: showGpsButton && (
-                <>
-                  {params.InputProps?.endAdornment}
-                  {d.isFair ? (
-                    <Chip
-                      icon={
-                        <MyLocationIcon
-                          sx={{ color: "var(--color-primary) !important" }}
-                        />
-                      }
-                      label="Here"
-                      onClick={handleAdornmentClick}
-                      sx={{
-                        borderRadius: "50px",
-                        backgroundColor: "#fff",
-                        color: "var(--color-primary)",
-                        fontWeight: "medium",
-                        "&:hover": {
-                          backgroundColor: "#f0f0f0",
-                        },
-                        cursor: "pointer",
-                      }}
+        onChange={handleChange}
+        onClick={handleTextFieldClick}
+        onBlur={handleBlur}
+        placeholder={placeholder}
+        disabled={!askedForCookies}
+        variant="standard"
+        fullWidth
+        error={hasError.current}
+        helperText={hasError.current ? "Please select a valid location" : ""}
+        InputProps={{
+          disableUnderline: true,
+          endAdornment: showGpsButton && (
+            <InputAdornment position="end">
+              {d.isFair ? (
+                <Chip
+                  icon={
+                    <MyLocationIcon
+                      sx={{ color: "var(--color-primary) !important" }}
                     />
-                  ) : (
-                    <InputAdornment position="end">
-                      <IconButton
-                        size="small"
-                        onClick={
-                          d.isDark ? handleTextFieldClick : handleAdornmentClick
-                        }
-                        sx={{
-                          padding: 0,
-                          "&:hover": {
-                            backgroundColor: "transparent",
-                          },
-                        }}
-                      >
-                        <FontAwesomeIcon
-                          cursor="pointer"
-                          icon={faLocation}
-                          className="headerIcon location"
-                        />
-                      </IconButton>
-                    </InputAdornment>
-                  )}
-                </>
-              ),
-            }}
-            inputProps={{
-              ...params.inputProps,
-            }}
-          />
-        )}
+                  }
+                  label="Here"
+                  onClick={handleAdornmentClick}
+                  sx={{
+                    borderRadius: "50px",
+                    backgroundColor: "#fff",
+                    color: "var(--color-primary)",
+                    fontWeight: "medium",
+                    "&:hover": { backgroundColor: "#f0f0f0" },
+                    cursor: "pointer",
+                  }}
+                />
+              ) : (
+                <IconButton
+                  size="small"
+                  onClick={
+                    d.isDark ? handleTextFieldClick : handleAdornmentClick
+                  }
+                  sx={{
+                    padding: 0,
+                    "&:hover": { backgroundColor: "transparent" },
+                  }}
+                >
+                  <FontAwesomeIcon
+                    cursor="pointer"
+                    icon={faLocation}
+                    className="headerIcon location"
+                  />
+                </IconButton>
+              )}
+            </InputAdornment>
+          ),
+        }}
+        inputProps={{
+          list: dataListId,
+        }}
+        sx={{
+          "& .MuiInputBase-root": {
+            paddingRight: "0 !important",
+          },
+        }}
       />
+      {getLocation().length > 1 && (
+        <datalist id={dataListId} style={{ height: "100%", width: "100vh" }}>
+          {options.map((option) => (
+            <option key={option.label} value={option.label} />
+          ))}
+        </datalist>
+      )}
     </>
   );
 }
