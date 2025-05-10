@@ -106,49 +106,7 @@ const part1: { value: EventName; text: (site: string) => string }[] = [
   },
 ];
 
-// IUIPC-10
-const part2 = [
-  // {
-  //   value: "iuipc1",
-  //   text: "Consumer online privacy is really a matter of consumers’ right to exercise control and autonomy over decisions about how their information is collected, used, and shared.",
-  // },
-  // {
-  //   value: "iuipc2",
-  //   text: "Consumer control of personal information lies at the heart of consumer privacy.",
-  // },
-  // {
-  //   value: "iuipc3",
-  //   text: "I believe that online privacy is invaded when control is lost or unwillingly reduced as a result of a marketing transaction.",
-  // },
-  // {
-  //   value: "iuipc4",
-  //   text: "Companies seeking information online should disclose the way the data are collected, processed, and used.",
-  // },
-  // {
-  //   value: "iuipc5",
-  //   text: "A good consumer online privacy policy should have a clear and conspicuous disclosure.",
-  // },
-  // {
-  //   value: "iuipc6",
-  //   text: "It is very important to me that I am aware and knowledgeable about how my personal information will be used.",
-  // },
-  // {
-  //   value: "iuipc7",
-  //   text: "It usually bothers me when online companies ask me for personal information.",
-  // },
-  // {
-  //   value: "iuipc8",
-  //   text: "When online companies ask me for personal information, I sometimes think twice before providing it.",
-  // },
-  // {
-  //   value: "iuipc9",
-  //   text: "It bothers me to give personal information to so many online companies.",
-  // },
-  // {
-  //   value: "iuipc10",
-  //   text: "I’m concerned that online companies are collecting too much personal information about me.",
-  // },
-];
+const part2 = [];
 
 const allQuestions = part1.concat(part2);
 
