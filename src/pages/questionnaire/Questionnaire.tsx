@@ -7,46 +7,32 @@ import { EventName, storeJson } from "src/lib/client";
 import { Entry } from "../../../start-service.ts";
 import { getSite } from "src/lib/composables.ts";
 
-const likert = [
-  {
-    value: 7,
-    text: "Strongly Agree",
-  },
-  {
-    value: 6,
-    text: "Agree",
-  },
-  {
-    value: 5,
-    text: "Somewhat Agree",
-  },
-  {
-    value: 4,
-    text: "Neither Agree nor Disagree",
-  },
-  {
-    value: 3,
-    text: "Somewhat Disagree",
-  },
-  {
-    value: 2,
-    text: "Disagree",
-  },
-  {
-    value: 1,
-    text: "Strongly disagree",
-  },
-];
+const sliderConfig = {
+  min: 1,
+  max: 7,
+  defaultValue: 4,
+  step: 0.1,
+  rateValues: [
+    { value: 1, text: "Strongly Disagree" },
+    { value: 2, text: "Disagree" },
+    { value: 3, text: "Somewhat Disagree" },
+    { value: 4, text: "Neither Agree nor Disagree" },
+    { value: 5, text: "Somewhat Agree" },
+    { value: 6, text: "Agree" },
+    { value: 7, text: "Strongly Agree" },
+  ],
+};
 
 const json = {
   elements: [
     {
-      type: "matrix",
+      type: "rating",
       name: "result",
-      columns: likert,
-      alternateRows: true,
-      isAllRowRequired: true,
-      rowTitleWidth: "25em",
+      displayMode: "slider",
+      minRateDescription: "Strongly Disagree",
+      maxRateDescription: "Strongly Agree",
+      ...sliderConfig,
+      isRequired: true,
       titleLocation: "hidden",
     },
   ],
@@ -72,14 +58,6 @@ const part1: { value: EventName; text: (site: string) => string }[] = [
     text: (site) =>
       `When the ${site} website asked to enable browser notifications, I felt concerned about my privacy.`,
   },
-  // {
-  //   value: "personalDetailsConcern",
-  //   text: "When the website asked for my personal details, I felt concerned about my privacy.",
-  // },
-  // {
-  //   value: "confusingCheckbox",
-  //   text: "After entering my email address, I noticed that the checkbox below contained intentionally confusing text.",
-  // },
   {
     value: "paymentMethod",
     text: (site) =>
@@ -90,10 +68,6 @@ const part1: { value: EventName; text: (site: string) => string }[] = [
     text: (site) =>
       `When the ${site} website preselected travel protection and added it to my basket by default, I felt concerned about my privacy.`,
   },
-  // {
-  //   value: "idConcern",
-  //   text: "When the website asked for my ID, I felt concerned about my privacy.",
-  // },
   {
     value: "videoIdent",
     text: (site) =>
@@ -121,7 +95,8 @@ export default function Questionnaire() {
     ...json,
     elements: allQuestions.map((q) => ({
       ...json.elements[0],
-      rows: [{ ...q, text: q.text(darkSite.item_name) }],
+      title: q.text(darkSite.item_name),
+      name: q.value,
     })),
   });
   survey.onComplete.add((sender) => {

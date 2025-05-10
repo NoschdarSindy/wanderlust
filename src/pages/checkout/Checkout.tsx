@@ -16,6 +16,7 @@ import { useRecoilValue, useSetRecoilState } from "recoil";
 import {
   cameraAccessGrantedAtom,
   showSkipIdButtonAtom,
+  travelProtectionSelectedAtom,
   // showSkipPaymentButtonAtom,
 } from "src/lib/atoms";
 import IdForm from "../../components/IdForm";
@@ -95,6 +96,7 @@ const Checkout = () => {
   const cameraAccessGranted = useRecoilValue(cameraAccessGrantedAtom);
   const params = new URLSearchParams(location.search);
   const isBriefing = params.has("briefing");
+  const travelProtectionSelected = useRecoilValue(travelProtectionSelectedAtom);
 
   const handleNext = (e) => {
     e.preventDefault();
@@ -106,11 +108,13 @@ const Checkout = () => {
           navigateDelayed(d.isNone ? "/summary" : "/checkout/travelProtection");
           break;
         case "/checkout/travelProtection":
-          sendEvent("travelProtection/end");
+          const travelProtectionAccepted = travelProtectionSelected === "yes";
+          sendEvent(
+            `travelProtection/end/${travelProtectionAccepted ? "accept" : "reject"}`,
+          );
           navigateDelayed("/checkout/payment");
           break;
         case "/checkout/payment":
-          sendEvent("paymentMethod/end");
           navigateDelayed("/checkout/id" + (d.isFair ? "?briefing" : ""));
           break;
         case "/checkout/id":

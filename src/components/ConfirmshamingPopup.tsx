@@ -25,14 +25,21 @@ export default function ConfirmshamingPopup() {
   );
 
   const handleAccept = (e) => {
-    Notification.requestPermission().then(() => {
+    Notification.requestPermission().then((permission) => {
+      sendEvent(
+        `notification/end/${permission === "granted" ? "accept" : "reject"}`,
+      );
       handleClose(e);
     });
   };
 
+  const handleReject = (e) => {
+    sendEvent("notification/end/reject");
+    handleClose(e);
+  };
+
   const handleClose = (_e: any, reason?: string) => {
     if (reason && reason === "backdropClick") return;
-    sendEvent("notification/end");
     setOpen(false);
     setConfirmshamingDone(true);
   };
@@ -47,11 +54,7 @@ export default function ConfirmshamingPopup() {
 
   return (
     <Fragment>
-      <BootstrapDialog
-        onClose={handleClose}
-        aria-labelledby="customized-dialog-title"
-        open={open}
-      >
+      <BootstrapDialog aria-labelledby="customized-dialog-title" open={open}>
         <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
           Don't miss out on our best offers!
         </DialogTitle>
@@ -61,7 +64,7 @@ export default function ConfirmshamingPopup() {
           </Typography>
         </DialogContent>
         <DialogActions>
-          <button onClick={handleClose} className="btn btn-secondary">
+          <button onClick={handleReject} className="btn btn-secondary">
             No, I dont want to save money
           </button>
           <button onClick={handleAccept} className="btn btn-primary">

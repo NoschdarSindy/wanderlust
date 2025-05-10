@@ -1,34 +1,41 @@
 export type Site = (typeof sites)[number];
 export type Design = (typeof designs)[number];
 
-const sites = ["hotels", "flights", "cars"] as const;
-const designs = ["dark", "fair", "none"] as const;
+const sites = [
+  "hotels",
+  "flights",
+  // "cars"
+] as const;
+const designs = [
+  "dark",
+  "fair",
+  // "none"
+] as const;
 
 const domains = {
   hotels: "wanderlust.travel",
   flights: "flyskyway.com",
-  cars: "overdrive.cars",
+  // cars: "overdrive.cars",
 } satisfies Record<Site, string>;
 
 const sitesMap = {
   H: "hotels",
   F: "flights",
-  C: "cars",
+  // C: "cars",
 } satisfies Record<string, Site>;
 
 const designsMap = {
   d: "dark",
   f: "fair",
-  n: "none",
+  // n: "none",
 } satisfies Record<string, Design>;
 
+// is actually full factorial design
 const latinSquare: `${keyof typeof sitesMap}${keyof typeof designsMap}`[][] = [
-  ["Hd", "Ff", "Cn"],
-  ["Fn", "Cd", "Hf"],
-  ["Cf", "Hn", "Fd"],
-  ["Hd", "Cn", "Ff"],
-  ["Fn", "Hf", "Cd"],
-  ["Cf", "Fd", "Hn"],
+  ["Hd", "Ff"],
+  ["Ff", "Hd"],
+  ["Hf", "Fd"],
+  ["Fd", "Hf"],
 ];
 
 const taskInfo = Object.fromEntries(
