@@ -8,6 +8,7 @@ const events = [
   // "personalDetails",
   "travelProtection",
   // "paymentMethod",
+  "newsletter",
   "videoIdent",
   "camera",
 ] as const;
