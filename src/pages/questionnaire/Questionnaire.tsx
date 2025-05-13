@@ -58,11 +58,11 @@ const part1: { value: EventName; text: (site: string) => string }[] = [
     text: (site) =>
       `When the ${site} website asked to enable browser notifications, I felt concerned about my privacy.`,
   },
-  {
-    value: "paymentMethod",
-    text: (site) =>
-      `When the ${site} website asked for my payment information, I felt concerned about my privacy.`,
-  },
+  // {
+  //   value: "paymentMethod",
+  //   text: (site) =>
+  //     `When the ${site} website asked for my payment information, I felt concerned about my privacy.`,
+  // },
   {
     value: "travelProtection",
     text: (site) =>
