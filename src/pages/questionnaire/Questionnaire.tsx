@@ -46,6 +46,11 @@ const part2 = [];
 
 const allQuestions = part1.concat(part2);
 
+const initialQuestion = {
+  value: "ddpFamiliarity",
+  text: "I am familiar with deceptive design patterns (sometimes called ‘dark patterns’).",
+};
+
 export default function Questionnaire() {
   const entries = JSON.parse(VITE_ENTRIES);
 
@@ -57,12 +62,14 @@ export default function Questionnaire() {
   });
 
   const [currentSiteIndex, setCurrentSiteIndex] = useState(0);
+  const [showInitialQuestion, setShowInitialQuestion] = useState(true);
   const currentSite = sites[currentSiteIndex];
 
   const [responses, setResponses] = useState<
     Record<string, Record<string, number>>
-  >(
-    sites.reduce(
+  >({
+    initial: { [initialQuestion.value]: sliderConfig.defaultValue },
+    ...sites.reduce(
       (acc, site) => ({
         ...acc,
         [site.site.item_name]: allQuestions.reduce(
@@ -72,12 +79,13 @@ export default function Questionnaire() {
       }),
       {},
     ),
-  );
+  });
 
   const [touchedSliders, setTouchedSliders] = useState<
     Record<string, Record<string, boolean>>
-  >(
-    sites.reduce(
+  >({
+    initial: { [initialQuestion.value]: false },
+    ...sites.reduce(
       (acc, site) => ({
         ...acc,
         [site.site.item_name]: allQuestions.reduce(
@@ -87,40 +95,55 @@ export default function Questionnaire() {
       }),
       {},
     ),
-  );
+  });
 
   const [error, setError] = useState<string | null>(null);
 
-  const handleSliderChange = (_, value: number | number[], name: EventName) => {
+  const handleSliderChange = (
+    _: any,
+    value: number | number[],
+    name: string,
+    section: string,
+  ) => {
     setResponses((prev) => ({
       ...prev,
-      [currentSite.site.item_name]: {
-        ...prev[currentSite.site.item_name],
+      [section]: {
+        ...prev[section],
         [name]: value as number,
       },
     }));
     setTouchedSliders((prev) => ({
       ...prev,
-      [currentSite.site.item_name]: {
-        ...prev[currentSite.site.item_name],
+      [section]: {
+        ...prev[section],
         [name]: true,
       },
     }));
-    setError(null); // Clear error when user interacts with a slider
+    setError(null);
   };
 
-  const handleSliderClick = (name: EventName) => {
+  const handleSliderClick = (name: string, section: string) => {
     setTouchedSliders((prev) => ({
       ...prev,
-      [currentSite.site.item_name]: {
-        ...prev[currentSite.site.item_name],
+      [section]: {
+        ...prev[section],
         [name]: true,
       },
     }));
-    setError(null); // Clear error when user clicks a slider
+    setError(null);
   };
 
   const handleNext = () => {
+    if (showInitialQuestion) {
+      if (!touchedSliders.initial[initialQuestion.value]) {
+        setError("Please interact with the slider before proceeding.");
+        return;
+      }
+      setShowInitialQuestion(false);
+      setError(null);
+      return;
+    }
+
     const allTouched = allQuestions.every(
       (q) => touchedSliders[currentSite.site.item_name][q.value],
     );
@@ -161,47 +184,98 @@ export default function Questionnaire() {
       >
         <h3>Questionnaire</h3>
         <br />
-        <h5>
-          Thank you for your participation so far. We will finish off with a
-          small questionnaire about your experience with the{" "}
-          {currentSite.site.item_name} website ({currentSite.domain}) from a
-          privacy perspective. After completing this questionnaire,{" "}
-          {currentSiteIndex < sites.length - 1
-            ? "you will answer the same questions for another site."
-            : "the study will be finished."}
-        </h5>
-        <br />
-        <br />
-        {allQuestions.map((q) => (
-          <Box key={q.value} sx={{ mb: 4, width: "80%" }}>
-            <Typography variant="body1" gutterBottom>
-              {q.text(currentSite.site.item_name)}
-            </Typography>
-            <Slider
-              value={
-                responses[currentSite.site.item_name][q.value] ||
-                sliderConfig.defaultValue
-              }
-              onChange={(e, value) =>
-                handleSliderChange(e, value as number, q.value)
-              }
-              onClick={() => handleSliderClick(q.value)}
-              min={sliderConfig.min}
-              max={sliderConfig.max}
-              step={sliderConfig.step}
-              valueLabelDisplay="off"
-              aria-labelledby={`${q.value}-slider`}
-            />
-            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-              <Typography variant="body2">
-                {sliderConfig.minRateDescription}
+        {showInitialQuestion ? (
+          <>
+            <h5>
+              Thank you for your participation so far. Below, please answer the
+              following question about your familiarity with deceptive design
+              patterns.
+            </h5>
+            <br />
+            <br />
+            <Box sx={{ mb: 4, width: "80%" }}>
+              <Typography variant="body1" gutterBottom>
+                {initialQuestion.text}
               </Typography>
-              <Typography variant="body2">
-                {sliderConfig.maxRateDescription}
-              </Typography>
+              <Slider
+                value={
+                  responses.initial[initialQuestion.value] ||
+                  sliderConfig.defaultValue
+                }
+                onChange={(e, value) =>
+                  handleSliderChange(e, value, initialQuestion.value, "initial")
+                }
+                onClick={() =>
+                  handleSliderClick(initialQuestion.value, "initial")
+                }
+                min={sliderConfig.min}
+                max={sliderConfig.max}
+                step={sliderConfig.step}
+                valueLabelDisplay="off"
+                aria-labelledby={`${initialQuestion.value}-slider`}
+              />
+              <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                <Typography variant="body2">
+                  {sliderConfig.minRateDescription}
+                </Typography>
+                <Typography variant="body2">
+                  {sliderConfig.maxRateDescription}
+                </Typography>
+              </Box>
             </Box>
-          </Box>
-        ))}
+          </>
+        ) : (
+          <>
+            <h5>
+              Thank you for your participation so far. We will finish off with a
+              small questionnaire about your experience with the{" "}
+              {currentSite.site.item_name} website ({currentSite.domain}) from a
+              privacy perspective. After completing this questionnaire,{" "}
+              {currentSiteIndex < sites.length - 1
+                ? "you will answer the same questions for another site."
+                : "the study will be finished."}
+            </h5>
+            <br />
+            <br />
+            {allQuestions.map((q) => (
+              <Box key={q.value} sx={{ mb: 4, width: "80%" }}>
+                <Typography variant="body1" gutterBottom>
+                  {q.text(currentSite.site.item_name)}
+                </Typography>
+                <Slider
+                  value={
+                    responses[currentSite.site.item_name][q.value] ||
+                    sliderConfig.defaultValue
+                  }
+                  onChange={(e, value) =>
+                    handleSliderChange(
+                      e,
+                      value,
+                      q.value,
+                      currentSite.site.item_name,
+                    )
+                  }
+                  onClick={() =>
+                    handleSliderClick(q.value, currentSite.site.item_name)
+                  }
+                  min={sliderConfig.min}
+                  max={sliderConfig.max}
+                  step={sliderConfig.step}
+                  valueLabelDisplay="off"
+                  aria-labelledby={`${q.value}-slider`}
+                />
+                <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                  <Typography variant="body2">
+                    {sliderConfig.minRateDescription}
+                  </Typography>
+                  <Typography variant="body2">
+                    {sliderConfig.maxRateDescription}
+                  </Typography>
+                </Box>
+              </Box>
+            ))}
+          </>
+        )}
         {error && (
           <Typography color="error" sx={{ mt: 2 }}>
             {error}
@@ -212,7 +286,11 @@ export default function Questionnaire() {
           variant="contained"
           sx={{ mt: 2, textTransform: "none" }}
         >
-          {currentSiteIndex < sites.length - 1 ? "Next" : "Complete"}
+          {showInitialQuestion
+            ? "Next"
+            : currentSiteIndex < sites.length - 1
+              ? "Next"
+              : "Complete"}
         </Button>
       </Box>
     </>
