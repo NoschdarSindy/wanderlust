@@ -13,14 +13,8 @@ import { sendEvent } from "src/lib/client";
 import { getDesignMode } from "src/lib/composables";
 import { useLocation } from "react-router-dom";
 
-const NewsletterForm = forwardRef((_, ref) => {
+const NewsletterForm = ({ validator }) => {
   const d = getDesignMode();
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  useImperativeHandle(ref, () => ({
-    getEmail: () => inputRef.current?.value ?? "",
-  }));
-
   useEffect(() => {
     sendEvent("newsletter/start");
   }, []);
@@ -40,17 +34,17 @@ const NewsletterForm = forwardRef((_, ref) => {
         </Grid>
         <Grid item xs={12}>
           <TextField
-            inputRef={inputRef}
             label="Email address"
             type="email"
             fullWidth
             required={d.isDark}
             autoComplete={"off"}
+            onChange={(e) => validator(e.target.value)}
           />
         </Grid>
       </Grid>
     </Fragment>
   );
-});
+};
 
 export default NewsletterForm;

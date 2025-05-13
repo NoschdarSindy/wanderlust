@@ -97,6 +97,11 @@ const Checkout = () => {
   const isNewsletterRoute = useMatch("/checkout/newsletter");
   const [isEmailValid, setIsEmailValid] = useState(true);
 
+  const validateEmail = (value: string) => {
+    const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+    setIsEmailValid(isValid);
+  };
+
   useEffect(() => {
     if (!isNewsletterRoute) return;
 
@@ -179,7 +184,10 @@ const Checkout = () => {
                   <Route path="/your-details" element={<AddressForm />} />
                   <Route path="/travelProtection" element={<InsuranceForm />} />
                   <Route path="/payment" element={<PaymentForm />} />
-                  <Route path="/newsletter" element={<NewsletterForm />} />
+                  <Route
+                    path="/newsletter"
+                    element={<NewsletterForm validator={validateEmail} />}
+                  />
                 </Routes>
                 <Grid container justifyContent="flex-end" gap={1}>
                   <Box sx={{ display: "flex" }}>
@@ -193,12 +201,12 @@ const Checkout = () => {
                     {/*    </button>*/}
                     {/*  </Zoom>*/}
                     {/*)}*/}
-                    {location.pathname.includes("/id") && d.isFair && (
+                    {isNewsletterRoute && d.isFair && (
                       <button
                         onClick={handleSkip}
                         className={`btn btn-${d.isFair ? "primary" : "light"}`}
                       >
-                        Skip identification
+                        Skip
                       </button>
                     )}
                   </Box>

@@ -1,7 +1,5 @@
-import { Box } from "@mui/material";
-import { Model } from "survey-core";
-import { Survey } from "survey-react-ui";
-import "survey-core/defaultV2.min.css";
+import { Box, Slider, Typography, Button } from "@mui/material";
+import { useState } from "react";
 import "./questionnaire.css";
 import { EventName, storeJson } from "src/lib/client";
 import { Entry } from "../../../start-service.ts";
@@ -11,37 +9,11 @@ const sliderConfig = {
   min: 1,
   max: 7,
   defaultValue: 4,
-  step: 0.1,
-  rateValues: [
-    { value: 1, text: "Strongly Disagree" },
-    { value: 2, text: "Disagree" },
-    { value: 3, text: "Somewhat Disagree" },
-    { value: 4, text: "Neither Agree nor Disagree" },
-    { value: 5, text: "Somewhat Agree" },
-    { value: 6, text: "Agree" },
-    { value: 7, text: "Strongly Agree" },
-  ],
+  step: 0.01,
+  minRateDescription: "Strongly Disagree",
+  maxRateDescription: "Strongly Agree",
 };
 
-const json = {
-  elements: [
-    {
-      type: "rating",
-      name: "result",
-      displayMode: "slider",
-      minRateDescription: "Strongly Disagree",
-      maxRateDescription: "Strongly Agree",
-      ...sliderConfig,
-      isRequired: true,
-      titleLocation: "hidden",
-    },
-  ],
-  showQuestionNumbers: "off",
-  completedHtml:
-    "<h3>Thank you for your participation. The study is now finished.</h3>",
-};
-
-// My own questions
 const part1: { value: EventName; text: (site: string) => string }[] = [
   {
     value: "cookies",
@@ -58,11 +30,6 @@ const part1: { value: EventName; text: (site: string) => string }[] = [
     text: (site) =>
       `When the ${site} website asked to enable browser notifications, I felt concerned about my privacy.`,
   },
-  // {
-  //   value: "paymentMethod",
-  //   text: (site) =>
-  //     `When the ${site} website asked for my payment information, I felt concerned about my privacy.`,
-  // },
   {
     value: "travelProtection",
     text: (site) =>
@@ -91,16 +58,19 @@ export default function Questionnaire() {
   );
   const darkSite = getSite(darkSiteName);
 
-  const survey = new Model({
-    ...json,
-    elements: allQuestions.map((q) => ({
-      ...json.elements[0],
-      title: q.text(darkSite.item_name),
-      name: q.value,
-    })),
-  });
-  survey.onComplete.add((sender) => {
-    const results = JSON.stringify({ ...sender.data, entries });
+  const [responses, setResponses] = useState<Record<string, number>>(
+    allQuestions.reduce(
+      (acc, q) => ({ ...acc, [q.value]: sliderConfig.defaultValue }),
+      {},
+    ),
+  );
+
+  const handleSliderChange = (_, value: number | number[], name: EventName) => {
+    setResponses((prev) => ({ ...prev, [name]: value as number }));
+  };
+
+  const handleSubmit = () => {
+    const results = JSON.stringify({ ...responses, entries });
     console.log(results);
 
     storeJson(results, "questionnaire")
@@ -112,7 +82,8 @@ export default function Questionnaire() {
       .catch((err) => {
         console.log(err);
       });
-  });
+    alert("Thank you for your participation. The study is now finished.");
+  };
 
   return (
     <>
@@ -125,15 +96,49 @@ export default function Questionnaire() {
       >
         <h3>Questionnaire</h3>
         <br />
-        <p>
+        <h5>
           Thank you for your participation so far. We will finish off with a
           small questionnaire about your experience with the{" "}
           {darkSite.item_name} website ({darkDomain}) from a privacy perspective
           {/*as well as your overall privacy concern*/}. After completing this
           questionnaire, the study will be finished.
-        </p>
+        </h5>
+        <br />
+        <br />
+        {allQuestions.map((q) => (
+          <Box key={q.value} sx={{ mb: 4, width: "80%" }}>
+            <Typography variant="body1" gutterBottom>
+              {q.text(darkSite.item_name)}
+            </Typography>
+            <Slider
+              value={responses[q.value] || sliderConfig.defaultValue}
+              onChange={(e, value) =>
+                handleSliderChange(e, value as number, q.value)
+              }
+              min={sliderConfig.min}
+              max={sliderConfig.max}
+              step={sliderConfig.step}
+              valueLabelDisplay="off" // Disable numbers on hover
+              aria-labelledby={`${q.value}-slider`}
+            />
+            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+              <Typography variant="body2">
+                {sliderConfig.minRateDescription}
+              </Typography>
+              <Typography variant="body2">
+                {sliderConfig.maxRateDescription}
+              </Typography>
+            </Box>
+          </Box>
+        ))}
+        <Button
+          onClick={handleSubmit}
+          variant="contained"
+          sx={{ mt: 2, textTransform: "none" }}
+        >
+          Complete
+        </Button>
       </Box>
-      <Survey model={survey} />
     </>
   );
 }
