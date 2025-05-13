@@ -18,27 +18,27 @@ const part1: { value: EventName; text: (site: string) => string }[] = [
   {
     value: "cookies",
     text: (site) =>
-      `When the ${site} website showed a cookie banner with no real choice, I felt concerned about my privacy.`,
+      `I noticed that the cookie banner on the ${site} website was designed in a way that restricted my control or pressured me to accept cookies.`,
   },
   {
     value: "geolocation",
     text: (site) =>
-      `When the ${site} website asked for my location, I felt concerned about my privacy.`,
+      `I noticed that the way the ${site} website asked for my location was designed in a way that pressured me to allow it.`,
   },
   {
     value: "notification",
     text: (site) =>
-      `When the ${site} website asked to enable browser notifications, I felt concerned about my privacy.`,
+      `I noticed that the way the ${site} website asked to send me notifications was designed in a way that restricted my control or pressured me to allow them.`,
   },
   {
     value: "travelProtection",
     text: (site) =>
-      `When the ${site} website preselected travel protection and added it to my basket by default, I felt concerned about my privacy.`,
+      `I noticed that the travel protection options on the ${site} website were designed in a way that pressured me to include them in my booking.`,
   },
   {
     value: "newsletter",
     text: (site) =>
-      `When the ${site} website asked me to sign up for the newsletter, I felt concerned about my privacy.`,
+      `I noticed that the newsletter sign-up on the ${site} website was designed in a way that restricted my control or pressured me to subscribe.`,
   },
 ];
 
