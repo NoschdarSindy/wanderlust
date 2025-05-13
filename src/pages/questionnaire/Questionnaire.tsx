@@ -36,14 +36,9 @@ const part1: { value: EventName; text: (site: string) => string }[] = [
       `When the ${site} website preselected travel protection and added it to my basket by default, I felt concerned about my privacy.`,
   },
   {
-    value: "videoIdent",
+    value: "newsletter",
     text: (site) =>
-      `When the ${site} website asked me to verify my identity using my ID, I felt concerned about my privacy.`,
-  },
-  {
-    value: "camera",
-    text: (site) =>
-      `When the ${site} website asked for access to my camera, I felt concerned about my privacy.`,
+      `When the ${site} website asked me to sign up for the newsletter, I felt concerned about my privacy.`,
   },
 ];
 
@@ -53,36 +48,106 @@ const allQuestions = part1.concat(part2);
 
 export default function Questionnaire() {
   const entries = JSON.parse(VITE_ENTRIES);
-  const { site: darkSiteName, domain: darkDomain } = entries.find(
-    (entry: Entry) => entry.design === "dark",
-  );
-  const darkSite = getSite(darkSiteName);
 
-  const [responses, setResponses] = useState<Record<string, number>>(
-    allQuestions.reduce(
-      (acc, q) => ({ ...acc, [q.value]: sliderConfig.defaultValue }),
+  const sites = entries.map((site: Entry) => {
+    return {
+      site: getSite(site.site),
+      domain: site.domain,
+    };
+  });
+
+  const [currentSiteIndex, setCurrentSiteIndex] = useState(0);
+  const currentSite = sites[currentSiteIndex];
+
+  const [responses, setResponses] = useState<
+    Record<string, Record<string, number>>
+  >(
+    sites.reduce(
+      (acc, site) => ({
+        ...acc,
+        [site.site.item_name]: allQuestions.reduce(
+          (qAcc, q) => ({ ...qAcc, [q.value]: sliderConfig.defaultValue }),
+          {},
+        ),
+      }),
       {},
     ),
   );
 
+  const [touchedSliders, setTouchedSliders] = useState<
+    Record<string, Record<string, boolean>>
+  >(
+    sites.reduce(
+      (acc, site) => ({
+        ...acc,
+        [site.site.item_name]: allQuestions.reduce(
+          (qAcc, q) => ({ ...qAcc, [q.value]: false }),
+          {},
+        ),
+      }),
+      {},
+    ),
+  );
+
+  const [error, setError] = useState<string | null>(null);
+
   const handleSliderChange = (_, value: number | number[], name: EventName) => {
-    setResponses((prev) => ({ ...prev, [name]: value as number }));
+    setResponses((prev) => ({
+      ...prev,
+      [currentSite.site.item_name]: {
+        ...prev[currentSite.site.item_name],
+        [name]: value as number,
+      },
+    }));
+    setTouchedSliders((prev) => ({
+      ...prev,
+      [currentSite.site.item_name]: {
+        ...prev[currentSite.site.item_name],
+        [name]: true,
+      },
+    }));
+    setError(null); // Clear error when user interacts with a slider
   };
 
-  const handleSubmit = () => {
-    const results = JSON.stringify({ ...responses, entries });
-    console.log(results);
+  const handleSliderClick = (name: EventName) => {
+    setTouchedSliders((prev) => ({
+      ...prev,
+      [currentSite.site.item_name]: {
+        ...prev[currentSite.site.item_name],
+        [name]: true,
+      },
+    }));
+    setError(null); // Clear error when user clicks a slider
+  };
 
-    storeJson(results, "questionnaire")
-      .then((response) => {
-        response.json().then((json) => {
-          console.log(json.message);
+  const handleNext = () => {
+    const allTouched = allQuestions.every(
+      (q) => touchedSliders[currentSite.site.item_name][q.value],
+    );
+
+    if (!allTouched) {
+      setError("Please interact with all sliders before proceeding.");
+      return;
+    }
+
+    if (currentSiteIndex < sites.length - 1) {
+      setCurrentSiteIndex(currentSiteIndex + 1);
+      setError(null);
+    } else {
+      const results = JSON.stringify({ responses, entries });
+      console.log(results);
+
+      storeJson(results, "questionnaire")
+        .then((response) => {
+          response.json().then((json) => {
+            console.log(json.message);
+          });
+        })
+        .catch((err) => {
+          console.log(err);
         });
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-    alert("Thank you for your participation. The study is now finished.");
+      alert("Thank you for your participation. The study is now finished.");
+    }
   };
 
   return (
@@ -99,26 +164,32 @@ export default function Questionnaire() {
         <h5>
           Thank you for your participation so far. We will finish off with a
           small questionnaire about your experience with the{" "}
-          {darkSite.item_name} website ({darkDomain}) from a privacy perspective
-          {/*as well as your overall privacy concern*/}. After completing this
-          questionnaire, the study will be finished.
+          {currentSite.site.item_name} website ({currentSite.domain}) from a
+          privacy perspective. After completing this questionnaire,{" "}
+          {currentSiteIndex < sites.length - 1
+            ? "you will answer the same questions for another site."
+            : "the study will be finished."}
         </h5>
         <br />
         <br />
         {allQuestions.map((q) => (
           <Box key={q.value} sx={{ mb: 4, width: "80%" }}>
             <Typography variant="body1" gutterBottom>
-              {q.text(darkSite.item_name)}
+              {q.text(currentSite.site.item_name)}
             </Typography>
             <Slider
-              value={responses[q.value] || sliderConfig.defaultValue}
+              value={
+                responses[currentSite.site.item_name][q.value] ||
+                sliderConfig.defaultValue
+              }
               onChange={(e, value) =>
                 handleSliderChange(e, value as number, q.value)
               }
+              onClick={() => handleSliderClick(q.value)}
               min={sliderConfig.min}
               max={sliderConfig.max}
               step={sliderConfig.step}
-              valueLabelDisplay="off" // Disable numbers on hover
+              valueLabelDisplay="off"
               aria-labelledby={`${q.value}-slider`}
             />
             <Box sx={{ display: "flex", justifyContent: "space-between" }}>
@@ -131,12 +202,17 @@ export default function Questionnaire() {
             </Box>
           </Box>
         ))}
+        {error && (
+          <Typography color="error" sx={{ mt: 2 }}>
+            {error}
+          </Typography>
+        )}
         <Button
-          onClick={handleSubmit}
+          onClick={handleNext}
           variant="contained"
           sx={{ mt: 2, textTransform: "none" }}
         >
-          Complete
+          {currentSiteIndex < sites.length - 1 ? "Next" : "Complete"}
         </Button>
       </Box>
     </>
