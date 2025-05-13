@@ -7,46 +7,32 @@ import { EventName, storeJson } from "src/lib/client";
 import { Entry } from "../../../start-service.ts";
 import { getSite } from "src/lib/composables.ts";
 
-const likert = [
-  {
-    value: 7,
-    text: "Strongly Agree",
-  },
-  {
-    value: 6,
-    text: "Agree",
-  },
-  {
-    value: 5,
-    text: "Somewhat Agree",
-  },
-  {
-    value: 4,
-    text: "Neither Agree nor Disagree",
-  },
-  {
-    value: 3,
-    text: "Somewhat Disagree",
-  },
-  {
-    value: 2,
-    text: "Disagree",
-  },
-  {
-    value: 1,
-    text: "Strongly disagree",
-  },
-];
+const sliderConfig = {
+  min: 1,
+  max: 7,
+  defaultValue: 4,
+  step: 0.1,
+  rateValues: [
+    { value: 1, text: "Strongly Disagree" },
+    { value: 2, text: "Disagree" },
+    { value: 3, text: "Somewhat Disagree" },
+    { value: 4, text: "Neither Agree nor Disagree" },
+    { value: 5, text: "Somewhat Agree" },
+    { value: 6, text: "Agree" },
+    { value: 7, text: "Strongly Agree" },
+  ],
+};
 
 const json = {
   elements: [
     {
-      type: "matrix",
+      type: "rating",
       name: "result",
-      columns: likert,
-      alternateRows: true,
-      isAllRowRequired: true,
-      rowTitleWidth: "25em",
+      displayMode: "slider",
+      minRateDescription: "Strongly Disagree",
+      maxRateDescription: "Strongly Agree",
+      ...sliderConfig,
+      isRequired: true,
       titleLocation: "hidden",
     },
   ],
@@ -72,14 +58,6 @@ const part1: { value: EventName; text: (site: string) => string }[] = [
     text: (site) =>
       `When the ${site} website asked to enable browser notifications, I felt concerned about my privacy.`,
   },
-  // {
-  //   value: "personalDetailsConcern",
-  //   text: "When the website asked for my personal details, I felt concerned about my privacy.",
-  // },
-  // {
-  //   value: "confusingCheckbox",
-  //   text: "After entering my email address, I noticed that the checkbox below contained intentionally confusing text.",
-  // },
   {
     value: "paymentMethod",
     text: (site) =>
@@ -90,10 +68,6 @@ const part1: { value: EventName; text: (site: string) => string }[] = [
     text: (site) =>
       `When the ${site} website preselected travel protection and added it to my basket by default, I felt concerned about my privacy.`,
   },
-  // {
-  //   value: "idConcern",
-  //   text: "When the website asked for my ID, I felt concerned about my privacy.",
-  // },
   {
     value: "videoIdent",
     text: (site) =>
@@ -106,49 +80,7 @@ const part1: { value: EventName; text: (site: string) => string }[] = [
   },
 ];
 
-// IUIPC-10
-const part2 = [
-  // {
-  //   value: "iuipc1",
-  //   text: "Consumer online privacy is really a matter of consumers’ right to exercise control and autonomy over decisions about how their information is collected, used, and shared.",
-  // },
-  // {
-  //   value: "iuipc2",
-  //   text: "Consumer control of personal information lies at the heart of consumer privacy.",
-  // },
-  // {
-  //   value: "iuipc3",
-  //   text: "I believe that online privacy is invaded when control is lost or unwillingly reduced as a result of a marketing transaction.",
-  // },
-  // {
-  //   value: "iuipc4",
-  //   text: "Companies seeking information online should disclose the way the data are collected, processed, and used.",
-  // },
-  // {
-  //   value: "iuipc5",
-  //   text: "A good consumer online privacy policy should have a clear and conspicuous disclosure.",
-  // },
-  // {
-  //   value: "iuipc6",
-  //   text: "It is very important to me that I am aware and knowledgeable about how my personal information will be used.",
-  // },
-  // {
-  //   value: "iuipc7",
-  //   text: "It usually bothers me when online companies ask me for personal information.",
-  // },
-  // {
-  //   value: "iuipc8",
-  //   text: "When online companies ask me for personal information, I sometimes think twice before providing it.",
-  // },
-  // {
-  //   value: "iuipc9",
-  //   text: "It bothers me to give personal information to so many online companies.",
-  // },
-  // {
-  //   value: "iuipc10",
-  //   text: "I’m concerned that online companies are collecting too much personal information about me.",
-  // },
-];
+const part2 = [];
 
 const allQuestions = part1.concat(part2);
 
@@ -163,7 +95,8 @@ export default function Questionnaire() {
     ...json,
     elements: allQuestions.map((q) => ({
       ...json.elements[0],
-      rows: [{ ...q, text: q.text(darkSite.item_name) }],
+      title: q.text(darkSite.item_name),
+      name: q.value,
     })),
   });
   survey.onComplete.add((sender) => {

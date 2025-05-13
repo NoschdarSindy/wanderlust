@@ -25,8 +25,8 @@ export default function LocationPopup({ accept }) {
   const [askedForLocation, setAskedForLocation] =
     useRecoilState(askedForLocationAtom);
 
-  const handleClose = (_e: any, reason?: string) => {
-    sendEvent("geolocation/end");
+  const handleReject = (_e: any, reason?: string) => {
+    sendEvent("geolocation/end/reject");
     setOpen(false);
     setAskedForLocation(true);
   };
@@ -38,7 +38,7 @@ export default function LocationPopup({ accept }) {
 
   return (
     <BootstrapDialog
-      onClose={handleClose}
+      onClose={handleReject}
       aria-labelledby="customized-dialog-title"
       open={open}
     >
@@ -55,7 +55,7 @@ export default function LocationPopup({ accept }) {
         Enable Location Access
         <IconButton
           aria-label="close"
-          onClick={handleClose}
+          onClick={handleReject}
           sx={{
             color: (theme) => theme.palette.grey[500],
           }}
@@ -71,6 +71,7 @@ export default function LocationPopup({ accept }) {
       <DialogActions>
         <button
           onClick={() => {
+            sendEvent("geolocation/end/accept");
             accept();
             setOpen(false);
           }}

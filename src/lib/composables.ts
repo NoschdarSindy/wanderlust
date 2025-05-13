@@ -123,7 +123,7 @@ export function getDesignMode() {
     design,
     isDark: design === "dark",
     isFair: design === "fair",
-    isNone: design === "none",
+    isNone: false, // design === "none",
   };
 }
 

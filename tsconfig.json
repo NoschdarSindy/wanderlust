@@ -11,6 +11,8 @@
       "src/*": ["src/*"]
     },
     "jsx": "react-jsx",
-    "types": ["vite/client"]
+    "types": ["vite/client"],
+    "skipLibCheck": true,
+    "noEmit": true
   }
 }

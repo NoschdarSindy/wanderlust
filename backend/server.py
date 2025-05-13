@@ -26,27 +26,6 @@ app.add_middleware(
 output_dir = Path("C:/Users/Nosch/Desktop/wanderlust/output")
 participantName = "unknown"
 
-sites = [
-    "hotels",
-    "flights",
-    "cars",
-]
-
-events = [
-    "routeChange",
-    "app",
-    "cookies",
-    "geolocation",
-    "notification",
-    # "personalDetails",
-    "travelProtection",
-    "paymentMethod",
-    "videoIdent",
-    "camera",
-]
-
-event_phases = ['start', 'end']
-
 info = StreamInfo("Frontend Events", "Markers", 1, 0, 'string', 'frontend')
 outlet = StreamOutlet(info)
 print("✅  LSL outlet ready — Ready to send data.")
@@ -138,12 +117,6 @@ async def get_event(request: Request, participant: str, site: str, design: str, 
     global participantName
     if participant != participantName:
         print(f"⚠️  Participant mismatch: expected {participantName}, got {participant}")
-    if site not in sites:
-        raise HTTPException(status_code=404, detail="Site not found")
-    if event not in events:
-        raise HTTPException(status_code=404, detail="Event not found")
-    if event != "routeChange" and route_or_event_phase not in event_phases:
-        raise HTTPException(status_code=404, detail="Specify start or end for " + event)
 
     full_path = request.url.path
     if request.url.query:

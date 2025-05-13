@@ -7,13 +7,16 @@ const events = [
   "notification",
   // "personalDetails",
   "travelProtection",
-  "paymentMethod",
+  // "paymentMethod",
+  "newsletter",
   "videoIdent",
   "camera",
 ] as const;
 export type EventName = (typeof events)[number];
-type EventPhase = "start" | "end";
-type EvenString = `${EventName}/${EventPhase}` | `routeChange/${string}`;
+type Decision = "accept" | "reject";
+type EvenString =
+  | `${EventName}/${"start" | `end${`/${Decision}` | ""}`}`
+  | `routeChange/${string}`;
 
 const participant = VITE_PARTICIPANT;
 const s = getSite();

@@ -22,10 +22,15 @@ function NotificationPermissionBanner() {
   const [askedForNotificationPermission, setAskedForNotificationPermission] =
     useRecoilState(askedForNotificationPermissionAtom);
 
-  const handleAccept = () => Notification.requestPermission().then(handleClose);
+  const handleAccept = () =>
+    Notification.requestPermission().then((permission) =>
+      handleClose(undefined, permission),
+    );
 
-  const handleClose = () => {
-    sendEvent("notification/end");
+  const handleClose = (_, permission?: NotificationPermission) => {
+    sendEvent(
+      `notification/end/${permission === "granted" ? "accept" : "reject"}`,
+    );
     setAskedForNotificationPermission(true);
   };
 

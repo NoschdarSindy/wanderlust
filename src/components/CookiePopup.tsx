@@ -27,7 +27,7 @@ export default function CookiePopup() {
 
   const handleClose = (_?: any, reason?: string) => {
     if (reason === "backdropClick") return;
-    sendEvent("cookies/end");
+    sendEvent("cookies/end/accept"); // no option to reject
     setOpen(false);
     setAskedForCookies(true);
   };
@@ -44,7 +44,6 @@ export default function CookiePopup() {
   if (!d.isNone)
     return (
       <BootstrapDialog
-        onClose={handleClose}
         aria-labelledby="customized-dialog-title"
         open={open}
         disableScrollLock

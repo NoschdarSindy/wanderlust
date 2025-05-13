@@ -11,14 +11,15 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import PaymentForm from "../../components/PaymentForm";
-import { Route, Routes, useLocation } from "react-router-dom";
+import { Route, Routes, useLocation, useMatch } from "react-router-dom";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import {
   cameraAccessGrantedAtom,
   showSkipIdButtonAtom,
+  travelProtectionSelectedAtom,
   // showSkipPaymentButtonAtom,
 } from "src/lib/atoms";
-import IdForm from "../../components/IdForm";
+import NewsletterForm from "../../components/NewsletterForm.tsx";
 import { sendEvent } from "src/lib/client";
 import InsuranceForm from "src/components/InsuranceForm";
 import getCssVariable from "src/lib/util";
@@ -90,11 +91,29 @@ const Checkout = () => {
   const [theme, setTheme] = useState(null);
   const location = useLocation();
   const navigateDelayed = useCustomNavigate();
-  // const showSkipPaymentButton = useRecoilValue(showSkipPaymentButtonAtom);
-  const showSkipIdButton = useRecoilValue(showSkipIdButtonAtom);
-  const cameraAccessGranted = useRecoilValue(cameraAccessGrantedAtom);
   const params = new URLSearchParams(location.search);
-  const isBriefing = params.has("briefing");
+  const travelProtectionSelected = useRecoilValue(travelProtectionSelectedAtom);
+
+  const isNewsletterRoute = useMatch("/checkout/newsletter");
+  const [isEmailValid, setIsEmailValid] = useState(true);
+
+  useEffect(() => {
+    if (!isNewsletterRoute) return;
+
+    const input: HTMLInputElement | null = document.querySelector(
+      'input[type="email"]',
+    );
+    const validate = () => {
+      const value = input?.value || "";
+      const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+      setIsEmailValid(valid);
+    };
+
+    input?.addEventListener("keyup", validate);
+    validate();
+
+    return () => input?.removeEventListener("keyup", validate);
+  }, [isNewsletterRoute]);
 
   const handleNext = (e) => {
     e.preventDefault();
@@ -106,19 +125,17 @@ const Checkout = () => {
           navigateDelayed(d.isNone ? "/summary" : "/checkout/travelProtection");
           break;
         case "/checkout/travelProtection":
-          sendEvent("travelProtection/end");
+          const travelProtectionAccepted = travelProtectionSelected === "yes";
+          sendEvent(
+            `travelProtection/end/${travelProtectionAccepted ? "accept" : "reject"}`,
+          );
           navigateDelayed("/checkout/payment");
           break;
         case "/checkout/payment":
-          sendEvent("paymentMethod/end");
-          navigateDelayed("/checkout/id" + (d.isFair ? "?briefing" : ""));
+          navigateDelayed("/checkout/newsletter");
           break;
-        case "/checkout/id":
-          if (isBriefing) {
-            navigateDelayed("/checkout/id");
-          } else {
-            endVideoIdent();
-          }
+        case "/checkout/newsletter":
+          endNewsletter();
           break;
         default:
           break;
@@ -126,18 +143,14 @@ const Checkout = () => {
     }
   };
 
-  const endVideoIdent = () => {
-    sendEvent("videoIdent/end");
+  const endNewsletter = () => {
+    sendEvent("newsletter/end");
     navigateDelayed("/summary");
   };
 
   const handleSkip = (e) => {
     e.preventDefault();
-    if (isBriefing) {
-      endVideoIdent();
-    } else {
-      handleNext(e);
-    }
+    endNewsletter();
   };
 
   useEffect(() => {
@@ -166,7 +179,7 @@ const Checkout = () => {
                   <Route path="/your-details" element={<AddressForm />} />
                   <Route path="/travelProtection" element={<InsuranceForm />} />
                   <Route path="/payment" element={<PaymentForm />} />
-                  <Route path="/id" element={<IdForm />} />
+                  <Route path="/newsletter" element={<NewsletterForm />} />
                 </Routes>
                 <Grid container justifyContent="flex-end" gap={1}>
                   <Box sx={{ display: "flex" }}>
@@ -180,26 +193,20 @@ const Checkout = () => {
                     {/*    </button>*/}
                     {/*  </Zoom>*/}
                     {/*)}*/}
-                    {location.pathname.includes("/id") && (
-                      <Zoom in={showSkipIdButton}>
-                        <button
-                          onClick={handleSkip}
-                          className={`btn btn-${d.isFair ? "primary" : "light"}`}
-                        >
-                          Skip identification
-                        </button>
-                      </Zoom>
+                    {location.pathname.includes("/id") && d.isFair && (
+                      <button
+                        onClick={handleSkip}
+                        className={`btn btn-${d.isFair ? "primary" : "light"}`}
+                      >
+                        Skip identification
+                      </button>
                     )}
                   </Box>
 
                   <button
                     className="btn btn-primary"
                     onClick={handleNext}
-                    disabled={
-                      location.pathname.includes("/id") &&
-                      !isBriefing &&
-                      !cameraAccessGranted
-                    }
+                    disabled={isNewsletterRoute && !isEmailValid}
                   >
                     Next
                   </button>

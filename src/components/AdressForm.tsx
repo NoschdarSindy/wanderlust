@@ -56,7 +56,7 @@ export default function AddressForm() {
             name="firstName"
             label="First name"
             fullWidth
-            autoComplete="given-name"
+            autoComplete="off"
             variant="standard"
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
@@ -69,7 +69,7 @@ export default function AddressForm() {
             name="lastName"
             label="Last name"
             fullWidth
-            autoComplete="family-name"
+            autoComplete="off"
             variant="standard"
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
@@ -83,7 +83,7 @@ export default function AddressForm() {
             name="emailAddress"
             label="Email address"
             fullWidth
-            autoComplete="email"
+            autoComplete="off"
             variant="standard"
             onBlur={handleEmailBlur}
             onChange={handleEmailChange}
@@ -102,7 +102,7 @@ export default function AddressForm() {
             name="phoneNumber"
             label="Phone number"
             fullWidth
-            autoComplete="tel"
+            autoComplete="off"
             variant="standard"
           />
         </Grid>
@@ -121,7 +121,7 @@ export default function AddressForm() {
             name="address1"
             label="Address line 1"
             fullWidth
-            autoComplete="shipping address-line1"
+            autoComplete="off"
             variant="standard"
           />
         </Grid>
@@ -131,7 +131,7 @@ export default function AddressForm() {
             name="address2"
             label="Address line 2"
             fullWidth
-            autoComplete="shipping address-line2"
+            autoComplete="off"
             variant="standard"
           />
         </Grid>
@@ -142,7 +142,7 @@ export default function AddressForm() {
             name="city"
             label="City"
             fullWidth
-            autoComplete="shipping address-level2"
+            autoComplete="off"
             variant="standard"
           />
         </Grid>
@@ -153,6 +153,7 @@ export default function AddressForm() {
             label="State/Province/Region"
             fullWidth
             variant="standard"
+            autoComplete="off"
           />
         </Grid>
         <Grid item xs={12} sm={6}>
@@ -162,7 +163,7 @@ export default function AddressForm() {
             name="zip"
             label="Zip / Postal code"
             fullWidth
-            autoComplete="shipping postal-code"
+            autoComplete="off"
             variant="standard"
           />
         </Grid>
@@ -172,7 +173,7 @@ export default function AddressForm() {
             name="country"
             label="Country"
             fullWidth
-            autoComplete="shipping country"
+            autoComplete="off"
             variant="standard"
           />
         </Grid>

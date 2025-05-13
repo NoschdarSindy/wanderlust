@@ -27,7 +27,7 @@ function App() {
 
   useEffect(() => {
     if (!s.isStudy) {
-      sendEvent(`routeChange/${location.pathname + location.search}`);
+      sendEvent(`routeChange/${location.pathname.split("/").pop()}`);
     }
   }, [location, s.isStudy]);
 

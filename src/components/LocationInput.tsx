@@ -71,17 +71,12 @@ export default function LocationInput({ accessor, placeholder }) {
   const handleGeolocationSuccess = () => {
     console.log("Location permission is enabled");
     setLocation(fakeGpsLocation);
-    endGeolocationEvent();
+    endGeolocationEvent(true);
   };
 
   const handleGeolocationError = () => {
     console.error("Location permission is denied");
-    endGeolocationEvent();
-  };
-
-  const startGeolocationEvent = () => {
-    sendEvent("geolocation/start");
-    getGeolocationPermission();
+    endGeolocationEvent(false);
   };
 
   const getGeolocationPermission = () => {
@@ -94,8 +89,8 @@ export default function LocationInput({ accessor, placeholder }) {
     );
   };
 
-  const endGeolocationEvent = () => {
-    sendEvent("geolocation/end");
+  const endGeolocationEvent = (accepted) => {
+    sendEvent(`geolocation/end/${accepted ? "accept" : "reject"}`);
     setShowBackdrop(false);
     setAskedForLocation(true);
   };
