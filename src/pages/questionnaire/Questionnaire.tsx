@@ -1,9 +1,17 @@
-import { Box, Slider, Typography, Button } from "@mui/material";
-import { useState } from "react";
+import {
+  Box,
+  Slider,
+  Typography,
+  Button,
+  CircularProgress,
+} from "@mui/material";
+import React, { useCallback, useState } from "react";
 import "./questionnaire.css";
 import { EventName, storeJson } from "src/lib/client";
 import { Entry } from "../../../start-service.ts";
 import { getSite } from "src/lib/composables.ts";
+import LoadingOverlay from "src/components/LoadingOverlay.tsx";
+import { useCustomNavigate } from "src/components/NavigationProvider.tsx";
 
 const sliderConfig = {
   min: 1,
@@ -23,7 +31,7 @@ const part1: { value: EventName; text: (site: string) => string }[] = [
   {
     value: "geolocation",
     text: (site) =>
-      `I noticed that the way the ${site} website asked for my location was designed in a way that pressured me to allow it.`,
+      `I noticed that the way the ${site} website asked for my location was designed in a way that restricted my control or pressured me to allow it.`,
   },
   {
     value: "notification",
@@ -33,7 +41,7 @@ const part1: { value: EventName; text: (site: string) => string }[] = [
   {
     value: "travelProtection",
     text: (site) =>
-      `I noticed that the travel protection options on the ${site} website were designed in a way that pressured me to include them in my booking.`,
+      `I noticed that the travel protection options on the ${site} website were designed in a way that restricted my control or pressured me to include them in my booking.`,
   },
   {
     value: "newsletter",
@@ -61,8 +69,17 @@ export default function Questionnaire() {
     };
   });
 
+  const delay = (func: () => void) => {
+    setIsLoading(true);
+    setTimeout(() => {
+      setIsLoading(false);
+      func();
+    }, 400);
+  };
+
   const [currentSiteIndex, setCurrentSiteIndex] = useState(0);
   const [showInitialQuestion, setShowInitialQuestion] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const currentSite = sites[currentSiteIndex];
 
   const [responses, setResponses] = useState<
@@ -139,8 +156,10 @@ export default function Questionnaire() {
         setError("Please interact with the slider before proceeding.");
         return;
       }
-      setShowInitialQuestion(false);
-      setError(null);
+      delay(() => {
+        setShowInitialQuestion(false);
+        setError(null);
+      });
       return;
     }
 
@@ -154,8 +173,10 @@ export default function Questionnaire() {
     }
 
     if (currentSiteIndex < sites.length - 1) {
-      setCurrentSiteIndex(currentSiteIndex + 1);
-      setError(null);
+      delay(() => {
+        setCurrentSiteIndex(currentSiteIndex + 1);
+        setError(null);
+      });
     } else {
       const results = JSON.stringify({ responses, entries });
       console.log(results);
@@ -227,12 +248,11 @@ export default function Questionnaire() {
         ) : (
           <>
             <h5>
-              Thank you for your participation so far. We will finish off with a
-              small questionnaire about your experience with the{" "}
-              {currentSite.site.item_name} website ({currentSite.domain}) from a
-              privacy perspective. After completing this questionnaire,{" "}
+              Next, we'd like to ask you a few brief questions about your
+              experience with the <b>{currentSite.site.item_name} website</b> (
+              {currentSite.domain}). After completing this questionnaire,{" "}
               {currentSiteIndex < sites.length - 1
-                ? "you will answer the same questions for another site."
+                ? `you will answer the same questions for the ${sites[currentSiteIndex + 1].site.item_name} website.`
                 : "the study will be finished."}
             </h5>
             <br />
@@ -281,17 +301,21 @@ export default function Questionnaire() {
             {error}
           </Typography>
         )}
-        <Button
-          onClick={handleNext}
-          variant="contained"
-          sx={{ mt: 2, textTransform: "none" }}
-        >
-          {showInitialQuestion
-            ? "Next"
-            : currentSiteIndex < sites.length - 1
+        <Box sx={{ position: "relative", mt: 2 }}>
+          <Button
+            onClick={handleNext}
+            variant="contained"
+            sx={{ textTransform: "none" }}
+            disabled={isLoading}
+          >
+            {showInitialQuestion
               ? "Next"
-              : "Complete"}
-        </Button>
+              : currentSiteIndex < sites.length - 1
+                ? "Next"
+                : "Complete"}
+          </Button>
+          {isLoading && <LoadingOverlay />}
+        </Box>
       </Box>
     </>
   );

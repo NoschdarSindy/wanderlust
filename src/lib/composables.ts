@@ -103,10 +103,10 @@ export const useNights = () => {
   );
 };
 
-export function useTotalPrice() {
+export function useTotalPrice(index?: number) {
   const s = getSite();
-  const mockIndex = useRecoilValue(mockIndexAtom);
-  const singlePrice = s.mocks[mockIndex].price;
+  index ??= useRecoilValue(mockIndexAtom);
+  const singlePrice = s.mocks[index].price;
   const counts = useRecoilValue(countsAtom);
   const factors = s.isCars ? [1] : Object.keys(s.counts).map((c) => counts[c]);
 

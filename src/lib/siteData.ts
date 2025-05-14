@@ -479,7 +479,7 @@ const mocks = {
       arrivalTimeReturn: "19:35",
       duration: "1h 50m",
       stops: "direct",
-      price: 89,
+      price: 102,
     },
     {
       airline: "easyJet",
@@ -489,7 +489,7 @@ const mocks = {
       arrivalTimeReturn: "22:05",
       duration: "1h 50m",
       stops: "direct",
-      price: 102,
+      price: 89,
     },
     {
       airline: "Eurowings",

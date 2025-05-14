@@ -22,14 +22,16 @@ const NewsletterForm = ({ validator }) => {
   return (
     <Fragment>
       <Typography variant="h6" gutterBottom>
-        Sign up for our newsletter to continue
+        {d.isDark
+          ? "Sign up for our newsletter to continue"
+          : "Stay informed with booking updates"}
       </Typography>
       <Grid container spacing={4} sx={{ paddingY: 2 }}>
         <Grid item xs={12}>
           <Typography sx={{ mb: 2 }}>
             {d.isDark
-              ? "To proceed, please enter your email address to subscribe to our newsletter. This is required to continue using the service."
-              : " Do you want to receive our newsletter? You can unsubscribe at any time."}
+              ? "Please enter your email to subscribe to our newsletter. This is required to continue."
+              : "To receive updates on your booking, you can enter your email address below (optional)."}
           </Typography>
         </Grid>
         <Grid item xs={12}>

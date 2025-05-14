@@ -1,31 +1,32 @@
 import { Box, Card, Grid, Radio, Typography } from "@mui/material";
-import { getImage } from "src/lib/composables";
+import { getDesignMode, getImage } from "src/lib/composables";
 import { travelProtectionSelectedAtom } from "src/lib/atoms";
 import { useRecoilState } from "recoil";
 import { useEffect } from "react";
 import { sendEvent } from "src/lib/client";
 
-const options = [
-  {
-    value: "yes",
-    label: "Continue with travel protection",
-    color: "success",
-    image: "sunshade-in-sand",
-    price: "19.99 €",
-  },
-  {
-    value: "no",
-    label: "Continue without travel protection",
-    color: "error",
-    image: "no-protection",
-    price: "0 €",
-  },
-];
-
 export default function InsuranceForm() {
   const [selectedOption, setSelectedOption] = useRecoilState(
     travelProtectionSelectedAtom,
   );
+  const d = getDesignMode();
+
+  const options = [
+    {
+      value: "yes",
+      label: "Continue with travel protection",
+      color: d.isDark ? "success.main" : "#0071c2",
+      image: "sunshade-in-sand",
+      price: "19.99 €",
+    },
+    {
+      value: "no",
+      label: "Continue without travel protection",
+      color: d.isDark ? "error.main" : "#0071c2",
+      image: "no-protection",
+      price: "0 €",
+    },
+  ];
 
   useEffect(() => {
     sendEvent("travelProtection/start");
@@ -52,8 +53,7 @@ export default function InsuranceForm() {
                 alignItems: "center",
                 justifyContent: "space-between",
                 borderWidth: 2,
-                borderColor:
-                  selectedOption === value ? `${color}.main` : "grey.300",
+                borderColor: selectedOption === value ? color : "grey.300",
                 cursor: "pointer",
               }}
             >
@@ -76,7 +76,7 @@ export default function InsuranceForm() {
                   checked={selectedOption === value}
                   value={value}
                   onChange={() => setSelectedOption(value)}
-                  sx={{ "&.Mui-checked": { color: `${color}.main` } }}
+                  sx={{ "&.Mui-checked": { color } }}
                 />
               </Box>
             </Card>

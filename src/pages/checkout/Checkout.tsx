@@ -148,14 +148,14 @@ const Checkout = () => {
     }
   };
 
-  const endNewsletter = () => {
-    sendEvent("newsletter/end");
+  const endNewsletter = (accept = true) => {
+    sendEvent(`newsletter/end/${accept ? "accept" : "reject"}`);
     navigateDelayed("/summary");
   };
 
   const handleSkip = (e) => {
     e.preventDefault();
-    endNewsletter();
+    endNewsletter(false);
   };
 
   useEffect(() => {

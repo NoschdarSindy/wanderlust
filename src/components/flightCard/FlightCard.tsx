@@ -23,7 +23,7 @@ export default function FlightCard(props: {
   const locationsArray = Object.values(locations);
   const isResults = useIsResultsPage();
   const isSummary = useIsSummaryPage();
-  const totalPrice = useTotalPrice();
+  const totalPrice = useTotalPrice(index);
   const getAirportCode = (location: string) =>
     /.*\((\w+)\)/.exec(location)?.[1];
   const getAirportName = (location: string) => /(.*)\s\(/.exec(location)?.[1];

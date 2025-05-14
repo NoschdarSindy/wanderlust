@@ -1,4 +1,3 @@
-import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { domains } from "src/lib/studyData"; // Import Bootstrap CSS
@@ -7,7 +6,7 @@ const Config = () => {
   const navigate = useNavigate();
   const entries = JSON.parse(VITE_ENTRIES);
 
-  const generateSettingsUrl = (domain) =>
+  const generateSettingsUrl = (domain: string) =>
     `chrome://settings/content/siteDetails?site=https%3A%2F%2F${domain}`;
 
   const copySettingsUrl = (domain?: string) => {
@@ -20,7 +19,10 @@ const Config = () => {
   };
 
   const handleBeginStudy = () => {
-    navigate("/consent"); // Navigate to the consent page
+    navigator.clipboard
+      .writeText(VITE_PARTICIPANT)
+      .then(() => navigate("/consent"))
+      .catch(() => alert("Unable to copy participant ID to clipboard"));
   };
 
   const getUrls = () => {

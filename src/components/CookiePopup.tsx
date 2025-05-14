@@ -27,9 +27,18 @@ export default function CookiePopup() {
 
   const handleClose = (_?: any, reason?: string) => {
     if (reason === "backdropClick") return;
-    sendEvent("cookies/end/accept"); // no option to reject
     setOpen(false);
     setAskedForCookies(true);
+  };
+
+  const handleAccept = () => {
+    sendEvent("cookies/end/accept");
+    handleClose();
+  };
+
+  const handleReject = () => {
+    sendEvent("cookies/end/reject");
+    handleClose();
   };
 
   useEffect(() => {
@@ -78,7 +87,7 @@ export default function CookiePopup() {
 
           {d.isFair && (
             <button
-              onClick={handleClose}
+              onClick={handleAccept}
               className="btn btn-primary"
               style={{ backgroundColor: "#0071c2", borderColor: "#0071c2" }}
             >
@@ -86,7 +95,7 @@ export default function CookiePopup() {
             </button>
           )}
           <button
-            onClick={handleClose}
+            onClick={handleReject}
             className="btn btn-primary"
             style={{ backgroundColor: "#0071c2", borderColor: "#0071c2" }}
           >

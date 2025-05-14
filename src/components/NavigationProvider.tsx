@@ -43,16 +43,17 @@ export function useCustomNavigate() {
   const navigate = useNavigate();
   const { setLoading } = useContext(NavigationContext);
 
-  return (to: string | number, options?: { replace?: boolean }) => {
+  return (to?: string | number, options?: { replace?: boolean }) => {
     setLoading(true);
 
     setTimeout(() => {
-      if (typeof to === "number") {
-        navigate(to);
-      } else {
-        navigate(to, options);
+      if (to) {
+        if (typeof to === "number") {
+          navigate(to);
+        } else {
+          navigate(to, options);
+        }
       }
-
       setTimeout(() => setLoading(false), 400);
     }, 100);
   };
