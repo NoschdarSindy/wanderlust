@@ -81,17 +81,17 @@ export default function CookiePopup() {
           )}
         </DialogContent>
         <DialogActions>
-          <button onClick={() => setShowMore(true)} className="btn btn-light">
-            Learn more
-          </button>
-
-          {d.isFair && (
+          {d.isFair ? (
             <button
               onClick={handleAccept}
               className="btn btn-primary"
               style={{ backgroundColor: "#0071c2", borderColor: "#0071c2" }}
             >
               Reject all
+            </button>
+          ) : (
+            <button onClick={() => setShowMore(true)} className="btn btn-light">
+              Learn more
             </button>
           )}
           <button
