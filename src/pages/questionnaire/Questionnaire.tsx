@@ -36,7 +36,7 @@ const part1: { value: EventName; text: (site: string) => string }[] = [
   {
     value: "notification",
     text: (site) =>
-      `I noticed that the ${site} website' request to send me notifications was designed in a way that restricted my control or pressured me to allow them.`,
+      `I noticed that the ${site} website's request to send me notifications was designed in a way that restricted my control or pressured me to allow them.`,
   },
   {
     value: "travelProtection",
