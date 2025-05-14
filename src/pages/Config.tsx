@@ -40,11 +40,11 @@ const Config = () => {
     <div className="m-5 p-xl-5">
       <p>Participant: {VITE_PARTICIPANT}</p>
       <pre>{entries.map(({ site, design }) => `${site}: ${design}\n`)}</pre>
-      <p>
-        Make sure and site data and permissions are reset before conducting the
-        study. To check permissions, open a new tab and paste:
-      </p>
-      <div>{getUrls()}</div>
+      {/*<p>*/}
+      {/*  Make sure and site data and permissions are reset before conducting the*/}
+      {/*  study. To check permissions, open a new tab and paste:*/}
+      {/*</p>*/}
+      {/*<div>{getUrls()}</div>*/}
       <p>
         <button className="btn btn-primary" onClick={handleBeginStudy}>
           Begin study
