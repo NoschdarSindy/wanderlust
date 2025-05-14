@@ -31,12 +31,12 @@ const part1: { value: EventName; text: (site: string) => string }[] = [
   {
     value: "geolocation",
     text: (site) =>
-      `I noticed that the way the ${site} website asked for my location was designed in a way that restricted my control or pressured me to allow it.`,
+      `I noticed that the ${site} website's request for my location was designed in a way that restricted my control or pressured me to allow it.`,
   },
   {
     value: "notification",
     text: (site) =>
-      `I noticed that the way the ${site} website asked to send me notifications was designed in a way that restricted my control or pressured me to allow them.`,
+      `I noticed that the ${site} website' request to send me notifications was designed in a way that restricted my control or pressured me to allow them.`,
   },
   {
     value: "travelProtection",
