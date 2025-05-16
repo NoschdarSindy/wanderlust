@@ -22,42 +22,55 @@ const sliderConfig = {
   maxRateDescription: "Strongly Agree",
 };
 
-const part1: { value: EventName; text: (site: string) => string }[] = [
+const stimuli: { value: string; label: string; intent: string }[] = [
   {
     value: "cookies",
-    text: (site) =>
-      `I noticed that the cookie banner on the ${site} website was designed in a way that restricted my control or pressured me to accept cookies.`,
+    label: "the cookie banner",
+    intent: "accept cookies",
   },
   {
     value: "geolocation",
-    text: (site) =>
-      `I noticed that the ${site} website's request for my location was designed in a way that restricted my control or pressured me to allow it.`,
+    label: "the website’s request for my location",
+    intent: "allow it",
   },
   {
     value: "notification",
-    text: (site) =>
-      `I noticed that the ${site} website's request to send me notifications was designed in a way that restricted my control or pressured me to allow them.`,
+    label: "the website’s request to send me notifications",
+    intent: "allow them",
   },
   {
     value: "travelProtection",
-    text: (site) =>
-      `I noticed that the travel protection options on the ${site} website were designed in a way that restricted my control or pressured me to include them in my booking.`,
+    label: "the travel protection options",
+    intent: "include them in my booking",
   },
   {
     value: "newsletter",
-    text: (site) =>
-      `I noticed that the newsletter sign-up on the ${site} website was designed in a way that restricted my control or pressured me to subscribe.`,
+    label: "the newsletter sign-up",
+    intent: "subscribe",
   },
 ];
 
-const part2 = [];
-
-const allQuestions = part1.concat(part2);
-
-const initialQuestion = {
-  value: "ddpFamiliarity",
-  text: "I am familiar with deceptive design patterns (sometimes called ‘dark patterns’).",
+const dpDescriptions = {
+  interfaceInterference:
+    "Some websites design their interfaces so that certain options are harder to see or choose.",
+  forcedAction:
+    "Some websites make users do things like signing up or granting access even when it's not really necessary.",
+  socialEngineering:
+    "Some websites use emotional or guilt-driven wording to pressure users into agreeing to something.",
+  sneaking:
+    "Some websites add extra services or costs by default unless the user removes them.",
 };
+
+const initialQuestions = [
+  {
+    value: "ddp_familiar",
+    text: "I am familiar with deceptive designs (sometimes called ‘dark patterns’).",
+  },
+  {
+    value: "ddp_bother",
+    text: "Deceptive design techniques usually bother me when I encounter them online.",
+  },
+];
 
 export default function Questionnaire() {
   const entries = JSON.parse(VITE_ENTRIES);
@@ -66,6 +79,7 @@ export default function Questionnaire() {
     return {
       site: getSite(site.site),
       domain: site.domain,
+      design: site.design,
     };
   });
 
@@ -82,14 +96,26 @@ export default function Questionnaire() {
   const [isLoading, setIsLoading] = useState(false);
   const currentSite = sites[currentSiteIndex];
 
+  const prefix = `${currentSite.site.name}_${currentSite.site.design}_`;
+  const siteQuestions = stimuli.flatMap(({ value, label, intent }) => [
+    {
+      value: `${prefix + value}_aware`,
+      text: `It seemed that the design of ${label} on the ${currentSite} website was intended to restrict my control or pressure me to ${intent}.`,
+    },
+    {
+      value: `${prefix + value}_bothered`,
+      text: `I was bothered by the design of ${label} on the ${currentSite} website.`,
+    },
+  ]);
+
   const [responses, setResponses] = useState<
     Record<string, Record<string, number>>
   >({
-    initial: { [initialQuestion.value]: sliderConfig.defaultValue },
+    initial: { [initialQuestions.value]: sliderConfig.defaultValue },
     ...sites.reduce(
       (acc, site) => ({
         ...acc,
-        [site.site.item_name]: allQuestions.reduce(
+        [site.site.item_name]: siteQuestions.reduce(
           (qAcc, q) => ({ ...qAcc, [q.value]: sliderConfig.defaultValue }),
           {},
         ),
@@ -101,11 +127,11 @@ export default function Questionnaire() {
   const [touchedSliders, setTouchedSliders] = useState<
     Record<string, Record<string, boolean>>
   >({
-    initial: { [initialQuestion.value]: false },
+    initial: { [initialQuestions.value]: false },
     ...sites.reduce(
       (acc, site) => ({
         ...acc,
-        [site.site.item_name]: allQuestions.reduce(
+        [site.site.item_name]: siteQuestions.reduce(
           (qAcc, q) => ({ ...qAcc, [q.value]: false }),
           {},
         ),
@@ -152,7 +178,7 @@ export default function Questionnaire() {
 
   const handleNext = () => {
     if (showInitialQuestion) {
-      if (!touchedSliders.initial[initialQuestion.value]) {
+      if (!touchedSliders.initial[initialQuestions.value]) {
         setError("Please interact with the slider before proceeding.");
         return;
       }
@@ -163,7 +189,7 @@ export default function Questionnaire() {
       return;
     }
 
-    const allTouched = allQuestions.every(
+    const allTouched = siteQuestions.every(
       (q) => touchedSliders[currentSite.site.item_name][q.value],
     );
 
@@ -209,31 +235,35 @@ export default function Questionnaire() {
           <>
             <h5>
               Thank you for your participation so far. Below, please answer the
-              following question about your familiarity with deceptive design
-              patterns.
+              following question about your familiarity with deceptive designs.
             </h5>
             <br />
             <br />
             <Box sx={{ mb: 4, width: "80%" }}>
               <Typography variant="body1" gutterBottom>
-                {initialQuestion.text}
+                {initialQuestions.text}
               </Typography>
               <Slider
                 value={
-                  responses.initial[initialQuestion.value] ||
+                  responses.initial[initialQuestions.value] ||
                   sliderConfig.defaultValue
                 }
                 onChange={(e, value) =>
-                  handleSliderChange(e, value, initialQuestion.value, "initial")
+                  handleSliderChange(
+                    e,
+                    value,
+                    initialQuestions.value,
+                    "initial",
+                  )
                 }
                 onClick={() =>
-                  handleSliderClick(initialQuestion.value, "initial")
+                  handleSliderClick(initialQuestions.value, "initial")
                 }
                 min={sliderConfig.min}
                 max={sliderConfig.max}
                 step={sliderConfig.step}
                 valueLabelDisplay="off"
-                aria-labelledby={`${initialQuestion.value}-slider`}
+                aria-labelledby={`${initialQuestions.value}-slider`}
               />
               <Box sx={{ display: "flex", justifyContent: "space-between" }}>
                 <Typography variant="body2">
@@ -257,10 +287,10 @@ export default function Questionnaire() {
             </h5>
             <br />
             <br />
-            {allQuestions.map((q) => (
+            {siteQuestions.map((q) => (
               <Box key={q.value} sx={{ mb: 4, width: "80%" }}>
                 <Typography variant="body1" gutterBottom>
-                  {q.text(currentSite.site.item_name)}
+                  {q.text}
                 </Typography>
                 <Slider
                   value={
