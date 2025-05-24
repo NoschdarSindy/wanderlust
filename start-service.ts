@@ -13,7 +13,7 @@ import {
 } from "./src/lib/studyData.ts";
 import * as process from "node:process";
 
-const customParticipantNumber = 1; // <=0 = none, >0 = custom
+const customParticipantNumber = 0; // <=0 = none, >0 = custom
 const openfakeSites = 0;
 const certs = 1;
 const kioskMode = 1;
