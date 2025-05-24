@@ -114,12 +114,12 @@ const generateSurveyModel = (sites) => {
               },
               {
                 name: `${value}_familiar`,
-                title: "I had seen this kind of design before the study.",
+                title: "I have seen the described design before the study.",
                 ...defaultOpts,
               },
               {
                 name: `${value}_bothered`,
-                title: "This kind of design generally bothers me.",
+                title: "The described design generally bothers me.",
                 ...defaultOpts,
               },
             ],
