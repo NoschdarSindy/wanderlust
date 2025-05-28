@@ -92,7 +92,7 @@ function Questionnaire() {
     design: site.design,
   }));
 
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(-1);
   const [formData, setFormData] = useState({});
   const [sliderTouched, setSliderTouched] = useState({});
   const [errors, setErrors] = useState({});
@@ -159,59 +159,64 @@ function Questionnaire() {
   };
 
   const handleBack = () => {
-    if (currentPage > 0) {
+    if (currentPage >= 0) {
       setCurrentPage((prev) => prev - 1);
     }
   };
 
   const getPageQuestions = (pageIndex) => {
-    if (pageIndex === 0) {
+    if (pageIndex === -1) {
       return [
-        ...initialQuestions.map((q) => ({
-          name: q.value,
-          title: q.text,
-          type: q.value === "ddp_bothered" ? "slider" : "radio",
+        {
+          type: "panel",
+          elements: initialQuestions.map((q) => ({
+            name: q.value,
+            title: q.text,
+            type: q.value === "ddp_bothered" ? "slider" : "radio",
+          })),
+        },
+        ...dpDescriptions.map(({ value, description }) => ({
+          type: "panel",
+          elements: [
+            { type: "html", html: `<big><big>${description}</big></big>` },
+            {
+              name: `${value}_familiar`,
+              title: "I have seen the described design before the study.",
+              type: "radio",
+            },
+            {
+              name: `${value}_bothered`,
+              title: "The described design generally bothers me.",
+              type: "slider",
+            },
+          ],
         })),
-        ...dpDescriptions.flatMap(({ value, description }) => [
-          { type: "html", html: `<big>${description}</big>` },
-          {
-            name: `${value}_familiar`,
-            title: "I have seen the described design before the study.",
-            type: "radio",
-          },
-          {
-            name: `${value}_bothered`,
-            title: "The described design generally bothers me.",
-            type: "slider",
-          },
-        ]),
       ];
     } else {
-      const site = sites[pageIndex - 1];
+      const site = sites[pageIndex];
       const prefix = `${site.site.name}_${site.design}_`;
       return [
         {
           type: "html",
-          html: `<h6>Next, we’d like to ask you a few short questions about your experience with the <b>${site.site.item_name}</b> website (${site.domain}). Once you’ve completed this part, ${
-            pageIndex < sites.length
-              ? `you will be asked the same questions about the ${sites[pageIndex].site.item_name} website.`
-              : "the study will be finished."
-          }</h6>`,
+          html: ``,
         },
-        ...stimuli.flatMap(({ value, label, intent }) => [
-          {
-            name: `${prefix + value}_aware`,
-            title: `It seemed that ${label(site.site.item_name)} ${
-              value === "travelProtection" ? "were" : "was"
-            } designed to restrict my control or pressure me to ${intent}.`,
-            type: "radio",
-          },
-          {
-            name: `${prefix + value}_bothered`,
-            title: `The design of ${label("")} bothered me.`,
-            type: "slider",
-          },
-        ]),
+        ...stimuli.map(({ value, label, intent }) => ({
+          type: "panel",
+          elements: [
+            {
+              name: `${prefix + value}_aware`,
+              title: `It seemed that ${label(site.site.item_name)} ${
+                value === "travelProtection" ? "were" : "was"
+              } designed to restrict my control or pressure me to ${intent}.`,
+              type: "radio",
+            },
+            {
+              name: `${prefix + value}_bothered`,
+              title: `The design of ${label("")} bothered me.`,
+              type: "slider",
+            },
+          ],
+        })),
       ];
     }
   };
@@ -220,67 +225,81 @@ function Questionnaire() {
     if (question.type === "html") {
       return (
         <Box
-          className="mb-6"
+          sx={{ mb: 3 }}
           dangerouslySetInnerHTML={{ __html: question.html }}
         />
       );
     } else if (question.type === "radio") {
       return (
-        <FormControl
-          component="fieldset"
-          error={!!errors[question.name]}
-          className="mb-6"
-        >
-          <Typography variant="h6" className="mb-2">
-            {question.title}
-          </Typography>
-          <RadioGroup
-            row
-            onChange={(e) => handleRadioChange(question.name, e.target.value)}
-            value={formData[question.name]?.toString() || ""}
+        <Box sx={{ mb: question.name === "ddp_familiar" && 3 }}>
+          <FormControl
+            component="fieldset"
+            error={!!errors[question.name]}
+            sx={{ mb: question.name !== "ddp_familiar" && 3 }}
           >
-            <FormControlLabel value="true" control={<Radio />} label="Yes" />
-            <FormControlLabel value="false" control={<Radio />} label="No" />
-          </RadioGroup>
-          {errors[question.name] && (
-            <Typography color="error">{errors[question.name]}</Typography>
+            <Typography variant="h6" sx={{ mb: 1 }}>
+              {question.title}
+            </Typography>
+            <RadioGroup
+              onChange={(e) => handleRadioChange(question.name, e.target.value)}
+              value={formData[question.name]?.toString() || ""}
+            >
+              <FormControlLabel value="true" control={<Radio />} label="Yes" />
+              <FormControlLabel value="false" control={<Radio />} label="No" />
+            </RadioGroup>
+            {errors[question.name] && (
+              <Typography color="error">{errors[question.name]}</Typography>
+            )}
+          </FormControl>
+          {question.name === "ddp_familiar" && (
+            <TextField
+              label="If yes, describe them in one sentence"
+              fullWidth
+              value={formData[`${question.name}_comment`] || ""}
+              onChange={(e) =>
+                handleTextChange(`${question.name}_comment`, e.target.value)
+              }
+              sx={{ mt: 2 }}
+              multiline
+            />
           )}
-        </FormControl>
+        </Box>
       );
     } else if (question.type === "slider") {
       return (
-        <Box className="mb-6">
-          <Typography variant="h6" className="mb-2">
+        <Box sx={{ mb: 3 }}>
+          <Typography variant="h6" sx={{ mb: 1 }}>
             {question.title}
           </Typography>
-          <Box className="px-4">
+          <Box>
             <Slider
               value={formData[question.name] ?? 50}
               onChange={(e, value) => handleSliderChange(question.name, value)}
               step={0.01}
               min={0}
               max={100}
-              marks={[
-                { value: 0, label: "Strongly Disagree" },
-                { value: 100, label: "Strongly Agree" },
-              ]}
-              valueLabelDisplay="auto"
+              marks={false}
+              valueLabelDisplay="off"
             />
+            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+              <Typography
+                variant="body2"
+                onClick={() => handleSliderChange(question.name, 0)}
+                sx={{ cursor: "pointer" }}
+              >
+                Strongly Disagree
+              </Typography>
+              <Typography
+                variant="body2"
+                onClick={() => handleSliderChange(question.name, 100)}
+                sx={{ cursor: "pointer" }}
+              >
+                Strongly Agree{" "}
+              </Typography>
+            </Box>
             {errors[question.name] && (
               <Typography color="error">{errors[question.name]}</Typography>
             )}
-            {question.name === "ddp_bothered" &&
-              formData[question.name] > 50 && (
-                <TextField
-                  label="If yes, describe them in one sentence"
-                  fullWidth
-                  value={formData[`${question.name}_comment`] || ""}
-                  onChange={(e) =>
-                    handleTextChange(`${question.name}_comment`, e.target.value)
-                  }
-                  className="mt-4"
-                />
-              )}
           </Box>
         </Box>
       );
@@ -288,28 +307,70 @@ function Questionnaire() {
     return null;
   };
 
+  const renderPanel = (panel) => {
+    if (panel.type === "panel") {
+      return (
+        <Box
+          sx={{
+            mb: 3,
+            bgcolor: "white",
+            p: 3,
+            borderRadius: 1,
+            boxShadow: 1,
+          }}
+        >
+          {panel.elements.map((question, index) => (
+            <Box key={index}>{renderQuestion(question)}</Box>
+          ))}
+        </Box>
+      );
+    }
+    return renderQuestion(panel);
+  };
+
   return (
-    <Box className="max-w-3xl mx-auto p-6 bg-white shadow-md rounded-lg">
-      {currentPage === sites.length + 1 ? (
-        <Typography variant="h6">
+    <Box
+      sx={{
+        px: "md",
+        py: 3,
+        bgcolor: "grey.100",
+        minHeight: "100vh",
+      }}
+    >
+      {currentPage === sites.length ? (
+        <Typography variant="h6" fontWeight={"bold"}>
           The study is now finished. Thank you for your participation.
         </Typography>
       ) : (
-        <>
-          <Typography variant="h5" className="mb-4">
-            {currentPage === 0
-              ? "Thank you for your participation so far. Below, we’d like to ask some questions about your familiarity and experience with deceptive designs."
-              : `Questions about ${sites[currentPage - 1].site.item_name}`}
-          </Typography>
-          {getPageQuestions(currentPage).map((question, index) => (
-            <Box key={index}>{renderQuestion(question)}</Box>
+        <Box sx={{ maxWidth: "md", mx: "auto" }}>
+          <Box sx={{ mb: 2 }}>
+            {currentPage === -1 ? (
+              <Typography variant={"h5"} fontWeight={"bold"}>
+                Thank you for your participation so far. Below, we’d like to ask
+                some questions about your familiarity and experience with
+                deceptive designs.
+              </Typography>
+            ) : (
+              <Typography variant={"h5"}>
+                Next, we’d like to ask you a few short questions about your
+                experience with the <b>{sites[currentPage].site.item_name}</b>{" "}
+                website ({sites[currentPage].domain}). Once you’ve completed
+                this part,{" "}
+                {currentPage < sites.length - 1
+                  ? `you will be asked the same questions about the ${sites[currentPage + 1].site.item_name} website.`
+                  : "the study will be finished."}
+              </Typography>
+            )}
+          </Box>
+          {getPageQuestions(currentPage).map((item, index) => (
+            <Box key={index}>{renderPanel(item)}</Box>
           ))}
-          <Box className="flex justify-between mt-6">
-            {currentPage > 0 && (
+          <Box sx={{ display: "flex", justifyContent: "space-between", mt: 3 }}>
+            {currentPage >= 0 && (
               <Button
                 variant="outlined"
                 onClick={handleBack}
-                className="capitalize"
+                sx={{ textTransform: "capitalize" }}
               >
                 Back
               </Button>
@@ -317,12 +378,12 @@ function Questionnaire() {
             <Button
               variant="contained"
               onClick={handleNext}
-              className="capitalize"
+              sx={{ textTransform: "capitalize", marginLeft: "auto" }}
             >
               {currentPage === sites.length ? "Submit" : "Next"}
             </Button>
           </Box>
-        </>
+        </Box>
       )}
     </Box>
   );
