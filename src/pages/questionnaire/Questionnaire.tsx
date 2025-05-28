@@ -122,14 +122,18 @@ function Questionnaire() {
     const newErrors = {};
     let isValid = true;
 
-    pageQuestions.forEach((q) => {
-      if (q.type === "radio" && !(q.name in formData)) {
-        newErrors[q.name] = "This question is required";
-        isValid = false;
-      }
-      if (q.type === "slider" && !sliderTouched[q.name]) {
-        newErrors[q.name] = "Please interact with this slider";
-        isValid = false;
+    pageQuestions.forEach((item) => {
+      if (item.type === "panel") {
+        item.elements.forEach((q) => {
+          if (q.type === "radio" && !(q.name in formData)) {
+            newErrors[q.name] = "This question is required";
+            isValid = false;
+          }
+          if (q.type === "slider" && !sliderTouched[q.name]) {
+            newErrors[q.name] = "Please interact with this slider";
+            isValid = false;
+          }
+        });
       }
     });
 
