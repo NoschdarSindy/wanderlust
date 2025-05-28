@@ -5,15 +5,12 @@ const events = [
   "cookies",
   "geolocation",
   "notification",
-  // "personalDetails",
   "travelProtection",
-  // "paymentMethod",
   "newsletter",
-  "videoIdent",
-  "camera",
 ] as const;
 export type EventName = (typeof events)[number];
-type Decision = "accept" | "reject";
+const decisions = ["accept", "reject"] as const;
+type Decision = (typeof decisions)[number];
 type EvenString =
   | `${EventName}/${"start" | `end${`/${Decision}` | ""}`}`
   | `routeChange/${string}`;
@@ -36,6 +33,17 @@ export const sendEvent = (eventString: EvenString) => {
     .catch((error) => {
       console.error(error);
     });
+
+  if (!eventString.startsWith("app/") && eventString.includes("/end")) {
+    const [eventName, decision] = eventString.split("/end/");
+    const key = `${design}_${eventName}_decision`;
+    console.log(key, decision);
+    if (eventName && decision) {
+      storeJson(JSON.stringify({ [key]: decision === "accept" }), key).catch(
+        console.error,
+      );
+    }
+  }
 };
 
 export const storeJson = (body, name) => {

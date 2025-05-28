@@ -96,6 +96,7 @@ function Questionnaire() {
   const [formData, setFormData] = useState({});
   const [sliderTouched, setSliderTouched] = useState({});
   const [errors, setErrors] = useState({});
+  const [showValidationError, setShowValidationError] = useState(false);
 
   const meta = {
     darkFirst: sites[0].design === "dark",
@@ -115,6 +116,7 @@ function Questionnaire() {
 
   const handleTextChange = (name, value) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
+    setErrors((prev) => ({ ...prev, [name]: false }));
   };
 
   const validatePage = () => {
@@ -128,9 +130,15 @@ function Questionnaire() {
           if (q.type === "radio" && !(q.name in formData)) {
             newErrors[q.name] = "This question is required";
             isValid = false;
-          }
-          if (q.type === "slider" && !sliderTouched[q.name]) {
+          } else if (q.type === "slider" && !sliderTouched[q.name]) {
             newErrors[q.name] = "Please interact with this slider";
+            isValid = false;
+          } else if (
+            q.name === "ddp_familiar" &&
+            formData["ddp_familiar"] &&
+            !formData["ddp_description"]?.trim()
+          ) {
+            newErrors["ddp_description"] = "This field cannot be empty";
             isValid = false;
           }
         });
@@ -138,19 +146,22 @@ function Questionnaire() {
     });
 
     setErrors(newErrors);
+    setShowValidationError(!isValid);
     return isValid;
   };
 
   const handleNext = async () => {
     if (!validatePage()) return;
 
-    if (currentPage < sites.length) {
-      setCurrentPage((prev) => prev + 1);
-    } else {
+    if (currentPage === sites.length - 1) {
+      //done
+      console.log(formData);
+      console.log(meta);
+
       try {
         await Promise.all([
-          storeJson(JSON.stringify(formData), "questionnaire"),
-          storeJson(JSON.stringify(meta), "meta"),
+          storeJson(formData, "questionnaire"),
+          storeJson(meta, "meta"),
         ]).then((responses) =>
           Promise.all(responses.map((res) => res.json())).then((jsons) =>
             jsons.forEach((json) => console.log(json.message)),
@@ -160,6 +171,8 @@ function Questionnaire() {
         console.error("Submission error:", err);
       }
     }
+
+    setCurrentPage((prev) => prev + 1);
   };
 
   const handleBack = () => {
@@ -256,16 +269,24 @@ function Questionnaire() {
             )}
           </FormControl>
           {question.name === "ddp_familiar" && (
-            <TextField
-              label="If yes, describe them in one sentence"
-              fullWidth
-              value={formData[`${question.name}_comment`] || ""}
-              onChange={(e) =>
-                handleTextChange(`${question.name}_comment`, e.target.value)
-              }
-              sx={{ mt: 2 }}
-              multiline
-            />
+            <>
+              <TextField
+                fullWidth
+                value={formData[`ddp_description`] || ""}
+                onChange={(e) =>
+                  handleTextChange(`ddp_description`, e.target.value)
+                }
+                sx={{ mt: 2 }}
+                multiline
+                label="If you answered yes above, please describe deceptive designs in one sentence."
+                error={errors["ddp_description"]}
+              />
+              {errors["ddp_description"] && (
+                <Typography color="error">
+                  {errors["ddp_description"]}
+                </Typography>
+              )}
+            </>
           )}
         </Box>
       );
@@ -342,7 +363,7 @@ function Questionnaire() {
       }}
     >
       {currentPage === sites.length ? (
-        <Typography variant="h6" fontWeight={"bold"}>
+        <Typography variant="h6" fontWeight={"bold"} align={"center"}>
           The study is now finished. Thank you for your participation.
         </Typography>
       ) : (
@@ -378,6 +399,11 @@ function Questionnaire() {
               >
                 Back
               </Button>
+            )}
+            {showValidationError && (
+              <Typography color="error" variant="body2">
+                Please fill out the whole form.
+              </Typography>
             )}
             <Button
               variant="contained"

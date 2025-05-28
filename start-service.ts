@@ -14,7 +14,7 @@ import {
 import * as process from "node:process";
 
 const customParticipantNumber = 0; // <=0 = none, >0 = custom
-const openfakeSites = 0;
+const openSites = 0;
 const certs = 1;
 const kioskMode = 1;
 const currentCity = "Berlin";
@@ -150,7 +150,8 @@ function startApps({ pName, entries }: { pName: string; entries: Entry[] }) {
 
   // Other apps
   entries.forEach(({ site, domain, design }, i) => {
-    const port = minPort + i;
+    const port = minPort + Object.values(domains).indexOf(domain);
+    console.log(`Starting ${site} on port ${port} with design ${design}...`);
     spawnApp({ site, domain, design, port, pName, tasks });
   });
 }
@@ -184,7 +185,7 @@ function openBrowser() {
 
   let urls = [
     "http://localhost:3000",
-    ...(openfakeSites
+    ...(openSites
       ? Object.values(domains).map((domain, i) =>
           certs ? `https://${domain}` : `http://localhost:${minPort + i}`,
         )

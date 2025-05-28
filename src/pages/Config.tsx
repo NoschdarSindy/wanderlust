@@ -39,7 +39,12 @@ const Config = () => {
   return (
     <div className="m-5 p-xl-5">
       <p>Participant: {VITE_PARTICIPANT}</p>
-      <pre>{entries.map(({ site, design }) => `${site}: ${design}\n`)}</pre>
+      <pre>
+        {entries.map(
+          ({ site, design }: { site: string; design: string }) =>
+            `${site[0].toUpperCase()}: ${design[0]}\n`,
+        )}
+      </pre>
       {/*<p>*/}
       {/*  Make sure and site data and permissions are reset before conducting the*/}
       {/*  study. To check permissions, open a new tab and paste:*/}

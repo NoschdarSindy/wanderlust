@@ -71,7 +71,6 @@ export default function LocationPopup({ accept }) {
       <DialogActions>
         <button
           onClick={() => {
-            sendEvent("geolocation/end/accept");
             accept();
             setOpen(false);
           }}
