@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import { type EventName, storeJson } from "src/lib/client";
 import { getSite } from "src/lib/composables.ts";
+import ScrollToTop from "src/components/ScrollToTop.tsx";
 
 const stimuli = [
   {
@@ -254,7 +255,7 @@ function Questionnaire() {
             error={!!errors[question.name]}
             sx={{ mb: question.name !== "ddp_familiar" && 3 }}
           >
-            <Typography variant="h6" sx={{ mb: 1 }}>
+            <Typography variant="h6" sx={{ mb: 1 }} fontWeight={"bold"}>
               {question.title}
             </Typography>
             <RadioGroup
@@ -270,17 +271,19 @@ function Questionnaire() {
           </FormControl>
           {question.name === "ddp_familiar" && (
             <>
-              <TextField
-                fullWidth
-                value={formData[`ddp_description`] || ""}
-                onChange={(e) =>
-                  handleTextChange(`ddp_description`, e.target.value)
-                }
-                sx={{ mt: 2 }}
-                multiline
-                label="If you answered yes above, please describe deceptive designs in one sentence."
-                error={errors["ddp_description"]}
-              />
+              {formData["ddp_familiar"] && (
+                <TextField
+                  fullWidth
+                  value={formData[`ddp_description`] || ""}
+                  onChange={(e) =>
+                    handleTextChange(`ddp_description`, e.target.value)
+                  }
+                  sx={{ mt: 2 }}
+                  multiline
+                  label="If you answered yes above, please describe deceptive designs in one sentence."
+                  error={errors["ddp_description"]}
+                />
+              )}
               {errors["ddp_description"] && (
                 <Typography color="error">
                   {errors["ddp_description"]}
@@ -293,7 +296,7 @@ function Questionnaire() {
     } else if (question.type === "slider") {
       return (
         <Box sx={{ mb: 3 }}>
-          <Typography variant="h6" sx={{ mb: 1 }}>
+          <Typography variant="h6" sx={{ mb: 1 }} fontWeight={"bold"}>
             {question.title}
           </Typography>
           <Box>
@@ -309,15 +312,15 @@ function Questionnaire() {
             <Box sx={{ display: "flex", justifyContent: "space-between" }}>
               <Typography
                 variant="body2"
-                onClick={() => handleSliderChange(question.name, 0)}
-                sx={{ cursor: "pointer" }}
+                // onClick={() => handleSliderChange(question.name, 0)}
+                // sx={{ cursor: "pointer" }}
               >
                 Strongly Disagree
               </Typography>
               <Typography
                 variant="body2"
-                onClick={() => handleSliderChange(question.name, 100)}
-                sx={{ cursor: "pointer" }}
+                // onClick={() => handleSliderChange(question.name, 100)}
+                // sx={{ cursor: "pointer" }}
               >
                 Strongly Agree{" "}
               </Typography>
@@ -358,10 +361,11 @@ function Questionnaire() {
       sx={{
         px: "md",
         py: 3,
-        bgcolor: "grey.100",
+        bgcolor: "grey.200",
         minHeight: "100vh",
       }}
     >
+      <ScrollToTop key={currentPage} />
       {currentPage === sites.length ? (
         <Typography variant="h6" fontWeight={"bold"} align={"center"}>
           The study is now finished. Thank you for your participation.
