@@ -301,7 +301,7 @@ const Demographics: React.FC = () => {
 
   // Handle survey completion
   survey.onComplete.add((sender) => {
-    const results = JSON.stringify(sender.data);
+    const results = sender.data;
     console.log("Survey results:", results);
 
     storeJson(results, "demographics")

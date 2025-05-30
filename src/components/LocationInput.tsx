@@ -61,6 +61,9 @@ export default function LocationInput({ accessor, placeholder }) {
     // value =
     //   (value[0]?.toUpperCase() || "") + (value.slice(1)?.toLowerCase() || "");
     setLocation(value);
+    if (d.isFair && showGpsButton) {
+      sendEvent(`geolocation/end/reject`);
+    }
     // hasError.current = !isValidOption(newValue);
   };
 
@@ -103,7 +106,6 @@ export default function LocationInput({ accessor, placeholder }) {
   };
 
   const handleAdornmentClick = (e) => {
-    sendEvent("geolocation/start");
     getGeolocationPermission();
   };
 

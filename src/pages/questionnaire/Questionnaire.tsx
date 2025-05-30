@@ -281,7 +281,7 @@ function Questionnaire() {
                   sx={{ mt: 2 }}
                   multiline
                   label="If you answered yes above, please describe deceptive designs in one sentence."
-                  error={errors["ddp_description"]}
+                  error={!!errors["ddp_description"]}
                 />
               )}
               {errors["ddp_description"] && (

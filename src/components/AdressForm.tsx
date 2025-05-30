@@ -138,9 +138,9 @@ export default function AddressForm() {
         <Grid item xs={12} sm={6}>
           <TextField
             required
-            id="city"
-            name="city"
-            label="City"
+            id="zip"
+            name="zip"
+            label="Zip / Postal code"
             fullWidth
             autoComplete="off"
             variant="standard"
@@ -159,9 +159,9 @@ export default function AddressForm() {
         <Grid item xs={12} sm={6}>
           <TextField
             required
-            id="zip"
-            name="zip"
-            label="Zip / Postal code"
+            id="city"
+            name="city"
+            label="City"
             fullWidth
             autoComplete="off"
             variant="standard"

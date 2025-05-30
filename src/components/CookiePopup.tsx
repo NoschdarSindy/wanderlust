@@ -29,6 +29,9 @@ export default function CookiePopup() {
     if (reason === "backdropClick") return;
     setOpen(false);
     setAskedForCookies(true);
+    if (d.isFair) {
+      sendEvent("geolocation/start");
+    }
   };
 
   const handleAccept = () => {
