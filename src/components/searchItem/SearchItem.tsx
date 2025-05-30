@@ -21,6 +21,7 @@ function HotelCard(props: {
   mock: any;
   locations: { origin: string; destination: string };
   guests: any;
+  index: number;
 }) {
   return (
     <div className="searchItem">
@@ -69,7 +70,7 @@ function HotelCard(props: {
             {pluralize(useNights(), "night")},{" "}
             {pluralize(props.guests.adult, "adult")}
           </span>
-          <span className="siPrice">€ {useTotalPrice()}</span>
+          <span className="siPrice">€ {useTotalPrice(props.index)}</span>
           <span className="siTaxOp">Includes taxes and fees</span>
           <button onClick={props.onClick} className="btn btn-primary">
             See availability <FontAwesomeIcon icon={faAngleRight} size={"xs"} />
@@ -103,6 +104,7 @@ const SearchItem = ({ index }) => {
           mock={mock}
           locations={locations}
           guests={guests}
+          index={index}
         />
       )}
 

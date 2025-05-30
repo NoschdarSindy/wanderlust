@@ -1,6 +1,9 @@
 import json
+import logging
 import os
 import re
+import time
+from contextlib import asynccontextmanager
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional
@@ -11,24 +14,48 @@ from fastapi.middleware.cors import CORSMiddleware
 from pylsl import StreamInfo, StreamOutlet, pylsl
 from starlette.requests import Request
 
-# logging.basicConfig(level=logging.DEBUG)
-# logger = logging.getLogger(__name__)
+from backend.talk_to_pro_lab import tobii_manager
 
-app = FastAPI()
+current_session_active = False
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+outlet = None
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    global outlet
+
+    # Startup
+    logger.info("Application starting up...")
+    info = StreamInfo("Frontend Events", "Markers", 1, 0, "string", "frontend")
+    outlet = StreamOutlet(info)
+    print("✅  LSL outlet ready — Ready to send data.")
+
+    yield
+
+    # Shutdown
+    logger.info("Application shutting down...")
+    global current_session_active
+    if current_session_active:
+        tobii_manager.stop_recording()
+    tobii_manager.cleanup()
+    logger.info("Application shutdown complete")
+
+
+app = FastAPI(lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=["*"]
+    allow_headers=["*"],
 )
 
 output_dir = Path("C:/Users/Nosch/Desktop/wanderlust/output")
 participantName = "unknown"
 
-info = StreamInfo("Frontend Events", "Markers", 1, 0, 'string', 'frontend')
-outlet = StreamOutlet(info)
-print("✅  LSL outlet ready — Ready to send data.")
 
 @app.get("/")
 async def hello():
@@ -41,7 +68,9 @@ async def get_next_participant(custom_participant_number: Optional[int] = None):
 
     # Read all folder names
     output_dir.mkdir(exist_ok=True)
-    dirnames = {d for d in os.listdir(output_dir) if os.path.isdir(os.path.join(output_dir, d))}
+    dirnames = {
+        d for d in os.listdir(output_dir) if os.path.isdir(os.path.join(output_dir, d))
+    }
     # Extract numbers from folder names that start with digits
     numbers = set()
     for d in dirnames:
@@ -71,7 +100,7 @@ async def get_next_participant(custom_participant_number: Optional[int] = None):
             else:
                 raise HTTPException(
                     status_code=400,
-                    detail=f"❌ All suffixes taken for participant {custom_base}"
+                    detail=f"❌ All suffixes taken for participant {custom_base}",
                 )
     else:
         # Find the next available index
@@ -96,7 +125,7 @@ async def get_next_participant(custom_participant_number: Optional[int] = None):
 
 @app.post("/store-json/{participant}/{filename_suffix}")
 async def store_json(data: dict, participant: str, filename_suffix: str):
-    print('Storing data')
+    print("Storing data")
     try:
         datetime_string = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         folder = os.path.join(output_dir, participant)
@@ -113,7 +142,14 @@ async def store_json(data: dict, participant: str, filename_suffix: str):
 
 
 @app.get("/{participant}/{site}/{design}/{event}/{route_or_event_phase:path}")
-async def get_event(request: Request, participant: str, site: str, design: str, event: str, route_or_event_phase: str):
+async def get_event(
+    request: Request,
+    participant: str,
+    site: str,
+    design: str,
+    event: str,
+    route_or_event_phase: str,
+):
     global participantName
     if participant != participantName:
         print(f"⚠️  Participant mismatch: expected {participantName}, got {participant}")
@@ -126,7 +162,14 @@ async def get_event(request: Request, participant: str, site: str, design: str, 
     outlet.push_sample([full_path], pylsl.local_clock())
     print(f"Pushed {full_path}")
 
+    if event != "routeChange":
+        route_or_event_phase = route_or_event_phase.split("/")[0]
+
+    tobii_marker = f"{design}/{event}/{route_or_event_phase}"
+    tobii_manager.send_event(participant, tobii_marker)
+
     return {"message": f"[BE] Pushed {full_path} to stream."}
+
 
 class ConnectionManager:
     def __init__(self):
@@ -140,7 +183,10 @@ class ConnectionManager:
         print(f"Client connected to channel '{channel}'")
 
     def disconnect(self, websocket: WebSocket, channel: str):
-        if channel in self.active_connections and websocket in self.active_connections[channel]:
+        if (
+            channel in self.active_connections
+            and websocket in self.active_connections[channel]
+        ):
             self.active_connections[channel].remove(websocket)
             if not self.active_connections[channel]:
                 del self.active_connections[channel]
@@ -152,26 +198,85 @@ class ConnectionManager:
                 await connection.send_text(json.dumps(message))
             print(f"Broadcasted to channel '{channel}': {message}")
 
-manager = ConnectionManager()
+
+connection_manager = ConnectionManager()
+
 
 # WebSocket endpoint
 @app.websocket("/ws/{channel}")
 async def websocket_endpoint(websocket: WebSocket, channel: str):
-    await manager.connect(websocket, channel)
+    await connection_manager.connect(websocket, channel)
     try:
         while True:
             data = await websocket.receive_text()
             message = json.loads(data)
-            await manager.broadcast(message, channel)
+            await connection_manager.broadcast(message, channel)
     except WebSocketDisconnect:
-        manager.disconnect(websocket, channel)
+        connection_manager.disconnect(websocket, channel)
     except Exception as e:
         print(f"WebSocket error: {e}")
-        manager.disconnect(websocket, channel)
+        connection_manager.disconnect(websocket, channel)
+
+
+# Recording control endpoints
+@app.get("/tobii/start/{participant_id}")
+async def start_recording(participant_id: str):
+    """Start Tobii recording for participant"""
+    global current_session_active, participantName
+
+    if current_session_active:
+        return {"error": "Recording already active", "participant": participantName}
+
+    if not tobii_manager.current_participant_label:
+        if tobii_manager.initialize(participant_id):
+            tobii_manager.current_participant_label = participant_id
+        else:
+            return {"error": "Failed to initialize Tobii"}
+
+    session_name = f"{participant_id}_screen_{time.strftime('%Y-%m-%d_%H-%M-%S')}"
+    if tobii_manager.start_recording(session_name):
+        current_session_active = True
+        logger.info(f"Started Tobii recording: {session_name}")
+        return {
+            "message": f"Recording started: {session_name}",
+            "participant": participant_id,
+        }
+    else:
+        return {"error": "Failed to start recording"}
+
+
+@app.get("/tobii/stop")
+async def stop_recording():
+    """Stop current Tobii recording"""
+    global current_session_active
+
+    if not current_session_active:
+        return {"error": "No active recording"}
+
+    if tobii_manager.stop_recording():
+        current_session_active = False
+        logger.info("Stopped Tobii recording")
+        return {
+            "message": "Recording stopped successfully",
+            "participant": participantName,
+        }
+    else:
+        return {"error": "Failed to stop recording"}
+
+
+# @app.get("/tobii/status")
+# async def get_tobii_status():
+#     """Get current Tobii recording status"""
+#     return {
+#         "participant": participantName,
+#         "recording_active": current_session_active,
+#         "manager_initialized": tobii_manager.current_participant_id is not None,
+#     }
 
 
 if __name__ == "__main__":
-    uvicorn.run("server:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run("server:app", host="127.0.0.1", port=8000, reload=False)
+
 
 # @app.middleware("http")
 # async def catch_all_exceptions(request: Request, call_next):

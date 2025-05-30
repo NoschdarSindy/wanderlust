@@ -4,8 +4,9 @@ import { Site, taskInfo } from "src/lib/studyData";
 import { useWebSocketChannel } from "src/lib/composables";
 import { useRecoilState } from "recoil";
 import { currentTaskAtom } from "src/lib/atoms";
-import { Box, Button, CircularProgress } from "@mui/material";
+import { Box, CircularProgress } from "@mui/material";
 import { useCustomNavigate } from "src/components/NavigationProvider.tsx";
+import { startTobiiRecording, stopTobiiRecording } from "src/lib/client.ts";
 
 const tasks = VITE_TASKS?.split(",") as Site[];
 
@@ -45,7 +46,10 @@ const TaskPage = () => {
       if (nextTask) {
         closePreviousTaskTab();
         loadNextTask(nextTask);
-      } else navigateDelayed("/questionnaire");
+      } else {
+        stopTobiiRecording();
+        navigateDelayed("/questionnaire");
+      }
     }
   }, [showTask, message]);
 
@@ -58,11 +62,11 @@ const TaskPage = () => {
   }, [message]);
 
   useEffect(() => {
+    startTobiiRecording();
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       e.preventDefault();
       e.returnValue = ""; // Required for Chrome to show confirmation dialog
     };
-
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, []);

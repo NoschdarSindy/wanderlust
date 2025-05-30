@@ -18,6 +18,7 @@ type EvenString =
 const participant = VITE_PARTICIPANT;
 const s = getSite();
 const { design } = getDesignMode();
+const server = "http://127.0.0.1:8000";
 
 export const sendEvent = async (eventString: EvenString) => {
   if (s.isStudy) return;
@@ -26,7 +27,7 @@ export const sendEvent = async (eventString: EvenString) => {
   // console.log(`${path}`)
 
   try {
-    const response = await fetch("http://127.0.0.1:8000/" + path);
+    const response = await fetch(`${server}/${path}`);
     const json = await response.json();
     console.log(json.message);
   } catch (error) {
@@ -44,9 +45,29 @@ export const sendEvent = async (eventString: EvenString) => {
 };
 
 export const storeJson = (body, name) => {
-  return fetch(`http://127.0.0.1:8000/store-json/${participant}/${name}`, {
+  return fetch(`${server}/store-json/${participant}/${name}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
+};
+
+export const startTobiiRecording = async () => {
+  try {
+    const response = await fetch(`${server}/tobii/start/${participant}`);
+    const json = await response.json();
+    console.log(json.message);
+  } catch (error) {
+    console.error("Error starting Tobii recording:", error);
+  }
+};
+
+export const stopTobiiRecording = async () => {
+  try {
+    const response = await fetch(`${server}/tobii/stop`);
+    const json = await response.json();
+    console.log(json.message);
+  } catch (error) {
+    console.error("Error stopping Tobii recording:", error);
+  }
 };

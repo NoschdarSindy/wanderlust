@@ -2,3 +2,7 @@ fastapi==0.115.4
 uvicorn[standard]==0.32.0
 pylsl==1.16.2
 tobii-research==2.1.0
+opencv-python~=4.11.0.86
+d3dshot~=0.1.5
+psychopy~=2025.1.1
+titta~=2.1.0
