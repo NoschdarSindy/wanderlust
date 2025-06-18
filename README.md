@@ -9,6 +9,7 @@ For full functionality, a Windows computer is needed with Chrome installed.
 127.0.0.1 wanderlust.travel
 127.0.0.1 flyskyway.com
 ```
+3. Add the certificate in the `certs` folder to the Windows trust store
 
 ## Backend
 Run `python backend/server.py` to start the backend server.
