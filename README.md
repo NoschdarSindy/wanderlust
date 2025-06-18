@@ -15,3 +15,5 @@ Run `python backend/server.py` to start the backend server.
 
 ## Frontend
 Run `npm start` to start the react apps. The backend needs to be running because the frontend requests the next participant number to handle the counterbalancing.
+
+# Results are stored by participant in a folder called `output`.
